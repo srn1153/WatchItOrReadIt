@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, Image, ScrollView, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
 import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
@@ -9,19 +9,34 @@ const SigninScreen = ({ setShowSigninScreen }) => {
   const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const[keyboardVisible, setKeyboardVisible] = useState(true); 
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(false); 
+    }); 
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(true); 
+    }); 
+
+    return () => {
+      keyboardDidHideListener.remove(); 
+      keyboardDidShowListener.remove(); 
+    };
+  }, []); 
 
   const onSignInPressed = () => {
-    console.log("Sign in"); 
-  }
-
-  const onLogInPressed = () => {
-    setShowSigninScreen(true);   
+    console.log("create appwrite sign up functionality here")
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+    style={styles.container}
+    behaviour={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+    <ScrollView contentContainerStyle={[styles.content, keyboardVisible ? styles.keyboardVisible : {}]}>
       <Image source={Logo} style={styles.logo} />
-      <ScrollView contentContainerStyle={styles.content}>
       <Text style={styles.text}>Sign up here!</Text>
 
       <CustomInput 
@@ -46,9 +61,9 @@ const SigninScreen = ({ setShowSigninScreen }) => {
       />
       <Button text="Sign up" onPress={onSignInPressed} type="primary" />
 
-      <Button text="Have an account? Log in here!" onPress={() => setShowSigninScreen(false)} type="tertiary"/>
-      </ScrollView>
-    </View>
+      <Button text="Already have an account? Log in here!" onPress={() => setShowSigninScreen(false)} type="tertiary"/>
+    </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -57,23 +72,25 @@ const styles = StyleSheet.create ({
     flex: 1,
   },
   logo: {
-    position: 'absolute', 
-    top: 0, 
-    height: Dimensions.get('window').height * 0.39, 
+    marginTop: -68, 
+    height: Dimensions.get('window').height * 0.55, 
     width: '100%',
-    resizeMode: 'cover', 
-
+    resizeMode: 'contain',
   },
   content: {
-    marginTop: Dimensions.get('window').height *0.39, 
+    marginTop: Dimensions.get('window').height * -0.18, 
     alignItems: 'center', 
-    padding: 7, 
+    paddingBottom: 30, 
+  },
+  keyboardVisible: {
+    marginTop: 0, 
   },
   text: {
-    padding: 7, 
+    marginTop: -20, 
     fontWeight: 'bold',   
     fontSize: 20,       
     color: 'grey', 
+    marginBottom: 10, 
   }
 });
 

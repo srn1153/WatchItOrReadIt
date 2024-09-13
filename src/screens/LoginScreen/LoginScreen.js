@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, Image, StyleSheet, ScrollView, Dimensions, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
 import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
@@ -8,9 +8,25 @@ const LoginScreen = ({ setShowSigninScreen }) => {
 
   const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
+  const[keyboardVisible, setKeyboardVisible] = useState(true); 
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(false); 
+    }); 
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(true); 
+    }); 
+
+    return () => {
+      keyboardDidHideListener.remove(); 
+      keyboardDidShowListener.remove(); 
+    };
+  }, []); 
 
   const onLogInPressed = () => {
-    console.log("create appwrite functionality here")
+    console.log("create appwrite log in functionality here")
   }
 
   const onSignupPressed = () => {
@@ -18,10 +34,13 @@ const LoginScreen = ({ setShowSigninScreen }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+    style={styles.container}
+    behaviour={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+    <ScrollView contentContainerStyle={[styles.content, keyboardVisible ? styles.keyboardVisible : {}]}>
       <Image source={Logo} style={styles.logo} />
-      <ScrollView contentContainerStyle={styles.content}>
-      <Text style={styles.text}>Welcome back!</Text>
+      <Text style={styles.text}>Welcome!</Text>
 
       <CustomInput 
       placeholder="Username" 
@@ -36,36 +55,39 @@ const LoginScreen = ({ setShowSigninScreen }) => {
       setValue={setPassword} 
       secureTextEntry={true}
       />
+
       <Button text="Login" onPress={onLogInPressed} type="primary" />
 
       <Button text="Don't have an account? Sign up here!" onPress={onSignupPressed} type="tertiary"/>
-      </ScrollView>
-    </View>
-  )
-}
+    </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
 
 const styles = StyleSheet.create ({
   container: {
     flex: 1,
   },
   logo: {
-    position: 'absolute', 
-    top: 0, 
-    height: Dimensions.get('window').height * 0.39, 
+    marginTop: -68, 
+    height: Dimensions.get('window').height * 0.55, 
     width: '100%',
-    resizeMode: 'cover', 
-
+    resizeMode: 'contain',
   },
   content: {
-    marginTop: Dimensions.get('window').height *0.39, 
+    marginTop: Dimensions.get('window').height * -0.18, 
     alignItems: 'center', 
-    padding: 7, 
+    paddingBottom: 30, 
+  },
+  keyboardVisible: {
+    marginTop: 0, 
   },
   text: {
-    padding: 7, 
+    marginTop: -20, 
     fontWeight: 'bold',   
     fontSize: 20,       
     color: 'grey', 
+    marginBottom: 10, 
   }
 });
 
