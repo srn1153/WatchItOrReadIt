@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     container: {
         background: 'white', 
         width: '80%', 
-        padding: 10, 
+        padding: 15, 
 
         borderColor: '#e8e8e8', 
         borderWidth: 1, 
@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
 
         paddingHorizontal: 10, 
         marginVertical: 10, 
+
+        fontSize: 15, 
     },
     input: {
 
