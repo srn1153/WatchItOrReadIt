@@ -4,14 +4,17 @@ import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
 
-const LoginScreen = ({ setShowLoginScreen }) => {
+const LoginScreen = ({ setShowSigninScreen }) => {
 
   const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
 
   const onLogInPressed = () => {
-    console.log("Sign in"); 
+    console.log("create appwrite functionality here")
+  }
+
+  const onSignupPressed = () => {
+    setShowSigninScreen(true); 
   }
 
   return (
@@ -35,7 +38,7 @@ const LoginScreen = ({ setShowLoginScreen }) => {
       />
       <Button text="Login" onPress={onLogInPressed} type="primary" />
 
-      <Button text="Don't have an account? Sign up here!" onPress={() => setShowLoginScreen(false)} type="tertiary"/>
+      <Button text="Don't have an account? Sign up here!" onPress={onSignupPressed} type="tertiary"/>
       </ScrollView>
     </View>
   )

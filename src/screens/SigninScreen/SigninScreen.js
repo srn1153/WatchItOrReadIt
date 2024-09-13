@@ -4,7 +4,7 @@ import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
 
-const SigninScreen = ({ setShowLoginScreen }) => {
+const SigninScreen = ({ setShowSigninScreen }) => {
 
   const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
@@ -15,7 +15,7 @@ const SigninScreen = ({ setShowLoginScreen }) => {
   }
 
   const onLogInPressed = () => {
-    setShowLoginScreen(true);   
+    setShowSigninScreen(true);   
   }
 
   return (
@@ -46,7 +46,7 @@ const SigninScreen = ({ setShowLoginScreen }) => {
       />
       <Button text="Sign up" onPress={onSignInPressed} type="primary" />
 
-      <Button text="Have an account? Log in here!" onPress={onLogInPressed} type="tertiary"/>
+      <Button text="Have an account? Log in here!" onPress={() => setShowSigninScreen(false)} type="tertiary"/>
       </ScrollView>
     </View>
   )

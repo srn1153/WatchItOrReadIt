@@ -6,14 +6,14 @@ import LoginScreen from './src/screens/LoginScreen';
 
 
 const App = () => {
-  const [showLoginScreen, setShowLoginScreen] = useState(false); 
+  const [showSigninScreen, setShowSigninScreen] = useState(false); 
   
   return (
       <SafeAreaView style={styles.root}>
-        {showLoginScreen ? (
-          <LoginScreen setShowLoginScreen={setShowLoginScreen} />
+        {showSigninScreen ? (
+          <SigninScreen setShowSigninScreen={setShowSigninScreen} />
         ) : (
-          <SigninScreen setShowLoginScreen={setShowLoginScreen} />
+          <LoginScreen setShowSigninScreen={setShowSigninScreen} />
         )}
       </SafeAreaView>
   );
