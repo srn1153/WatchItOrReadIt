@@ -1,13 +1,20 @@
-import React from 'react'; 
+import React, { useState }  from 'react'; 
 import { SafeAreaView, StyleSheet } from 'react-native';
 //import AppwriteService from './appwrite/service';
 import SigninScreen from './src/screens/SigninScreen';
+import LoginScreen from './src/screens/LoginScreen';
 
 
 const App = () => {
+  const [showLoginScreen, setShowLoginScreen] = useState(false); 
+  
   return (
       <SafeAreaView style={styles.root}>
-        <SigninScreen  /> 
+        {showLoginScreen ? (
+          <LoginScreen setShowLoginScreen={setShowLoginScreen} />
+        ) : (
+          <SigninScreen setShowLoginScreen={setShowLoginScreen} />
+        )}
       </SafeAreaView>
   );
 };

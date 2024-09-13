@@ -4,25 +4,21 @@ import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
 
-const SigninScreen = ({ setShowLoginScreen }) => {
+const LoginScreen = ({ setShowLoginScreen }) => {
 
   const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
 
-  const onSignInPressed = () => {
-    console.log("Sign in"); 
-  }
-
   const onLogInPressed = () => {
-    setShowLoginScreen(true);   
+    console.log("Sign in"); 
   }
 
   return (
     <View style={styles.container}>
       <Image source={Logo} style={styles.logo} />
       <ScrollView contentContainerStyle={styles.content}>
-      <Text style={styles.text}>Sign up here!</Text>
+      <Text style={styles.text}>Welcome back!</Text>
 
       <CustomInput 
       placeholder="Username" 
@@ -32,21 +28,14 @@ const SigninScreen = ({ setShowLoginScreen }) => {
       />
 
       <CustomInput 
-      placeholder="Email"
-      value={email}
-      setValue={setEmail}
-      secureTextEntry={false}
-      />
-
-      <CustomInput 
       placeholder="Password" 
       value={password} 
       setValue={setPassword} 
       secureTextEntry={true}
       />
-      <Button text="Sign up" onPress={onSignInPressed} type="primary" />
+      <Button text="Login" onPress={onLogInPressed} type="primary" />
 
-      <Button text="Have an account? Log in here!" onPress={onLogInPressed} type="tertiary"/>
+      <Button text="Don't have an account? Sign up here!" onPress={() => setShowLoginScreen(false)} type="tertiary"/>
       </ScrollView>
     </View>
   )
@@ -77,4 +66,4 @@ const styles = StyleSheet.create ({
   }
 });
 
-export default SigninScreen
+export default LoginScreen
