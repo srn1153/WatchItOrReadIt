@@ -4,14 +4,14 @@ import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
 import { useAuth } from '../../context/authContext'
-
+import { useNavigation } from '@react-navigation/native'; 
 
 const LoginScreen = ({ setShowSigninScreen }) => {
-
   const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
   const[keyboardVisible, setKeyboardVisible] = useState(true); 
   const {login} = useAuth()
+  const navigation = useNavigation()
 
 
   useEffect(() => {
@@ -33,10 +33,11 @@ const LoginScreen = ({ setShowSigninScreen }) => {
     console.log("Creating firebase login functionality here")
 
     const response = await login(email, password)
-
     console.log("Got results", response)
-    if(!response.success){
-      Alert.alert("Login error", response.msg)
+    if(response.success){
+      navigation.navigate('Home')
+    } else {
+      console.log("Login error", response.msg)
     }
 
   }

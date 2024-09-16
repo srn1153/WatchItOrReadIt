@@ -1,6 +1,6 @@
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from '../../firebaseConfig';
 import { db } from '../../firebaseConfig';
 
@@ -61,7 +61,7 @@ export const AuthContextProvider = ({children})=> {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, signUp, logout }}>
+        <AuthContext.Provider value={{ user, login, signUp, logout, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     )
@@ -69,7 +69,6 @@ export const AuthContextProvider = ({children})=> {
 
 export const useAuth = () => {
     const value = useContext(AuthContext)
-
     if(!value) {
         throw new Error("userAuth must be wrapped inside AuthContextProvider")
     }
