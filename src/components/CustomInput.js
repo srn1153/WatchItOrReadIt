@@ -1,6 +1,7 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import React from 'react'
 
+//Created for custom textfields and can use it for usernames, emails or passwords 
 const CustomInput = ({ value, setValue, placeholder, secureTextEntry }) => {
   return (
     <View style={styles.container}>
@@ -8,7 +9,7 @@ const CustomInput = ({ value, setValue, placeholder, secureTextEntry }) => {
       value = {value}
       onChangeText={setValue}
       placeholder={placeholder}
-      style={styles.input}
+      // style={styles.input}
       secureTextEntry={secureTextEntry}
       />
     </View>
@@ -30,9 +31,9 @@ const styles = StyleSheet.create({
 
         fontSize: 15, 
     },
-    input: {
+    // input: {
 
-    }
+    // }
 })
 
 export default CustomInput

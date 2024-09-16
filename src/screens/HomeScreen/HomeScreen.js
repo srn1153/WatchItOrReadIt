@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, ScrollView, Keyboard } from 'react-native'
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import React from 'react'
 
+//Created for temporary use, will modify once I have merged branches with team 
+//Created to test if my navgiation code was working efficiently
 const HomeScreen = () => {
-  
     return (
         <View  
         style={styles.container}
@@ -20,21 +21,6 @@ const styles = StyleSheet.create ({
       marginTop: Dimensions.get('window').height * 0.5,
       alignItems: 'center',  
     },
-    content: {
-      marginTop: Dimensions.get('window').height * -0.18, 
-      alignItems: 'center', 
-      paddingBottom: 30, 
-    },
-    keyboardVisible: {
-        marginTop: 0, 
-      },
-    text: {
-      marginTop: -20, 
-      fontWeight: 'bold',   
-      fontSize: 20,       
-      color: 'grey', 
-      marginBottom: 10, 
-    }
   });
 
 export default HomeScreen
