@@ -3,12 +3,16 @@ import { View, Text, Image, StyleSheet, ScrollView, Dimensions, KeyboardAvoiding
 import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
+import { useAuth } from '../../context/authContext'
+
 
 const LoginScreen = ({ setShowSigninScreen }) => {
 
-  const [username, setUsername] = useState(''); 
+  const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
   const[keyboardVisible, setKeyboardVisible] = useState(true); 
+  const {login} = useAuth()
+
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
@@ -25,8 +29,16 @@ const LoginScreen = ({ setShowSigninScreen }) => {
     };
   }, []); 
 
-  const onLogInPressed = () => {
-    console.log("create appwrite log in functionality here")
+  const onLogInPressed = async () => {
+    console.log("Creating firebase login functionality here")
+
+    const response = await login(email, password)
+
+    console.log("Got results", response)
+    if(!response.success){
+      Alert.alert("Login error", response.msg)
+    }
+
   }
 
   const onSignupPressed = () => {
@@ -43,9 +55,9 @@ const LoginScreen = ({ setShowSigninScreen }) => {
       <Text style={styles.text}>Welcome!</Text>
 
       <CustomInput 
-      placeholder="Username" 
-      value={username} 
-      setValue={setUsername} 
+      placeholder="Email" 
+      value={email} 
+      setValue={setEmail} 
       secureTextEntry={false}
       />
 

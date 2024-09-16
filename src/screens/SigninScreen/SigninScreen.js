@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, Image, ScrollView, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
 import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
+import { useAuth } from '../../context/authContext'
 
 const SigninScreen = ({ setShowSigninScreen }) => {
 
@@ -10,6 +11,8 @@ const SigninScreen = ({ setShowSigninScreen }) => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const[keyboardVisible, setKeyboardVisible] = useState(true); 
+  const {signUp} = useAuth()
+
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
@@ -26,8 +29,15 @@ const SigninScreen = ({ setShowSigninScreen }) => {
     };
   }, []); 
 
-  const onSignInPressed = () => {
-    console.log("create appwrite sign up functionality here")
+  const onSignInPressed = async () => {
+    console.log("Creating Firebase signup functioanlity here")
+
+    const response = await signUp(email, password, username)
+
+    console.log("Got results", response)
+    if(!response.success){
+      Alert.alert("Sign up error:", response.msg)
+    }
   }
 
   return (

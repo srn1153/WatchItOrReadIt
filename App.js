@@ -1,14 +1,15 @@
 import React, { useState }  from 'react'; 
-import { SafeAreaView, StyleSheet } from 'react-native';
-//import AppwriteService from './appwrite/service';
+import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import SigninScreen from './src/screens/SigninScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import { AuthContextProvider } from './src/context/authContext';
 
 
 const App = () => {
   const [showSigninScreen, setShowSigninScreen] = useState(false); 
   
   return (
+    <AuthContextProvider>
       <SafeAreaView style={styles.root}>
         {showSigninScreen ? (
           <SigninScreen setShowSigninScreen={setShowSigninScreen} />
@@ -16,9 +17,9 @@ const App = () => {
           <LoginScreen setShowSigninScreen={setShowSigninScreen} />
         )}
       </SafeAreaView>
+    </AuthContextProvider>
   );
 };
-
 
 const styles = StyleSheet.create({ 
   root: {
