@@ -6,7 +6,7 @@ import Button from '../../components/Button'
 import { useAuth } from '../../context/authContext'
 import { useNavigation } from '@react-navigation/native'
 
-const SigninScreen = ({ setShowSigninScreen }) => {
+const SigninScreen = () => {
   //Holding username, password and email input values
   const [username, setUsername] = useState(''); 
   const [password, setPassword] = useState('');
@@ -96,7 +96,7 @@ const SigninScreen = ({ setShowSigninScreen }) => {
       />
       <Button text="Sign up" onPress={onSignInPressed} type="primary" />
 
-      <Button text="Already have an account? Log in here!" onPress={() => setShowSigninScreen(false)} type="tertiary"/>
+      <Button text="Already have an account? Log in here!" onPress={() => navigation.navigate('Login')} type="tertiary"/>
     </ScrollView>
     </KeyboardAvoidingView>
   )

@@ -6,7 +6,7 @@ import Button from '../../components/Button'
 import { useAuth } from '../../context/authContext'
 import { useNavigation } from '@react-navigation/native' 
 
-const LoginScreen = ({ setShowSigninScreen }) => {
+const LoginScreen =  () => {
   //Holding email and password input values 
   const [email, setEmail] = useState(''); 
   const [password, setPassword] = useState('');
@@ -62,11 +62,6 @@ const LoginScreen = ({ setShowSigninScreen }) => {
     }
   }
 
-  //Check if this button works (not fully implemented yet so may not work)
-  const onSignupPressed = () => {
-    setShowSigninScreen(true); 
-  }
-
   //Ensuring that the keyboard does not cover the textfields for login information
   //Creating CustomInput text fields for information needed to login 
   return (
@@ -94,7 +89,7 @@ const LoginScreen = ({ setShowSigninScreen }) => {
 
       <Button text="Login" onPress={onLogInPressed} type="primary" />
 
-      <Button text="Don't have an account? Sign up here!" onPress={onSignupPressed} type="tertiary"/>
+      <Button text="Don't have an account? Sign up here!" onPress={() => navigation.navigate('Signup')} type="tertiary"/>
     </ScrollView>
     </KeyboardAvoidingView>
   );

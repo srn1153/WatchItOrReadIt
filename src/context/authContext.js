@@ -36,10 +36,10 @@ export const AuthContextProvider = ({children})=> {
             console.log("Login successful: ", userInfo.user)
             return {success: true, data: userInfo.user} //returns user's data if login was successful
         } catch (error) {
-            const msg = error.message
+            let msg = error.message
             //if error occurs I want the message to be user appropriate
             if(msg.includes('(auth/invalid-email)')) msg='Invalid email, please try again' 
-            //add other errors into this function 
+            if(msg.includes('(auth/invalid-credential)')) msg='Either email or password is incorrect, please try again'
             Alert.alert("Login Error: ", msg) //Displaying user-friendly alert, to guide them to log in successfully
             return{success: false, msg} //returning the error 
         }
@@ -70,10 +70,9 @@ export const AuthContextProvider = ({children})=> {
             })
             return {success: true, data: user} //returning success status and user information
         } catch (error) {
-            const msg = error.message
+            let msg = error.message
             //if error occurs I want the message to be user appropriate
             if(msg.includes('(auth/invalid-email)')) msg='Invalid email, please try again' 
-            //add other errors into this function 
             Alert.alert("Signup Error: ", msg) //Displaying user-friendly alert, to guide them to sign up successfully
             return{success: false, msg} //returning the error
         }
