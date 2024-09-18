@@ -87,7 +87,6 @@ export default function WriteReviewScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Segmented control */}
       <View style={styles.segmentedControl}>
         <TouchableOpacity
           style={[styles.segmentButton, searchType === 'movie' && styles.activeSegment]}

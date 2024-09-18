@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './screens/HomeScreen';
+import HomeScreen  from './screens/HomeScreen';
 import WriteReviewScreen from './screens/WriteReviewScreen';
 import { AntDesign } from '@expo/vector-icons';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
@@ -10,7 +10,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 const Stack = createStackNavigator();
 
-export default function App() {
+const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -71,3 +71,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default App
