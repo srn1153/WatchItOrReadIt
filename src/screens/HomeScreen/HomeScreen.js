@@ -1,26 +1,77 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
-import React from 'react'
+import { StatusBar } from 'expo-status-bar';
+import React, { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AntDesign } from '@expo/vector-icons';
+import { TouchableOpacity, StyleSheet, Text, View, ScrollView } from 'react-native';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-//Created for temporary use, will modify once I have merged branches with team 
-//Created to test if my navgiation code was working efficiently
+//const Stack = createStackNavigator();
+
 const HomeScreen = () => {
-    return (
-        <View  
-        style={styles.container}
+  const navigation = useNavigation()
+
+  // const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  // useEffect(() => {
+  //   async function loadFonts() {
+  //     try {
+  //       await SplashScreen.preventAutoHideAsync();
+  //       await Font.loadAsync({
+  //         'ibm-plex-mono': require('./assets/fonts/IBMPlexMono-Regular.ttf'),
+  //       });
+  //       setFontsLoaded(true);
+  //     } catch (e) {
+  //       console.error(e);
+  //     } finally {
+  //       if (fontsLoaded) {
+  //         SplashScreen.hideAsync();
+  //       }
+  //     }
+  //   }
+
+  //   loadFonts();
+  // }, [fontsLoaded]);
+
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
+
+  return (
+    <SafeAreaView style={styles.safeArea}> 
+    <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity
+        style={styles.plusButton}
+        onPress={() => navigation.navigate('WriteReview')}
         >
-            <Text>
-            POTENTIAL HOME PAGE
-            </Text>
-        </View>
-      );
-    };
+        <AntDesign name="plus" size={18} color="white" />
+      </TouchableOpacity>
+    </ScrollView>
+  </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create ({
-    container: {
-      flex: 1,
-      marginTop: Dimensions.get('window').height * 0.5,
-      alignItems: 'center',  
-    },
-  });
+  safeArea: {
+    flex: 1, 
+    backgroundColor: '#fff',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  }, 
+  plusButton:{
+    marginRight: 15,
+    backgroundColor: 'grey',
+    borderRadius: 50,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default HomeScreen

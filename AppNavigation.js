@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import SignupScreen from "./src/screens/SignupScreen";
 import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
+import WriteReviewScreen from "./src/screens/WriteReviewScreen"; 
 import { AuthContext } from "./src/context/authContext";
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
@@ -38,6 +39,7 @@ const AppNavigation = () => {
                 <Stack.Screen name = "Login" component={LoginScreen} />
                 <Stack.Screen name = "Signup" component={SignupScreen} />
                 <Stack.Screen name = "Home" component={HomeScreen} />
+                <Stack.Screen name = "WriteReview" component={WriteReviewScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )
