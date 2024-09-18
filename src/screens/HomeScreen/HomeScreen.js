@@ -45,7 +45,7 @@ const HomeScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
         style={styles.plusButton}
-        onPress={() => navigation.navigate("WriteReview")}
+        onPress={() => navigation.navigate('WriteReview')}
         >
         <AntDesign name="plus" size={18} color="white" />
       </TouchableOpacity>

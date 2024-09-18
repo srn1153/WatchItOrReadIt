@@ -20,19 +20,22 @@ const NavigationBar = () => {
         tabBarIcon: ({ size }) => (
           <Image source={HomeIcon} style={{ width: size, height: size, tintColor: 'black' }}
           />
-        )
+        ), 
+        headerShown: false, 
       }} />
       <Tab.Screen name='Search' component={TempSearch} options={{
         tabBarIcon: ({ size }) => (
           <Image source={SearchIcon} style={{ width: size, height: size }}
           />
-        )
+        ), 
+        headerShown: false, 
       }} />
       <Tab.Screen name='Profile Room' component={TempProfileRoom} options={{
         tabBarIcon: ({ size }) => (
           <Image source={ProfileRoomIcon} style={{ width: size, height: size, tintColor: 'black' }}
           />
-        )
+        ), 
+        headerShown: false, 
       }} />
     </Tab.Navigator>
   )
