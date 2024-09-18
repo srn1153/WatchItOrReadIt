@@ -45,7 +45,7 @@ const HomeScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
         style={styles.plusButton}
-        onPress={() => navigation.navigate('WriteReview')}
+        onPress={() => navigation.navigate("WriteReview")}
         >
         <AntDesign name="plus" size={18} color="white" />
       </TouchableOpacity>
@@ -65,7 +65,6 @@ const styles = StyleSheet.create ({
     alignItems: 'center',
   }, 
   plusButton:{
-    marginRight: 15,
     backgroundColor: 'grey',
     borderRadius: 50,
     padding: 10,

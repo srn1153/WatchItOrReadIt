@@ -6,6 +6,7 @@ import SignupScreen from "./src/screens/SignupScreen";
 import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
 import WriteReviewScreen from "./src/screens/WriteReviewScreen"; 
 import { AuthContext } from "./src/context/authContext";
+import NavigationBar from './src/components/NavigationBar';
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
@@ -33,7 +34,10 @@ const AppNavigation = () => {
     //Defining Login, Signup and HomeScreen screens in the stack
     return (
         <NavigationContainer>
-            <Stack.Navigator
+            {isAuthenticated ? (
+                <NavigationBar /> 
+            ) : (
+                <Stack.Navigator
                 initialRouteName={'Login'}
                 screenOptions={{ headerShown: false }}>
                 <Stack.Screen name = "Login" component={LoginScreen} />
@@ -41,6 +45,8 @@ const AppNavigation = () => {
                 <Stack.Screen name = "Home" component={HomeScreen} />
                 <Stack.Screen name = "WriteReview" component={WriteReviewScreen} />
             </Stack.Navigator>
+            )}
+            
         </NavigationContainer>
     )
 }
