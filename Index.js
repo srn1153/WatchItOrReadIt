@@ -53,6 +53,10 @@ const Index = () => {
                 <AntDesign name="plus" size={24} color="white" />
               </TouchableOpacity>
             ),
+            headerStyle: {
+              backgroundColor: '#333', // Customize header background color
+            },
+            headerTintColor: '#fff', // Customize header text and icon color
           })}
         />
         <Stack.Screen name="WriteReview" component={WriteReviewScreen} />

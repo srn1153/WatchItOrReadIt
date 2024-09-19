@@ -156,48 +156,55 @@ export default function WriteReviewScreen({ navigation }) {
           </TouchableOpacity>
 
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
           <FlatList
-            data={searchResults}
-            keyExtractor={(item, index) => (searchType === 'book' ? item.id : item.id.toString())}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleItemSelect(item)}>
-                <View style={styles.resultItem}>
-                  {item.poster_path && (
-                    <Image
-                      source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
-                      style={styles.posterImage}
-                    />
-                  )}
-
-                  {item.volumeInfo && item.volumeInfo.imageLinks && (
-                    <Image
-                      source={{ uri: item.volumeInfo.imageLinks.thumbnail }}
-                      style={styles.posterImage}
-                    />
-                  )}
-
-                  <Text style={styles.itemTitle}>
-                    {item.title || item.name || item.volumeInfo.title}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
+  data={searchResults}
+  keyExtractor={(item, index) => (searchType === 'book' ? item?.id : item?.id?.toString() || index.toString())}
+  renderItem={({ item }) => (
+    <TouchableOpacity onPress={() => handleItemSelect(item)}>
+      <View style={styles.resultItem}>
+        {/* For movies and TV shows, use poster_path */}
+        {item?.poster_path && (
+          <Image
+            source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
+            style={styles.posterImage}
           />
+        )}
+
+        {/* For books, use volumeInfo.imageLinks */}
+        {item?.volumeInfo?.imageLinks?.thumbnail && (
+          <Image
+            source={{ uri: item.volumeInfo.imageLinks.thumbnail }}
+            style={styles.posterImage}
+          />
+        )}
+
+        {/* Title handling for both movies, TV shows, and books */}
+        <Text style={styles.itemTitle}>
+          {item?.title || item?.name || item?.volumeInfo?.title || 'Unknown Title'}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  )}
+/>
+
         </>
       )}
 
       {/* Displaying existing reviews */}
       <FlatList
-        data={reviews}
-        keyExtractor={(item, index) => item.item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.reviewItem}>
-            <Text>{item.item.title || item.item.name || item.item.volumeInfo.title}</Text>
-            <Text>{item.text}</Text>
-          </View>
-        )}
-      />
+  data={reviews}
+  keyExtractor={(item, index) => {
+    const id = item?.item?.id || item?.item?.volumeInfo?.id || index.toString();
+    return id.toString();
+  }}
+  renderItem={({ item }) => (
+    <View style={styles.reviewItem}>
+      <Text>{item?.item?.title || item?.item?.name || item?.item?.volumeInfo?.title || 'Unknown Title'}</Text>
+      <Text>{item.text}</Text>
+    </View>
+  )}
+/>
+
     </View>
   );
 }
@@ -316,3 +323,4 @@ const styles = StyleSheet.create({
     fontFamily: 'ibm-plex-mono',
   },
 });
+
