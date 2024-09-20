@@ -65,7 +65,6 @@ const styles = StyleSheet.create ({
     alignItems: 'center',
   }, 
   plusButton:{
-    marginRight: 15,
     backgroundColor: 'grey',
     borderRadius: 50,
     padding: 10,
