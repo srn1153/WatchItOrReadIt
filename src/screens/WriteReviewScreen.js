@@ -25,53 +25,21 @@ const saveReview = async (review) => {
   }
 };
 
-export default function WriteReviewScreen({ navigation }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+export default function WriteReviewScreen({ route }) {
+  const { item: selectedItem } = route.params; 
   const [reviewText, setReviewText] = useState('');
   const [loading, setLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
-  const [searchType, setSearchType] = useState('movie');
 
   useEffect(() => {
     const fetchReviews = async () => {
+      setLoading(true); 
       const reviewsData = await loadReviews();
       setReviews(reviewsData);
+      setLoading(false); 
     };
     fetchReviews();
   }, []);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    setLoading(true);
-    setSearchResults([]);
-    setSelectedItem(null);
-
-    try {
-      const API_KEY = '79c14b18444432a1b856be277e49212d'; 
-      if (searchType === 'movie') {
-        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${searchQuery}&api_key=${API_KEY}`);
-        setSearchResults(response.data.results);
-      } else if (searchType === 'tv') {
-        const response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${searchQuery}&api_key=${API_KEY}`);
-        setSearchResults(response.data.results);
-      } else if (searchType === 'book') {
-        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}`);
-        setSearchResults(response.data.items);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setSearchResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleItemSelect = (item) => {
-    setSelectedItem(item);
-    setSearchResults([]);
-  };
 
   const handleSubmitReview = async () => {
     if (selectedItem && reviewText) {
@@ -88,126 +56,42 @@ export default function WriteReviewScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}> 
-    <View style={styles.container}>
-      <View style={styles.segmentedControl}>
-        <TouchableOpacity
-          style={[styles.segmentButton, searchType === 'movie' && styles.activeSegment]}
-          onPress={() => setSearchType('movie')}
-        >
-          <Text style={[styles.segmentText, searchType === 'movie' && styles.activeSegmentText]}>Movies</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.segmentButton, searchType === 'tv' && styles.activeSegment]}
-          onPress={() => setSearchType('tv')}
-        >
-          <Text style={[styles.segmentText, searchType === 'tv' && styles.activeSegmentText]}>TV Shows</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.segmentButton, searchType === 'book' && styles.activeSegment]}
-          onPress={() => setSearchType('book')}
-        >
-          <Text style={[styles.segmentText, searchType === 'book' && styles.activeSegmentText]}>Books</Text>
-        </TouchableOpacity>
-      </View>
-
-      {selectedItem ? (
-        <>
-          <Text style={styles.itemTitle}>
-            Reviewing: {selectedItem.title || selectedItem.name || selectedItem.volumeInfo.title}
-          </Text>
-
-          {selectedItem.poster_path && (
-            <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w200${selectedItem.poster_path}` }}
-              style={styles.itemPoster}
-            />
-          )}
-
-          {selectedItem.volumeInfo && selectedItem.volumeInfo.imageLinks && (
-            <Image
-              source={{ uri: selectedItem.volumeInfo.imageLinks.thumbnail }}
-              style={styles.itemPoster}
-            />
-          )}
-
-          <TextInput
-            style={styles.input}
-            multiline
-            numberOfLines={5}
-            value={reviewText}
-            onChangeText={setReviewText}
-            placeholder="Write your review here..."
-          />
-          <Button title="Post Review" onPress={handleSubmitReview} />
-        </>
-      ) : (
-        <>
-          <View style={styles.searchContainer}>
-            <FontAwesome name="search" size={24} color="gray" style={styles.searchIcon} />
+      <View style={styles.container}>
+        {selectedItem ? (
+          <>
+            <Text style={styles.itemTitle}>
+              Reviewing: {selectedItem.title || selectedItem.name}
+            </Text>
+            {selectedItem.poster_path && (
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w200${selectedItem.poster_path}` }}
+                style={styles.itemPoster}
+              />
+            )}
             <TextInput
-              style={styles.searchInput}
-              placeholder={`Search for a ${searchType}`}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
-              returnKeyType='search'
+              style={styles.input}
+              multiline
+              numberOfLines={5}
+              value={reviewText}
+              onChangeText={setReviewText}
+              placeholder="Write your review here..."
             />
-          </View>
-          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Text style={styles.searchButtonText}>Search</Text>
-          </TouchableOpacity>
-
-          {loading && <ActivityIndicator size="large" color="#0000ff" />}
-          <FlatList
-  data={searchResults}
-  keyExtractor={(item, index) => (searchType === 'book' ? item?.id : item?.id?.toString() || index.toString())}
-  renderItem={({ item }) => (
-    <TouchableOpacity onPress={() => handleItemSelect(item)}>
-      <View style={styles.resultItem}>
-        {/* For movies and TV shows, use poster_path */}
-        {item?.poster_path && (
-          <Image
-            source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
-            style={styles.posterImage}
-          />
+            <Button title="Post Review" onPress={handleSubmitReview} />
+          </>
+        ) : (
+          loading ? <ActivityIndicator size="large" color="#0000ff" /> : <Text>No item selected</Text>
         )}
-
-        {/* For books, use volumeInfo.imageLinks */}
-        {item?.volumeInfo?.imageLinks?.thumbnail && (
-          <Image
-            source={{ uri: item.volumeInfo.imageLinks.thumbnail }}
-            style={styles.posterImage}
-          />
-        )}
-
-        {/* Title handling for both movies, TV shows, and books */}
-        <Text style={styles.itemTitle}>
-          {item?.title || item?.name || item?.volumeInfo?.title || 'Unknown Title'}
-        </Text>
+        <FlatList
+          data={reviews}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.reviewItem}>
+              <Text>{item?.item?.title || item?.item?.name || item?.item?.volumeInfo?.title || 'Unknown Title'}</Text>
+              <Text>{item.text}</Text>
+            </View>
+          )}
+        />
       </View>
-    </TouchableOpacity>
-  )}
-/>
-
-        </>
-      )}
-
-      {/* Displaying existing reviews */}
-      <FlatList
-  data={reviews}
-  keyExtractor={(item, index) => {
-    const id = item?.item?.id || item?.item?.volumeInfo?.id || index.toString();
-    return id.toString();
-  }}
-  renderItem={({ item }) => (
-    <View style={styles.reviewItem}>
-      <Text>{item?.item?.title || item?.item?.name || item?.item?.volumeInfo?.title || 'Unknown Title'}</Text>
-      <Text>{item.text}</Text>
-    </View>
-  )}
-/>
-
-    </View>
     </SafeAreaView>
   );
 }
