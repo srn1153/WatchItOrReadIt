@@ -3,6 +3,7 @@ import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOp
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { FontAwesome } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const loadReviews = async () => {
   try {
@@ -86,6 +87,7 @@ export default function WriteReviewScreen({ navigation }) {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}> 
     <View style={styles.container}>
       <View style={styles.segmentedControl}>
         <TouchableOpacity
@@ -206,10 +208,15 @@ export default function WriteReviewScreen({ navigation }) {
 />
 
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1, 
+    backgroundColor: '#f8f8f8',
+  },
   container: {
     flex: 1,
     padding: 20,
