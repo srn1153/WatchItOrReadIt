@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, Modal, Picker, ScrollView } from 'react-native';
+import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker'
 import axios from 'axios'; // Importing axios for API calls
 import { useNavigation } from '@react-navigation/native'; 
 
@@ -65,39 +66,34 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Search Type Dropdown */}
       <Picker
         selectedValue={searchType} 
         onValueChange={(itemValue) => setSearchType(itemValue)}
         style={styles.picker}
       >
-         {/* Labels for dropdown */}
         <Picker.Item label="Movie" value="movie" /> 
         <Picker.Item label="TV Show" value="tv" />
         <Picker.Item label="Book" value="book" />
       </Picker>
 
-      {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
         placeholder="Search...." 
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-      <Button title="Search" onPress={handleSearch} disabled={loading} /> {/* Search button */}
+      <Button title="Search" onPress={handleSearch} disabled={loading} />
       
-      {/* Results */}
       <FlatList
         data={results}
         renderItem={({ item }) => (
           <View style={styles.resultItem}>
-             {/* Displaying image */}
             <Image
               source={{ uri: item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/200' }}
               style={styles.image}
             />
             <View style={styles.textContainer}>
-              <Text style={styles.title}>{item.title || item.name}</Text> {/* Display title */}
+              <Text style={styles.title}>{item.title || item.name}</Text>
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => handleAddToList(item)} // Add to list button
@@ -111,7 +107,6 @@ export default function SearchScreen() {
         contentContainerStyle={styles.listContainer}
       />
 
-      {/* Pop Up Window for Adding to List */}
       <Modal
   animationType="slide"
   transparent={true}
@@ -120,10 +115,8 @@ export default function SearchScreen() {
 >
   <View style={styles.modalContainer}>
     <View style={styles.modalContent}>
-      {/* Pop Up Window Header */}
       <Text style={styles.modalHeaderText}>Add Me To...</Text>
 
-      {/* User to select the list type */}
       <Picker
         selectedValue={selectedList}
         onValueChange={(itemValue) => {
@@ -137,7 +130,6 @@ export default function SearchScreen() {
         <Picker.Item label="A New List" value="newList" />
       </Picker>
 
-       {/* Input for new list name if creating a new list */}
       {addingNewList && (
         <TextInput
           style={styles.newListInput}

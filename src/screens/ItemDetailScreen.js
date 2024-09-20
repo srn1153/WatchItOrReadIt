@@ -53,6 +53,7 @@ const ItemDetailScreen = ({ route }) => {
   const addToList = () => {
     // Logic to handle adding the item to the user's list goes here
     console.log("Add to List button pressed!");
+    navigation.navigate('ListSearchScreen')
   };
 
 
