@@ -3,21 +3,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import SignupScreen from "./src/screens/SignupScreen";
-import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
-import WriteReviewScreen from './src/screens/WriteReviewScreen';
+import HomeScreen from "./src/screens/HomeScreen";
 import WriteReviewScreen from "./src/screens/WriteReviewScreen"; 
 import { AuthContext } from "./src/context/authContext";
 import NavigationBar from './src/components/NavigationBar';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-//Will use this once branches have merged: import SearchScreen from ''
-//Will use this once branches have merged: import ProfileRoom from ''
-//Temporary screens I am using
-import TempSearch from './src/screens/TempSearch'
-import TempProfileRoom from './src/screens/TempProfileRoom'
-import { Image, Text } from 'react-native'
-import HomeIcon from './assets/images/HomeIcon.png'
-import SearchIcon from './assets/images/SearchIcon.png'
-import ProfileRoomIcon from './assets/images/ProfileRoomIcon.png'
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
@@ -47,10 +37,8 @@ const AppNavigation = () => {
     return (
         <NavigationContainer>
             {isAuthenticated ? (
-                <Stack.Navigator>
-                    <Stack.Screen name="Back" component={NavigationBar} options={{ headerShown: false}} />
-                    <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
-                </Stack.Navigator>
+                <NavigationBar />
+                
             ) : (
                 <Stack.Navigator
                 initialRouteName={'Login'}

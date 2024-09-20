@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions, KeyboardAvoidingView, Platform, Keyboard, Alert } from 'react-native'
 import Logo from '../../../assets/images/login.png'
 import CustomInput from '../../components/CustomInput'
 import Button from '../../components/Button'
-import { useAuth } from '../../context/authContext'
+import { AuthContext, useAuth } from '../../context/authContext'
 import { useNavigation } from '@react-navigation/native' 
 
 const LoginScreen =  () => {
@@ -55,8 +55,8 @@ const LoginScreen =  () => {
     const response = await login(email, password)
     console.log("Got results", response) //print out the results 
     
-    if(response.success){ //If login was successful 
-      navigation.navigate('Home') //Takes the user to the home screen
+    if(response.success){ //If login was successful
+      //Allowin authContext to redirect screen to homescreen  
     } else {
       console.log("Login error", response.msg) //displays error if otherwise
     }

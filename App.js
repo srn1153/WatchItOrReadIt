@@ -1,19 +1,20 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './screens/HomeScreen';
-import WriteReviewScreen from './screens/WriteReviewScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import WriteReviewScreen from './src/screens/WriteReviewScreen';
+import NavigationBar from './src/components/NavigationBar';
+import AppNavigation from './AppNavigation';
+import { AuthContextProvider } from './src/context/authContext';
+
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Main' }} />
-        <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContextProvider>
+      <AppNavigation />
+    </AuthContextProvider>
   );
 }
 
