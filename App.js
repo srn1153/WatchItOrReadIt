@@ -19,3 +19,9 @@ const App = () => {
 }
 
 export default App;
+
+<Stack.Navigator initialRouteName="Profile">
+        <Stack.Screen name="My Profile Room" component={ProfileScreen} />
+        <Stack.Screen name="List" component={ListScreen} />
+        <Stack.Screen name="Search" component={SearchScreen} />
+      </Stack.Navigator>
