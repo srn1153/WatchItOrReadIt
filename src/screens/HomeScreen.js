@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, ScrollView, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, Image, FlatList, ScrollView, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from 'react-native';
 import axios from 'axios';
 
 export default function HomeScreen({ navigation }) {
@@ -38,7 +38,7 @@ const fetchBooks = async () => {
   try {
     const response = await axios.get('https://www.googleapis.com/books/v1/volumes', {
       params: {
-        q: 'trending OR popular fiction',
+        q: '2022 best reads',
         maxResults: 20,
         key: 'AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU'
       }
@@ -57,7 +57,7 @@ const fetchBooks = async () => {
 
   const handlePress = (item) => {
     setSelectedItem(item);
-    setModalVisible(true);
+    console.log("Entertainment pressed! Will go to feature page once the branch is merged");
   };
 
   const renderItem = ({ item }, type) => {
@@ -77,22 +77,10 @@ const fetchBooks = async () => {
         />
       </TouchableOpacity>
     );
-  };
-
-  const renderDetails = () => {
-    if(!selectedItem) return null;
-
-    return (
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>{selectedItem.title || selectedItem.name}</Text>
-        <Text>Synopsis: {selectedItem.overview || 'N/A'}</Text>
-        <Text>Year: {selectedItem.release_date || selectedItem.first_air_date}</Text>
-      </View>
-    );
-  };
+  }; 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Popular Movies</Text>
@@ -115,7 +103,7 @@ const fetchBooks = async () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Boring Books</Text>
+          <Text style={styles.sectionTitle}>Best Books</Text>
           <FlatList
             data={books}
             horizontal
@@ -125,21 +113,9 @@ const fetchBooks = async () => {
         </View>
       </ScrollView>
 
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            {renderDetails()}
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeButton}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>
+   
+
+    </SafeAreaView>
   );
 }
 

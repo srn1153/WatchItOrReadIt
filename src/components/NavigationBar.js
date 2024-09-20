@@ -11,8 +11,11 @@ import HomeIcon from '../../assets/images/HomeIcon.png'
 import SearchIcon from '../../assets/images/SearchIcon.png'
 import ProfileRoomIcon from '../../assets/images/ProfileRoomIcon.png'
 
+//Creating an instance of the bottom tab navigator
 const Tab = createBottomTabNavigator(); 
 
+//Implementing bottom tab bar, including each images, and text to match the colour black 
+//Adding Home, Search and Profile Room in the bottom tab navigation
 const NavigationBar = () => {
   return (
     <Tab.Navigator screenOptions={{ tabBarLabelStyle: { color: 'black'} }}>
