@@ -9,7 +9,7 @@ export default function ListScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topTabs}>  {/* Top Tabs: Navigation between different list types */}
+      <View style={styles.topTabs}> 
         <TouchableOpacity onPress={() => setSelectedTab('Your List')}>
           <Text style={[styles.tab, selectedTab === 'Your List' && styles.activeTab]}>Your List</Text>
         </TouchableOpacity>
@@ -26,7 +26,6 @@ export default function ListScreen() {
           <FontAwesome name="plus" size={24} color="black" />
         </TouchableOpacity>
       </View>
-      {/* Area where 'List' content would be displayed */}
       <View style={styles.content}>
       </View>
     </View>

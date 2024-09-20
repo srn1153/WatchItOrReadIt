@@ -1,11 +1,8 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeScreen from '../screens/HomeScreen'
-//Will use this once branches have merged: import SearchScreen from ''
-//Will use this once branches have merged: import ProfileRoom from ''
-//Temporary screens I am using
 import SearchScreen from '../screens/SearchScreen'
-import TempProfileRoom from '../screens/TempProfileRoom'
+import ProfileScreen from '../screens/ProfileScreen';
 import { Image, Text } from 'react-native'
 import HomeIcon from '../../assets/images/HomeIcon.png'
 import SearchIcon from '../../assets/images/SearchIcon.png'
@@ -33,7 +30,7 @@ const NavigationBar = () => {
         ), 
         headerShown: false, 
       }} />
-      <Tab.Screen name='Profile Room' component={TempProfileRoom} options={{
+      <Tab.Screen name='Profile Room' component={ProfileScreen} options={{
         tabBarIcon: ({ size }) => (
           <Image source={ProfileRoomIcon} style={{ width: size, height: size, tintColor: 'black' }}
           />
