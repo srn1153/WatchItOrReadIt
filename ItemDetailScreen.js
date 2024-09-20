@@ -19,6 +19,17 @@ const ItemDetailScreen = ({ route }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
 
+  const addReview = () => {
+    // Logic to handle posting a review will go here
+    console.log("Add review button pressed!");
+  };
+
+  const addToList = () => {
+    // Logic to handle adding the item to the user's list goes here
+    console.log("Add to List button pressed!");
+  };
+
+
   useEffect(() => {
     const fetchDetails = async () => {
       const API_KEY = '79c14b18444432a1b856be277e49212d';
@@ -190,6 +201,9 @@ const ItemDetailScreen = ({ route }) => {
           </View>
         </View>
 
+
+      <View style={styles.topBox}>
+
         <View style={styles.synopsisContainer}>
           <Text style={styles.infoTitle}>SYNOPSIS</Text>
           <Text style={styles.synopsis}>
@@ -206,6 +220,20 @@ const ItemDetailScreen = ({ route }) => {
             )}
           </Text>
         </View>
+
+          {/* button Container */}
+          <View style={styles.buttonContainer}>
+            
+            <TouchableOpacity style={styles.addToListButton} onPress={addToList}>
+              <Text style={styles.ButtonText}>Add to List</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.reviewButton} onPress={addReview}>
+              <Text style={styles.ButtonText}>Add Review</Text>
+            </TouchableOpacity>
+          </View>
+      </View>
+
 
         {/*TV Series*/}
         <View style={styles.infoBox}>
@@ -250,12 +278,7 @@ const ItemDetailScreen = ({ route }) => {
             )}
           </View>
 
-          {/* Review*/}
-        <View style={styles.reviewContainer}>
-          
 
-          </View>
-  
         
       </ScrollView>
     // </SafeAreaView>
@@ -337,8 +360,10 @@ const styles = StyleSheet.create({
   },
 
   synopsisContainer: {
-    padding: 16,
-    marginTop: 10,
+    paddingLeft: 0,
+    paddingRight: 27,
+    marginTop: 0,
+    flex: 1,
   },
   infoTitle: {
     fontWeight: '700',
@@ -352,7 +377,7 @@ const styles = StyleSheet.create({
   },
   showMore: {
     fontSize: 14,
-    color: 'purple',
+    color: '#41509A',
     opacity: 0.5,
     fontWeight: '700',
     fontStyle: 'italic',
@@ -370,6 +395,7 @@ const styles = StyleSheet.create({
 
   },
 
+  // Info Box
   infoBox2: {
     padding: 16,
     
@@ -383,7 +409,6 @@ const styles = StyleSheet.create({
     marginLeft: 0, // Add space between CAST and cast names
     flexShrink: 1, // Ensure text wraps properly
   },
-
 
   seasonInfo: {
     fontSize: 14,
@@ -403,10 +428,47 @@ const styles = StyleSheet.create({
     width: 16,
   },
 
-  reviewContainer: {
+  // REVIEW
 
+  reviewButton: {
+    backgroundColor: '#41509A', // Button background color
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 5,
+    width: 130,
+    // marginLeft: 150,
+  },
+  ButtonText: {
+    color: 'white',
+    fontWeight: '0',
+    fontSize: 14,
+    fontFamily: 'courier',
+  },
+  
+  addToListButton: {
+    backgroundColor: '#41509A', // Different color for distinction
+    paddingVertical: 14,
+    paddingHorizontal: 0,
+    borderRadius: 8,
+    alignItems: 'center',
+    // marginVertical: 10,
+    width: 130,
+    // marginLeft: 150,
+  },
+  buttonContainer:{
+    marginTop: 30
 
-  }
+  },
+
+  topBox:{
+    flexDirection: 'row',
+    alignItems: 'flex-start', // Align items at the start
+    justifyContent: 'space-between', // Space between synopsis and buttons
+    padding: 16,
+  },
+  
 
 });
 
