@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, ScrollView, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from 'react-native';
 import axios from 'axios';
+import { navigateToItemDetail } from '../../src/components/utils/navigationUtils'; // import the shared function
+import { useNavigation } from '@react-navigation/native';
+import SearchScreen from './SearchScreen';
 
 export default function HomeScreen({ navigation }) {
+
 
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
@@ -57,7 +61,9 @@ const fetchBooks = async () => {
 
   const handlePress = (item) => {
     setSelectedItem(item);
-    console.log("Entertainment pressed! Will go to feature page once the branch is merged");
+    const itemWithType = { ...item, type: searchType };
+    console.log('Navigating with item:', itemWithType);
+    navigation.navigate('ItemDetail', { item: itemWithType });
   };
 
   const renderItem = ({ item }, type) => {

@@ -239,7 +239,7 @@ const ItemDetailScreen = ({ route }) => {
         <View style={styles.infoBox}>
             {item.type === 'movie' && (
               <>
-                <Image source={require('./assets/movieIcon.png')} style={styles.tvIcon} />
+                <Image source={require('../../assets/movieIcon.png')} style={styles.tvIcon} />
                 <Text style={styles.infoTitle}>  MOVIE   </Text>
               </> 
             )}
@@ -249,10 +249,10 @@ const ItemDetailScreen = ({ route }) => {
  
             {item.type === 'tv' && (
               <>
-                <Image source={require('./assets/TVicon.png')} style={styles.tvIcon} />
+                <Image source={require('../../assets/TVicon.png')} style={styles.tvIcon} />
                 <Text style={styles.infoTitle}>  SERIES  </Text>
 
-                <Image source={require('./assets/seasonsIcon.png')} style={styles.seasonIcon} />
+                <Image source={require('../../assets/seasonsIcon.png')} style={styles.seasonIcon} />
                 <Text style={styles.seasonInfo}> {seasonInfo}</Text>
 
                 <Text style={styles.airingYears}>  ‧  {airingYears}</Text>

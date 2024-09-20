@@ -4,7 +4,7 @@ import HomeScreen from '../screens/HomeScreen'
 //Will use this once branches have merged: import SearchScreen from ''
 //Will use this once branches have merged: import ProfileRoom from ''
 //Temporary screens I am using
-import TempSearch from '../screens/TempSearch'
+import SearchScreen from '../screens/SearchScreen'
 import TempProfileRoom from '../screens/TempProfileRoom'
 import { Image, Text } from 'react-native'
 import HomeIcon from '../../assets/images/HomeIcon.png'
@@ -26,7 +26,7 @@ const NavigationBar = () => {
         ), 
         headerShown: false, 
       }} />
-      <Tab.Screen name='Search' component={TempSearch} options={{
+      <Tab.Screen name='Search' component={SearchScreen} options={{
         tabBarIcon: ({ size }) => (
           <Image source={SearchIcon} style={{ width: size, height: size }}
           />
