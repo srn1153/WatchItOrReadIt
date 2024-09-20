@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import SignupScreen from "./src/screens/SignupScreen";
 import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
+import WriteReviewScreen from './src/screens/WriteReviewScreen';
 import WriteReviewScreen from "./src/screens/WriteReviewScreen"; 
 import { AuthContext } from "./src/context/authContext";
 import NavigationBar from './src/components/NavigationBar';
