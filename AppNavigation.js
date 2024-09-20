@@ -7,9 +7,21 @@ import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
 import WriteReviewScreen from './src/screens/WriteReviewScreen';
 import WriteReviewScreen from "./src/screens/WriteReviewScreen"; 
 import { AuthContext } from "./src/context/authContext";
+import NavigationBar from './src/components/NavigationBar';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+//Will use this once branches have merged: import SearchScreen from ''
+//Will use this once branches have merged: import ProfileRoom from ''
+//Temporary screens I am using
+import TempSearch from './src/screens/TempSearch'
+import TempProfileRoom from './src/screens/TempProfileRoom'
+import { Image, Text } from 'react-native'
+import HomeIcon from './assets/images/HomeIcon.png'
+import SearchIcon from './assets/images/SearchIcon.png'
+import ProfileRoomIcon from './assets/images/ProfileRoomIcon.png'
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
+const Tab = createBottomTabNavigator(); 
 
 const AppNavigation = () => {
     //Creating an isAuthenciated variable to hold the status of authentication from the AuthContext file
@@ -34,14 +46,20 @@ const AppNavigation = () => {
     //Defining Login, Signup and HomeScreen screens in the stack
     return (
         <NavigationContainer>
-            <Stack.Navigator
+            {isAuthenticated ? (
+                <Stack.Navigator>
+                    <Stack.Screen name="Back" component={NavigationBar} options={{ headerShown: false}} />
+                    <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
+                </Stack.Navigator>
+            ) : (
+                <Stack.Navigator
                 initialRouteName={'Login'}
                 screenOptions={{ headerShown: false }}>
                 <Stack.Screen name = "Login" component={LoginScreen} />
                 <Stack.Screen name = "Signup" component={SignupScreen} />
-                <Stack.Screen name = "Home" component={HomeScreen} />
-                <Stack.Screen name = "WriteReview" component={WriteReviewScreen} />
             </Stack.Navigator>
+            )}
+            
         </NavigationContainer>
     )
 }
