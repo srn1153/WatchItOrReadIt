@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import { navigateToItemDetail } from '../../src/components/utils/navigationUtils';
 
 
 const SearchScreen = ({ navigation }) => {
