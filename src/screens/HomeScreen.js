@@ -8,7 +8,6 @@ export default function HomeScreen({ navigation }) {
   const [tvShows, setTvShows] = useState([]);
   const [books, setBooks] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -57,24 +56,37 @@ const fetchBooks = async () => {
 
   const handlePress = (item) => {
     setSelectedItem(item);
-    console.log("Entertainment pressed! Will go to feature page once the branch is merged");
+    let type; 
+
+    if(movies.includes(item)){
+      type='movie';
+    } else if (tvShows.includes(item)) {
+      type='tv'; 
+    } else if (books.includes(item)){
+      type='book'; 
+    }
+    const itemWithType = { ...item, type };
+    console.log('Navigating with item:', itemWithType);
+    navigation.navigate('ItemDetail', { item: itemWithType });
   };
 
   const renderItem = ({ item }, type) => {
     let imageUrl;
 
-    if(type === 'movie' || type === 'tv'){
+    if(type === 'movie'){
       imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/120x180';
-    } else if (type === 'book') {
+    } else if (type === 'tv') {
+      imageUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/120x180';
+    }
+    else if (type === 'book') {
       imageUrl = item.volumeInfo?.imageLinks?.thumbnail || 'https://via.placeholder.com/120x180';
     }
 
     return (
-      <TouchableOpacity onPress={() => handlePress(item)}>
+      <TouchableOpacity onPress={() => handlePress(item, type)}>
         <Image
           style={styles.poster}
-          source={{ uri: imageUrl }}
-        />
+          source={{ uri: imageUrl }} />
       </TouchableOpacity>
     );
   }; 

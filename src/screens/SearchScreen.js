@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
+
 const SearchScreen = ({ navigation }) => {
   // State variables
   const [searchQuery, setSearchQuery] = useState(''); // Stores the current search query
@@ -54,14 +55,11 @@ const SearchScreen = ({ navigation }) => {
   };
 
   // Function to handle item press and navigate to detail page
-  const handleItemPress = (item) => {
-    console.log('Navigating with item:', item); // Debugging
-    // Determine the type based on the searchType and add it to the item
+   const handleItemPress = (item) => {
     const itemWithType = { ...item, type: searchType };
+    console.log('Navigating with item:', itemWithType);
     navigation.navigate('ItemDetail', { item: itemWithType });
   };
-  
-  
 
   // Function to get the label for the current search type
   const getTypeLabel = () => {

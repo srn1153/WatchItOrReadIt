@@ -8,6 +8,7 @@ import WriteReviewScreen from "./src/screens/WriteReviewScreen";
 import { AuthContext } from "./src/context/authContext";
 import NavigationBar from './src/components/NavigationBar';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import ItemDetailScreen from './src/screens/ItemDetailScreen'; 
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
@@ -37,8 +38,11 @@ const AppNavigation = () => {
     return (
         <NavigationContainer>
             {isAuthenticated ? (
-                <NavigationBar />
-                
+                <Stack.Navigator>
+                <Stack.Screen name="Back" component={NavigationBar} options={{ headerShown: false }} />
+                <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
+                <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
+            </Stack.Navigator>
             ) : (
                 <Stack.Navigator
                 initialRouteName={'Login'}
@@ -46,8 +50,7 @@ const AppNavigation = () => {
                 <Stack.Screen name = "Login" component={LoginScreen} />
                 <Stack.Screen name = "Signup" component={SignupScreen} />
             </Stack.Navigator>
-            )}
-            
+            )} 
         </NavigationContainer>
     )
 }
