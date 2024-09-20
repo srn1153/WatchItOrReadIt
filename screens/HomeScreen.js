@@ -39,7 +39,8 @@ const fetchBooks = async () => {
     const response = await axios.get('https://www.googleapis.com/books/v1/volumes', {
       params: {
         q: 'trending OR popular fiction',
-        maxResult: 20,
+        maxResults: 20,
+        key: 'AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU'
       }
     });
     setBooks(response.data.items);
@@ -184,5 +185,6 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
 });
+
 
 
