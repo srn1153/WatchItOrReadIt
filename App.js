@@ -1,9 +1,22 @@
 import React from 'react';
-import Navigation from './Navigation'; // Import the Navigation component to manage app navigation
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './src/screens/HomeScreen';
+import WriteReviewScreen from './src/screens/WriteReviewScreen';
+import NavigationBar from './src/components/NavigationBar';
+import AppNavigation from './AppNavigation';
+import { AuthContextProvider } from './src/context/authContext';
+import Navigation from './Navigation'
 
-// Entry point for the app
+const Stack = createStackNavigator();
+
 const App = () => {
-  return <Navigation />; // Render the Navigation component, which contains all navigation logic
-};
+  return (
+    <AuthContextProvider>
+      <AppNavigation />
+      <Navigation />
+    </AuthContextProvider>
+  );
+}
 
 export default App;
