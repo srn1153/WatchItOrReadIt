@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, ScrollView, SafeAreaView, TouchableOpaci
 import axios from 'axios';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { useNavigation } from '@react-navigation/native'
 
 
 const ItemDetailScreen = ({ route }) => {
@@ -17,12 +18,37 @@ const ItemDetailScreen = ({ route }) => {
   const [genres, setGenres] = useState('Genres not available.');
   const [headerImage, setHeaderImage] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const navigation = useNavigation(); 
 
 
-  const addReview = () => {
-    // Logic to handle posting a review will go here
+  const addReview = (item) => {
     console.log("Add review button pressed!");
-  };
+    let type; 
+
+  // Check if item.type is a string or an array
+  if (Array.isArray(item.type)) {
+    if (item.type.includes('movie')) {
+      type = 'movie';
+    } else if (item.type.includes('tv')) {
+      type = 'tv'; 
+    } else if (item.type.includes('book')) {
+      type = 'book'; 
+    }
+  } else if (typeof item.type === 'string') {
+    if (item.type.includes('movie')) {
+      type = 'movie';
+    } else if (item.type.includes('tv')) {
+      type = 'tv'; 
+    } else if (item.type.includes('book')) {
+      type = 'book'; 
+    }
+  }
+
+  const itemWithType = { ...item, type };
+  console.log('Navigating with item:', itemWithType);
+  navigation.navigate('WriteReview', { item: itemWithType });
+};
 
   const addToList = () => {
     // Logic to handle adding the item to the user's list goes here
@@ -228,7 +254,7 @@ const ItemDetailScreen = ({ route }) => {
               <Text style={styles.ButtonText}>Add to List</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.reviewButton} onPress={addReview}>
+            <TouchableOpacity style={styles.reviewButton} onPress={() => addReview(item)}>
               <Text style={styles.ButtonText}>Add Review</Text>
             </TouchableOpacity>
           </View>
