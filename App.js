@@ -6,7 +6,7 @@ import WriteReviewScreen from './src/screens/WriteReviewScreen';
 import NavigationBar from './src/components/NavigationBar';
 import AppNavigation from './AppNavigation';
 import { AuthContextProvider } from './src/context/authContext';
-
+import Navigation from './Navigation'
 
 const Stack = createStackNavigator();
 
@@ -14,6 +14,7 @@ const App = () => {
   return (
     <AuthContextProvider>
       <AppNavigation />
+      <Navigation />
     </AuthContextProvider>
   );
 }
