@@ -94,6 +94,8 @@ const SearchScreen = ({ navigation }) => {
         return 'TV Show';
       case 'book':
         return 'Book';
+      case 'user':
+        return 'View my profile room!'; 
       default:
         return '';
     }
