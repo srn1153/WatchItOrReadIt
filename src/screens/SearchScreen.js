@@ -34,15 +34,15 @@ const SearchScreen = ({ navigation }) => {
       const API_KEY = '79c14b18444432a1b856be277e49212d';
       let response;
 
-    
+      // Fetch data based on searchType
       if (searchType === 'movie') {
         response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${text}&api_key=${API_KEY}`);
       } else if (searchType === 'tv') {
         response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${text}&api_key=${API_KEY}`);
       } else if (searchType === 'book') {
         response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);
-      } else // Fetch data based on searchType
-      if (searchType === 'user'){
+      } //Fetching users from database (firebase)
+      else if (searchType === 'user'){
         const userQuery = query(
           collection(db, 'users'), 
           where('username', '>=', text), 
@@ -56,12 +56,12 @@ const SearchScreen = ({ navigation }) => {
       if (response) {
         if(searchType === 'book') {
           if(response.data.items) {
-            setSearchResults(response.data.items)
+            setSearchResults(response.data.items || [])
           }
         } else if(searchType === 'user') {
           setSearchResults(response); 
         } else {
-          setSearchResults(response.data.results);
+          setSearchResults(response.data.results || []);
         }
       }
 
@@ -77,7 +77,12 @@ const SearchScreen = ({ navigation }) => {
    const handleItemPress = (item) => {
     const itemWithType = { ...item, type: searchType };
     console.log('Navigating with item:', itemWithType);
-    navigation.navigate('ItemDetail', { item: itemWithType });
+    //if searchType is movie, tv show or book, then go to the ItemDetailScreen 
+    if(searchType === 'movie' || searchType === 'tv' || searchType === 'book'){
+      navigation.navigate('ItemDetail', { item: itemWithType });
+    } else { //else go to Temporary Profile Room
+      navigation.navigate('TempUserProfileRoom'); 
+    }
   };
 
   // Function to get the label for the current search type
@@ -168,7 +173,7 @@ const SearchScreen = ({ navigation }) => {
           onPress={() => handleItemPress(item)}
         >
       {/* Display poster image based on search type */}
-      {item.poster_path && (
+      {(searchType === 'movie' || searchType === 'tv') && item.poster_path && (
         <Image
           source={{
             uri: `https://image.tmdb.org/t/p/w200${item.poster_path}`,
@@ -177,15 +182,16 @@ const SearchScreen = ({ navigation }) => {
         />
       )}
 
-      {item.volumeInfo?.imageLinks?.thumbnail && (
+      {searchType === 'book' && item.volumeInfo?.imageLinks?.thumbnail && (
         <Image
           source={{ uri: item.volumeInfo.imageLinks.thumbnail }}
           style={styles.posterImage}
         />
       )}
+
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle}>
-          {item.title || item.name || item.volumeInfo?.title}
+          {searchType === 'user' ? item.username : item.title || item.name || item.volumeInfo?.title}
         </Text>
 
         {/* Display additional information based on searchType */}
