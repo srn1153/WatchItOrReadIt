@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, SafeAreaView } from 'react-native';
 import axios from 'axios';
 
 
@@ -80,7 +80,7 @@ const SearchScreen = ({ navigation }) => {
       <Text style={styles.title}>Search</Text>
 
       {/* Search type buttons */}
-      <View style={styles.searchTypeContainer}>
+      <SafeAreaView style={styles.searchTypeContainer}>
         <TouchableOpacity
           style={[
             styles.searchTypeButton,
@@ -90,6 +90,7 @@ const SearchScreen = ({ navigation }) => {
         >
           <Text style={styles.searchTypeText}>Movies</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[
             styles.searchTypeButton,
@@ -99,6 +100,7 @@ const SearchScreen = ({ navigation }) => {
         >
           <Text style={styles.searchTypeText}>TV Shows</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[
             styles.searchTypeButton,
@@ -108,12 +110,23 @@ const SearchScreen = ({ navigation }) => {
         >
           <Text style={styles.searchTypeText}>Books</Text>
         </TouchableOpacity>
-      </View>
+
+        <TouchableOpacity
+          style={[
+            styles.searchTypeButton,
+            searchType === 'user' && styles.searchTypeButtonActive,
+          ]}
+          onPress={() => setSearchType('user')}
+        >
+          <Text style={styles.searchTypeText}>Users</Text>
+        </TouchableOpacity>
+
+      </SafeAreaView>
 
       {/* Search bar */}
       <TextInput
         style={styles.searchBar}
-        placeholder="Find books, films, or TV shows..."
+        placeholder="Find movies, TV shows, books, or users..."
         value={searchQuery}
         onChangeText={handleSearch}
       />
@@ -181,7 +194,7 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: '#fff',
   },
   title: {
@@ -199,8 +212,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   searchTypeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 9,
     borderWidth: 0.3,
     borderColor: '#ccc',
