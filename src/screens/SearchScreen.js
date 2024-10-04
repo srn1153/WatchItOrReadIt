@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, SafeAreaView } from 'react-native';
 import axios from 'axios';
-
+import { db } from '../../firebaseConfig'; 
+import { collection, query, where, getDocs } from 'firebase/firestore'; 
 
 const SearchScreen = ({ navigation }) => {
   // State variables
   const [searchQuery, setSearchQuery] = useState(''); // Stores the current search query
   const [searchResults, setSearchResults] = useState([]); // Stores search results from API
   const [loading, setLoading] = useState(false); // Indicates if data is being fetched
-  const [searchType, setSearchType] = useState('movie'); // Tracks the type of search (movie, tv, or book)
+  const [searchType, setSearchType] = useState('user'); // Tracks the type of search (movie, tv, or book)
 
   // Resets search results and query when searchType changes
   useEffect(() => {
@@ -33,19 +34,37 @@ const SearchScreen = ({ navigation }) => {
       const API_KEY = '79c14b18444432a1b856be277e49212d';
       let response;
 
-      // Fetch data based on searchType
+    
       if (searchType === 'movie') {
         response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${text}&api_key=${API_KEY}`);
       } else if (searchType === 'tv') {
         response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${text}&api_key=${API_KEY}`);
       } else if (searchType === 'book') {
         response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);
+      } else // Fetch data based on searchType
+      if (searchType === 'user'){
+        const userQuery = query(
+          collection(db, 'users'), 
+          where('username', '>=', text), 
+          where('username', '<=', text + '\uf8ff')
+        ); 
+        const querySnapShot = await getDocs(userQuery); 
+        response = querySnapShot.docs.map(doc => doc.data()); 
       }
 
       // Update search results based on response
-      if (response && response.data) {
-        setSearchResults(searchType === 'book' ? response.data.items : response.data.results);
+      if (response) {
+        if(searchType === 'book') {
+          if(response.data.items) {
+            setSearchResults(response.data.items)
+          }
+        } else if(searchType === 'user') {
+          setSearchResults(response); 
+        } else {
+          setSearchResults(response.data.results);
+        }
       }
+
     } catch (error) {
       console.error('Error fetching data:', error);
       setSearchResults([]);
@@ -137,7 +156,12 @@ const SearchScreen = ({ navigation }) => {
       {/* List of search results */}
       <FlatList
       data={searchResults}
-      keyExtractor={(item) => `${searchType}-${item.id}`} // Composite key for uniqueness
+      keyExtractor={(item) => {
+        if(searchType === 'user') {
+          return item.username; 
+        }
+          return `${searchType}-${item.id}`} // Composite key for uniqueness
+      }
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.itemContainer}
