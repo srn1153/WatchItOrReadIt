@@ -27,6 +27,7 @@ const TempUserProfileRoom = () => {
     }
   }
 
+  //Adding button onto this temporary screen
   return (
     <View>
       <Text>TempUserProfileRoom</Text>
