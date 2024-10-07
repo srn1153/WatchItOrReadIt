@@ -31,20 +31,17 @@ const SearchScreen = ({ navigation }) => {
 
     try {
       const API_KEY = '79c14b18444432a1b856be277e49212d';
-      let response;
 
       // Fetch data based on searchType
       if (searchType === 'movie') {
-        response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${text}&api_key=${API_KEY}`);
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${searchQuery}&api_key=${API_KEY}`);
+        setSearchResults(response.data.results);
       } else if (searchType === 'tv') {
-        response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${text}&api_key=${API_KEY}`);
+        const response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${searchQuery}&api_key=${API_KEY}`);
+        setSearchResults(response.data.results);
       } else if (searchType === 'book') {
-        response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);
-      }
-
-      // Update search results based on response
-      if (response && response.data) {
-        setSearchResults(searchType === 'book' ? response.data.items : response.data.results);
+        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}`);
+        setSearchResults(response.data.items);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
