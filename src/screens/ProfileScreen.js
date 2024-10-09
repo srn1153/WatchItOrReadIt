@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import profileRoom from '../../assets/ProfileRoom/room1.png'; // importing the profile room image
+import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; // importing the profile room image
 import heartButton from '../../assets/ProfileRoom/heartButton.png'; // importing the heart button image
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; // importing the decorate button image
 import countryLamp from '../../assets/ProfileRoom/Country_Lamp.png'; // importing the country lamp image
@@ -201,9 +201,6 @@ const styles = StyleSheet.create({
     // alignSelf: 'center',
     marginLeft: 8,
     marginBottom: 104,
-  },
-  heartButton: {
-    marginRight: 8,
   },
   heartButtonImage: {
     width: 50,
