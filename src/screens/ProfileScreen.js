@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../context/authContext'
+
 import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; // importing the profile room image
 import heartButton from '../../assets/ProfileRoom/heartButton.png'; // importing the heart button image
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; // importing the decorate button image
@@ -26,11 +28,41 @@ export default function ProfileScreen() {
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
   const [activeTab, setActiveTab] = useState('Lamp'); // Default active tab is 'Lamp'
   const [selectedItem, setSelectedItem] = useState(null); // State to store selected item for overlay
+  const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
 
+      
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible); // Toggle modal visibility
   };
+
+  const toggleLogoutModal = () => {
+    setLogoutModalVisible(!isLogoutModalVisible); // Toggle logout confirmation modal visibility
+  };
+
+        // LOG OUT
+            //Accessing the logout function from authContext
+            const {logout} = useAuth()
+
+            // Function to open the logout confirmation modal
+            const handleLogoutButtonPress = () => {
+              setLogoutModalVisible(true); // Open the confirmation modal
+            };
+
+            // Function to handle the actual logout process
+            const onLogOutPressed = async () => {
+              setLogoutModalVisible(false); // Close confirmation modal first
+              console.log("Logout Button was pressed!");
+
+              const response = await logout();
+              console.log("Results", response); // Print out the results
+
+              if (response.success) {
+                navigation.navigate('Login'); // Navigate to the login screen
+              } else {
+                console.log("Logout error:", response.msg);
+              }
+            };
 
 
     // Function to handle item selection and update the state with the selected item
@@ -138,8 +170,13 @@ export default function ProfileScreen() {
     }
   };
 
+
+
   return (
     <View style={styles.container}>
+      
+
+
       <Image source={profileRoom} style={styles.profileRoomImg} />
 
       {/* Conditionally render the selected item as an overlay */}
@@ -157,6 +194,7 @@ export default function ProfileScreen() {
           <Image source={decorateButton} style={styles.decorateButtonImage} />
         </TouchableOpacity>
       </View>
+      
 
       {/* Modal for popup */}
       <Modal
@@ -187,14 +225,35 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-
-
-            {/* Scrollable items for the selected tab */}
-            {renderItemsForActiveTab()}
-
+              {/* Scrollable items for the selected tab */}
+              {renderItemsForActiveTab()}
           </View>
         </View>
       </Modal>
+
+
+      {/* Logout Confirmation Modal */}
+      <Modal transparent={true} animationType="fade" visible={isLogoutModalVisible} onRequestClose={toggleLogoutModal}>
+        <View style={styles.logoutModalContainer}>
+          <View style={styles.logoutModalContent}>
+          <Text style={styles.logoutModalTitle}>Log Out</Text>
+            <Text style={styles.logoutModalText}>Are you sure you want to log out?</Text>
+            <View style={styles.logoutModalButtons}>
+              <TouchableOpacity onPress={toggleLogoutModal} style={styles.logoutCancelButton}>
+                <Text style={styles.logoutButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onLogOutPressed} style={styles.logoutConfirmButton}>
+                <Text style={styles.logoutButtonText}>Log Out</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <TouchableOpacity onPress={handleLogoutButtonPress}>
+        <Image style={styles.logOutButton} source={require("../../assets/ProfileRoom/logoutButton.png")} />
+      </TouchableOpacity>
+
     </View>
   );
 }
@@ -316,4 +375,65 @@ const styles = StyleSheet.create({
     marginLeft: 310,
     bottom: 10,
   },
+  logOutButton: {
+    top: 80,
+    height: 30, 
+    width: 30, 
+    right: 15, 
+    position: "absolute", 
+  },
+  logoutModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutModalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.77)', // Semi-transparent background
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  logoutModalTitle: {
+    color: 'white',
+    fontSize: 22,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontFamily: 'courier',
+  },
+  logoutModalText: {
+    color: 'white',
+    fontSize: 13,
+    marginBottom: 25,
+    textAlign: 'center',
+    // fontFamily: 'courier',
+
+  },
+  logoutModalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  logoutCancelButton: {
+    flex: 1,
+    padding: 15,
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  logoutConfirmButton: {
+    flex: 1,
+    padding: 15,
+    alignItems: 'center',
+    backgroundColor: '#F2D49D', // Red for log out confirmation
+    borderRadius: 5,
+  },
+  logoutButtonText: {
+    color: '#000', // Text color
+    fontWeight: 'light',
+    fontSize: 15,
+    // fontFamily: 'courier',
+  },
+  
+
 });
