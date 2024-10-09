@@ -4,9 +4,16 @@ import { useNavigation } from '@react-navigation/native';
 import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; // importing the profile room image
 import heartButton from '../../assets/ProfileRoom/heartButton.png'; // importing the heart button image
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; // importing the decorate button image
+//lamps
 import countryLamp from '../../assets/ProfileRoom/Country_Lamp.png'; // importing the country lamp image
 import ornateLamp from '../../assets/ProfileRoom/Ornate_Lamp.png'; // importing the ornate lamp image
+import boxLamp from '../../assets/ProfileRoom/Box_Lamp.png'; // importing the ornate lamp image
+import retroLamp from '../../assets/ProfileRoom/Retro_Lamp.png'; // importing the ornate lamp image
+import classicLamp from '../../assets/ProfileRoom/Classic_Lamp.png'; // importing the ornate lamp image
+import junimoLamp from '../../assets/ProfileRoom/Junimo_Lamp.png'; // importing the ornate lamp image
+import jojaLamp from '../../assets/ProfileRoom/Joja_Lamp.png'; // importing the ornate lamp image
 import OrnateLampOverlay from '../../assets/ProfileRoom/OrnateLamp_Overlay.png'; // Overlay image when item selected
+//couch
 import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png'; // importing the ornate lamp image
 import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; // importing the ornate lamp image
 import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; // importing the ornate lamp image
@@ -53,7 +60,25 @@ export default function ProfileScreen() {
             <Image source={ornateLamp} style={styles.itemImage} />
             {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('boxLamp')}>
+            <Image source={boxLamp} style={styles.itemImage} />
+            {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('classicLamp')}>
+            <Image source={classicLamp} style={styles.itemImage} />
+            {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('retroLamp')}>
+            <Image source={retroLamp} style={styles.retroLampImage} />
+            {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
+          </TouchableOpacity>
+
+
         </ScrollView>
+        
       );
     } else if (activeTab === 'Couch') {
       return (
@@ -267,11 +292,18 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     alignItems: 'center',
-    marginHorizontal: 15, // Space between items
+    marginHorizontal: 5, // Space between items
+    bottom: 10,
   },
   itemImage: {
     width: 80, // Adjust size of the item images
     height: 80,
+    resizeMode: 'contain',
+  },
+  retroLampImage:{
+    width: 120,
+    height: 120,
+    left: -21,
     resizeMode: 'contain',
   },
   itemText: {
