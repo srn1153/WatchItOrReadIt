@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream
-import React from 'react';
-import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import profileRoom from '../../assets/ProfileRoom/room1.png'; //importing the profile room image
-
-export default function ProfileScreen() {
-  const navigation = useNavigation(); //navigation object to navigate between screens 
-=======
 import React, { useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +11,7 @@ import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png'; // importing th
 import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; // importing the ornate lamp image
 import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; // importing the ornate lamp image
 import largeBrownCouch from '../../assets/ProfileRoom/Large_Brown_Couch.png'; // importing the ornate lamp image
-import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; // importing the ornate lamp imager
+import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; // importing the ornate lamp image
 
 
 export default function ProfileScreen() {
@@ -33,7 +24,6 @@ export default function ProfileScreen() {
   const toggleModal = () => {
     setModalVisible(!isModalVisible); // Toggle modal visibility
   };
->>>>>>> Stashed changes
 
 
     // Function to handle item selection and update the state with the selected item
@@ -125,12 +115,6 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-<<<<<<< Updated upstream
-      <Image source={profileRoom} style={styles.profileRoomImg} /> 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('List')}>
-        <Text style={styles.buttonText}>My Lists</Text>
-      </TouchableOpacity>
-=======
       <Image source={profileRoom} style={styles.profileRoomImg} />
 
       {/* Conditionally render the selected item as an overlay */}
@@ -186,39 +170,19 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
->>>>>>> Stashed changes
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-  },
-  button: {
-    backgroundColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    position: 'absolute', 
-    bottom: 30, 
-    alignSelf: 'center', 
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    textAlign: 'center',
+    flex: 1,
+    backgroundColor: 'black', // Set background to black
   },
   profileRoomImg: {
-    flex: 1, 
+    flex: 1,
     height: '100%',
     width: '100%',
-<<<<<<< Updated upstream
-    resizeMode: 'stretch', 
-    position: 'absolute', 
-  }
-});
-=======
     resizeMode: 'contain',
     position: 'absolute',
   },
@@ -324,4 +288,3 @@ const styles = StyleSheet.create({
     bottom: 10,
   },
 });
->>>>>>> Stashed changes
