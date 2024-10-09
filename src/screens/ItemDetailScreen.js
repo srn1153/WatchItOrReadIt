@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, StatusBar, FlatList } from 'react-native';
 import axios from 'axios';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -21,6 +21,60 @@ const ItemDetailScreen = ({ route }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const navigation = useNavigation(); 
 
+  const [recommendations, setRecommendations] = useState([]);
+  const [bookRecommendations, setBookRecommendations] = useState([]);
+//  const [genreRecommendations, setGenreRecommendations] = useEffect([]);
+
+ 
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      const API_KEY = '79c14b18444432a1b856be277e49212d';
+      try {
+        let movieRecommendations = [];
+        let bookRecommendations = [];
+  
+        // Fetch movie recommendations based on book title if item is a book
+        if (item.volumeInfo && item.volumeInfo.title) {
+          const movieResponse = await axios.get(
+            `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(item.volumeInfo.title)}&api_key=${API_KEY}`
+          );
+          movieRecommendations = movieResponse.data.results || [];
+          setRecommendations(movieRecommendations); // Set movie recommendations state
+        
+          if(movieRecommendations.length > 0) {
+            const genreId = movieRecommendations[0].genre_ids[0];
+            const genreMovieResponse = await axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}` );
+            const genreMovies = genreMovieResponse.data.reseults || [];
+              setRecommendations((prev) => [...prev, ...genreMovies]);
+          }
+        }
+  
+        // Fetch TV or movie recommendations if item is a TV or movie
+        if (item.type === 'movie' || item.type === 'tv') {
+          let response;
+          if (item.type === 'movie') {
+            response = await axios.get(`https://api.themoviedb.org/3/movie/${item.id}/recommendations?api_key=${API_KEY}`);
+          } else if (item.type === 'tv') {
+            response = await axios.get(`https://api.themoviedb.org/3/tv/${item.id}/recommendations?api_key=${API_KEY}`);
+          }
+          setRecommendations(response.data.results || []); // Set TV or movie recommendations state
+        }
+  
+        // Fetch book recommendations based on movie title
+        const bookResponse = await axios.get(
+          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(item.title || item.volumeInfo.title)}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
+        );
+        bookRecommendations = bookResponse.data.items || [];
+        setBookRecommendations(bookRecommendations); // Set book recommendations state
+  
+      } catch (error) {
+        console.error('Error fetching recommendations:', error);
+      }
+    };
+  
+    fetchRecommendations();
+  }, [item]);
+  
 
   const addReview = (item) => {
     console.log("Add review button pressed!");
@@ -273,7 +327,6 @@ const ItemDetailScreen = ({ route }) => {
 
 
         {/*TV Series*/}
- 
             {item.type === 'tv' && (
               <>
                 <Image source={require('../../assets/TVicon.png')} style={styles.tvIcon} />
@@ -301,12 +354,65 @@ const ItemDetailScreen = ({ route }) => {
                 <Text style={styles.mainCast}>{displayGenres}</Text>
                 </View>
 
-              </>
+              
+                
+          </>
             )}
-          </View>
+            </View>
+            <View style={styles.infoBox2}>
+  <View style={styles.bookDetails}>
+    {/* Display book details here */}
+  </View>
+  {(item.type === 'movie' || item.volumeInfo) && recommendations.length > 0 && (
+
+  <View style={styles.recommendationContainer}>
+      <Text style={styles.sectionTitle}>
+        {item.type === 'movie' || item.volumeInfo ? 'Movies You may like...' : 'TV Shows You may like...'}
+        </Text>
+      <FlatList
+        data={recommendations}
+        horizontal
+        keyExtractor={(recommendation) => recommendation.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigation.push('ItemDetailScreen', { item })}>
+            <View style={styles.recommendationItem}>
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
+                style={styles.recommendationImage}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+      />
+    </View>
+      )}
+
+    <View style={styles.recommendationContainer}>
+      <Text style={styles.sectionTitle}>Books You may like...</Text>
+      <FlatList
+        data={bookRecommendations}
+        horizontal
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigation.push('BookDetailScreen', { book: item })}>
+            <View style={styles.recommendationItem}>
+              <Image
+                source={{ uri: item.volumeInfo.imageLinks?.thumbnail || 'default_image_url' }}
+                style={styles.recommendationImage}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+      />
+    </View>
+  
+</View>
 
 
-        
       </ScrollView>
     // </SafeAreaView>
   );
@@ -496,7 +602,33 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   
+  // RECOMMENDATIONS
+  recommendationContainer: {
+    marginTop: 20,
+    paddingHorizontal: 5,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 10,
+    marginLeft: -10
+  },
+  recommendationItem: {
+    margin: 5,
 
+  },
+  recommendationImage: {
+    width: 100,
+    height: 150,
+    margin: 5,
+    },
+  
+    bookRecommendations: {
+      margin: 5,
+      paddingHorizontal: 5,
+    }
 });
 
 export default ItemDetailScreen;
+

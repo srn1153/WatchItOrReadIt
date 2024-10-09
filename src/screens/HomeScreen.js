@@ -151,27 +151,7 @@ const styles = StyleSheet.create({
     height: 180,
     margin: 5,
   },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    fontFamily: 'ibm-plex-mono',
-  },
-  closeButton: {
-    marginTop: 10,
-    color: 'grey',
-  },
+ 
 });
 
 
