@@ -5,12 +5,12 @@ import { useAuth } from '../context/authContext'
 import { db } from '../../firebaseConfig'; // firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
 
-
-
 // Furniture image Imports
 import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; // importing the profile room image
 import heartButton from '../../assets/ProfileRoom/heartButton.png'; // importing the heart button image
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; // importing the decorate button image
+import saveButton from '../../assets/ProfileRoom/saveButton.png';
+
 //lamps
 import countryLamp from '../../assets/ProfileRoom/Country_Lamp.png';
 import ornateLamp from '../../assets/ProfileRoom/Ornate_Lamp.png'; 
@@ -23,13 +23,41 @@ import ornateLampOverlay from '../../assets/ProfileRoom/OrnateLamp_Overlay.png';
 import boxLampOverlay from '../../assets/ProfileRoom/BoxLamp_Overlay.png'; 
 //couch
 import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png'; // importing the ornate lamp image
-import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; // importing the ornate lamp image
-import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; // importing the ornate lamp image
-import largeBrownCouch from '../../assets/ProfileRoom/Large_Brown_Couch.png'; // importing the ornate lamp image
-import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; // importing the ornate lamp image
-import wizardCouchOverlay from '../../assets/ProfileRoom/WizardCouch_Overlay.png'; // Overlay image when item selected
+import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; 
+import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; 
+import largeBrownCouch from '../../assets/ProfileRoom/Large_Brown_Couch.png'; 
+import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; 
+import wizardCouchOverlay from '../../assets/ProfileRoom/WizardCouch_Overlay.png'; 
+import yellowCouchOverlay from '../../assets/ProfileRoom/YellowCouch_Overlay.png'; 
+import largeBrownCouchOverlay from '../../assets/ProfileRoom/LargeBrownCouch_Overlay.png'; 
 //armchair
-import brownArmchair from '../../assets/ProfileRoom/Brown_Armchair.png'; // importing the ornate lamp image
+import brownArmchair from '../../assets/ProfileRoom/Brown_Armchair.png';
+import blueArmchair from '../../assets/ProfileRoom/Blue_Armchair.png';
+import yellowArmchair from '../../assets/ProfileRoom/Yellow_Armchair.png';
+import redArmchair from '../../assets/ProfileRoom/Red_Armchair.png';
+import greenArmchair from '../../assets/ProfileRoom/Green_Armchair.png';
+import blueArmchairOverlay from '../../assets/ProfileRoom/BlueArmchair_Overlay.png'; 
+import yellowArmchairOverlay from '../../assets/ProfileRoom/YellowArmchair_Overlay.png'; 
+import redArmchairOverlay from '../../assets/ProfileRoom/RedArmchair_Overlay.png'; 
+import greenArmchairOverlay from '../../assets/ProfileRoom/GreenArmchair_Overlay.png'; 
+//fireplace
+import brickFireplace from '../../assets/ProfileRoom/Brick_Fireplace.png';
+import elegantFireplace from '../../assets/ProfileRoom/Elegant_Fireplace.png';
+import elegantFireplaceOverlay from '../../assets/ProfileRoom/ElegantFireplace_Overlay.png'; 
+//chair
+import countryChair from '../../assets/ProfileRoom/Country_Chair.png'; 
+import purpleOfficeChair from '../../assets/ProfileRoom/Purple_Office_Chair.png'; 
+import countryChairOverlay from '../../assets/ProfileRoom/CountryChair_Overlay.png'; 
+
+//rug
+import snowyRug from '../../assets/ProfileRoom/Snowy_Rug.png'; 
+import mysticRug from '../../assets/ProfileRoom/Mystic_Rug.png'; 
+
+import snowyRugOverlay from '../../assets/ProfileRoom/SnowyRug_Overlay.png'; 
+
+
+
+
 
 
 export default function ProfileScreen() {
@@ -46,91 +74,94 @@ export default function ProfileScreen() {
     const [selectedArmchair, setSelectedArmchair] = useState(null);
     const [selectedFireplace, setSelectedFireplace] = useState(null);
     const [selectedChair, setSelectedChair] = useState(null);
-    const [selectedTV, setSelectedTV] = useState(null);
-
-      
+    const [selectedRug, setSelectedRug] = useState(null);
 
 
-
-
-
-  // Function to save selected furniture to Firestore
-  const saveSelectedFurniture = async () => {
-    if (user) {
-      try {
-        const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
-  
-        // Log the selected items to ensure they have values
-        console.log("Saving selected furniture:", selectedLamp, selectedCouch);
-  
-        await setDoc(furnitureDoc, {
-          lamp: selectedLamp,
-          couch: selectedCouch,
-        }, { merge: true });
-  
-        console.log("Furniture selection saved successfully!");
-      } catch (error) {
-        console.error("Error saving furniture selection:", error);
-      }
-    } else {
-      console.log("User is not authenticated. Cannot save furniture.");
-    }
-  };
-  
-  // Trigger save when modal closes or furniture is selected
-  const handleModalClose = () => {
-    saveSelectedFurniture();
-    setModalVisible(false); // Close the modal
-  };
-
-
-
-      // Function to fetch the saved furniture selection from Firestore
-      const fetchSelectedFurniture = async () => {
-        if (user) {
-          try {
-            const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
-            const docSnap = await getDoc(furnitureDoc);
-      
-            if (docSnap.exists()) {
-              const data = docSnap.data();
-              console.log("Fetched furniture data:", data);
-              setSelectedLamp(data.lamp);
-              setSelectedCouch(data.couch);
-            } else {
-              console.log("No furniture selections found.");
-            }
-          } catch (error) {
-            console.error("Error fetching furniture selections:", error);
-          }
-        } else {
-          console.log("User is not authenticated. Cannot fetch furniture.");
+    // Saves selected furniture to Firestore
+    const saveSelectedFurniture = async () => {
+      if (user) {
+        try {
+          const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+    
+          // Log selected items to ensure they have values
+          console.log("Saving selected furniture:", selectedLamp, selectedCouch, selectedArmchair, selectedFireplace, selectedChair, selectedRug);
+    
+          await setDoc(furnitureDoc, {
+            lamp: selectedLamp || null,
+            couch: selectedCouch || null,
+            armchair: selectedArmchair || null,
+            fireplace: selectedFireplace || null,
+            chair: selectedChair || null,
+            rug: selectedRug || null,
+          }, { merge: true });
+    
+          console.log("Furniture selection saved successfully!");
+        } catch (error) {
+          console.error("Error saving furniture selection:", error);
         }
+      } else {
+        console.log("User is not authenticated. Cannot save furniture.");
+      }
+    };
+  
+    // Trigger save when modal closes
+    const handleModalClose = () => {
+      saveSelectedFurniture();
+      setModalVisible(false); // Close the modal
+    };
+
+
+    // Fetch saved furniture selection from Firestore
+    const fetchSelectedFurniture = async () => {
+      if (user) {
+        try {
+          const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+          const docSnap = await getDoc(furnitureDoc);
+    
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            console.log("Fetched furniture data:", data);
+            setSelectedLamp(data.lamp);
+            setSelectedCouch(data.couch);
+            setSelectedArmchair(data.armchair);
+            setSelectedFireplace(data.fireplace || null);
+            setSelectedChair(data.chair || null);
+            setSelectedRug(data.rug || null);
+          } else {
+            console.log("No furniture selections found.");
+          }
+        } catch (error) {
+          console.error("Error fetching furniture selections:", error);
+        }
+      } else {
+        console.log("User is not authenticated. Cannot fetch furniture.");
+      }
+    };
+
+      // Fetch the furniture selection when the component mounts or user changes
+      useEffect(() => {
+        if (user) {
+          console.log("User detected, fetching furniture selections...");
+          fetchSelectedFurniture();
+        }
+      }, [user]); // Only run when the user changes
+
+
+
+
+      // Toggle modal visibility
+      const toggleModal = () => {
+        setModalVisible(!isModalVisible); 
       };
 
-  // Fetch the furniture selection when the component mounts or user changes
-  useEffect(() => {
-    if (user) {
-      console.log("User detected, fetching furniture selections...");
-      fetchSelectedFurniture();
-    }
-  }, [user]); // Only run when the user changes
+      // Toggle logout confirmation modal visibility
+      const toggleLogoutModal = () => {
+        setLogoutModalVisible(!isLogoutModalVisible); 
+      };
 
 
 
-
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible); // Toggle modal visibility
-  };
-
-  const toggleLogoutModal = () => {
-    setLogoutModalVisible(!isLogoutModalVisible); // Toggle logout confirmation modal visibility
-  };
-
-
-
-  // LOG OUT
+  // LOG OUT BUTTON
       //Accessing the logout function from authContext
       const {logout} = useAuth()
 
@@ -155,24 +186,23 @@ export default function ProfileScreen() {
       };
 
 
-    // Function to handle item selection and update the state with the selected item
+    // handle item selection and update the state with the selected item
     const handleItemSelect = (item) => {
       if (activeTab === 'Lamp') {
         setSelectedLamp(item); // only set the lamp state if the active tab is 'Lamp'
       } else if (activeTab === 'Couch') {
-        setSelectedCouch(item); // only set the couch state if the active tab is 'Couch'
+        setSelectedCouch(item); 
       } else if (activeTab === 'Armchair') {
         setSelectedArmchair(item);
       } else if (activeTab === 'Fireplace') {
         setSelectedFireplace(item);
       } else if (activeTab === 'Chair') {
         setSelectedChair(item);
-      } else if (activeTab === 'TV') {
-        setSelectedTV(item);
+      } else if (activeTab === 'Rug') {
+        setSelectedRug(item);
       }
     };
     
-
 
   const renderItemsForActiveTab = () => {
     if (activeTab === 'Lamp') {
@@ -214,8 +244,6 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
 
-
-
         </ScrollView>
         
       );
@@ -249,29 +277,74 @@ export default function ProfileScreen() {
     } else if (activeTab === 'Armchair') {
       return (
         <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
-          {/* Add Armchair items here */}
-          <Text style={styles.itemText}>No Armchair items available</Text>
+          
+          {/* Add Armchair items */}
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('brownArmChair')}>
+          <Image source={brownArmchair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('blueArmchair')}>
+          <Image source={blueArmchair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('yellowArmchair')}>
+          <Image source={yellowArmchair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('redArmchair')}>
+          <Image source={redArmchair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('greenArmchair')}>
+          <Image source={greenArmchair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+
         </ScrollView>
       );
     } else if (activeTab === 'Fireplace') {
       return (
         <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
-          {/* Add Fireplace items here */}
-          <Text style={styles.itemText}>No Fireplace items available</Text>
+          
+          {/* Fireplace items */}
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('brickFireplace')}>
+          <Image source={brickFireplace} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('elegantFireplace')}>
+          <Image source={elegantFireplace} style={styles.itemImage} />
+          </TouchableOpacity>
+
         </ScrollView>
       );
     } else if (activeTab === 'Chair') {
       return (
         <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
-          {/* Add Chair items here */}
-          <Text style={styles.itemText}>No Chair items available</Text>
+          
+          {/* Chair items */}
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('purpleOfficeChair')}>
+          <Image source={purpleOfficeChair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('countryChair')}>
+          <Image source={countryChair} style={styles.itemImage} />
+          </TouchableOpacity>
+
         </ScrollView>
       );
-    } else if (activeTab === 'TV') {
+    } else if (activeTab === 'Rug') {
       return (
         <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
-          {/* Add TV items here */}
-          <Text style={styles.itemText}>No TV items available</Text>
+          
+          {/* Rug items */}
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('mysticRug')}>
+          <Image source={mysticRug} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('snowyRug')}>
+          <Image source={snowyRug} style={styles.itemImage} />
+          </TouchableOpacity>
+
         </ScrollView>
       );
     }
@@ -295,13 +368,52 @@ export default function ProfileScreen() {
           <Image source={boxLampOverlay} style={styles.lampOverlay} />
         )}
 
-      {selectedCouch === 'wizardCouch' && (
-        <Image source={wizardCouchOverlay} style={styles.couchOverlay_wizard} />
-      )}
+        {/* Couch */}
+        {selectedCouch === 'wizardCouch' && (
+          <Image source={wizardCouchOverlay} style={styles.couchOverlay_wizard} />
+        )}
+        {selectedCouch === 'yellowCouch' && (
+          <Image source={yellowCouchOverlay} style={styles.couchOverlay_yellow} />
+        )}
+        {selectedCouch === 'largeBrownCouch' && (
+          <Image source={largeBrownCouchOverlay} style={styles.couchOverlay_lbrown} />
+        )}
 
-      
+        {/* Armchair */}
+        {selectedArmchair === 'blueArmchair' && (
+          <Image source={blueArmchairOverlay} style={styles.armchairOverlay} />
+        )}
+        {selectedArmchair === 'yellowArmchair' && (
+          <Image source={yellowArmchairOverlay} style={styles.armchairOverlay} />
+        )}
+        {selectedArmchair === 'redArmchair' && (
+          <Image source={redArmchairOverlay} style={styles.armchairOverlay} />
+        )}
+        {selectedArmchair === 'greenArmchair' && (
+          <Image source={greenArmchairOverlay} style={styles.armchairOverlay} />
+        )}
+
+        {/* Fireplace */}
+        {/* {selectedFireplace === 'brickFireplace' && (
+          <Image source={brickFireplace} style={styles.brickplaceOverlay} />
+        )} */}
+
+        {selectedFireplace === 'elegantFireplace' && (
+          <Image source={elegantFireplaceOverlay} style={styles.fireplaceOverlay} />
+        )}
+
+        {/* Chair */}
+        {selectedChair=== 'countryChair' && (
+          <Image source={countryChairOverlay} style={styles.chairOverlay} />
+        )}
+
+        {/* Rug */}
+        {selectedRug=== 'snowyRug' && (
+          <Image source={snowyRugOverlay} style={styles.rugOverlay} />
+        )}
 
 
+      {/* Buttons: Decorate & Lists */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.heartButton} onPress={() => navigation.navigate('List')}>
           <Image source={heartButton} style={styles.heartButtonImage} />
@@ -322,15 +434,14 @@ export default function ProfileScreen() {
         >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {/* <Text style={styles.modalText}>Customize Your Room</Text> */}
-            <TouchableOpacity onPress={handleModalClose}>
-              <Text style={styles.closeButton}>Close</Text>
-            </TouchableOpacity>
 
+          <TouchableOpacity style={styles.saveButton} onPress={handleModalClose}>
+          <Image source={saveButton} style={styles.saveButtonImage} />
+          </TouchableOpacity>
 
             {/* Tab Bar */}
             <View style={styles.tabBar}>
-              {['Lamp', 'Couch', 'Armchair', 'Fireplace', 'Chair', 'TV'].map((tab) => (
+              {['Lamp', 'Couch', 'Armchair', 'Fireplace', 'Chair', 'Rug'].map((tab) => (
                 <TouchableOpacity
                   key={tab}
                   style={[styles.tabButton, activeTab === tab && styles.activeTab]}
@@ -405,15 +516,58 @@ const styles = StyleSheet.create({
     height: 86,
     resizeMode: 'contain',
     top: 367.5, 
-    left: 17, // Adjust left alignment of overlay image
+    left: 17, 
   },
+  couchOverlay_yellow: {
+    position: 'absolute',
+    height: 83.7,
+    resizeMode: 'contain',
+    top: 368.5, 
+    left: 17, 
+  },
+  couchOverlay_lbrown: {
+    position: 'absolute',
+    height: 85,
+    resizeMode: 'contain',
+    top: 367.9, 
+    left: 16, 
+  },
+  armchairOverlay: {
+    position: 'absolute',
+    height: 58,
+    resizeMode: 'contain',
+    top: 566,
+    left: 179,
+  },
+  fireplaceOverlay: {
+    position: 'absolute',
+    height: 245,
+    resizeMode: 'contain',
+    top: 108,
+    left: 33, 
+  },
+  chairOverlay: {
+    position: 'absolute',
+    height: 96,
+    resizeMode: 'contain',
+    top: 503,
+    left: 282,
+  },
+  rugOverlay: {
+    position: 'absolute',
+    height: 72,
+    resizeMode: 'contain',
+    top: 552,
+    left: 77,
+  },
+
 
   // Buttons style
   buttonContainer: {
     flexDirection: 'row',
     position: 'absolute',
     bottom: 30,
-    marginLeft: 8,
+    marginLeft: 2,
     marginBottom: 104,
   },
   heartButtonImage: {
@@ -425,6 +579,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     resizeMode: 'contain',
+  },
+  saveButtonImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    position: 'absolute',
+    left: 130,
+    bottom: 7,
   },
 
   // Modal style
@@ -497,12 +659,6 @@ const styles = StyleSheet.create({
   itemText: {
     marginTop: 5,
     fontSize: 14,
-  },
-  closeButton: {
-    fontSize: 15,
-    color: '#FFD186',
-    marginLeft: 310,
-    bottom: 10,
   },
 
   // LogOut style
