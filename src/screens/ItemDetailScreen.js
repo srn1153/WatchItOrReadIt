@@ -23,9 +23,7 @@ const ItemDetailScreen = ({ route }) => {
 
   const [recommendations, setRecommendations] = useState([]);
   const [bookRecommendations, setBookRecommendations] = useState([]);
-//  const [genreRecommendations, setGenreRecommendations] = useEffect([]);
 
- 
   useEffect(() => {
     const fetchRecommendations = async () => {
       const API_KEY = '79c14b18444432a1b856be277e49212d';
@@ -40,13 +38,6 @@ const ItemDetailScreen = ({ route }) => {
           );
           movieRecommendations = movieResponse.data.results || [];
           setRecommendations(movieRecommendations); // Set movie recommendations state
-        
-          if(movieRecommendations.length > 0) {
-            const genreId = movieRecommendations[0].genre_ids[0];
-            const genreMovieResponse = await axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}` );
-            const genreMovies = genreMovieResponse.data.reseults || [];
-              setRecommendations((prev) => [...prev, ...genreMovies]);
-          }
         }
   
         // Fetch TV or movie recommendations if item is a TV or movie
@@ -363,18 +354,14 @@ const ItemDetailScreen = ({ route }) => {
   <View style={styles.bookDetails}>
     {/* Display book details here */}
   </View>
-  {(item.type === 'movie' || item.volumeInfo) && recommendations.length > 0 && (
-
   <View style={styles.recommendationContainer}>
-      <Text style={styles.sectionTitle}>
-        {item.type === 'movie' || item.volumeInfo ? 'Movies You may like...' : 'TV Shows You may like...'}
-        </Text>
+      <Text style={styles.sectionTitle}>You May Also Like to Watch...</Text>
       <FlatList
         data={recommendations}
         horizontal
         keyExtractor={(recommendation) => recommendation.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.push('ItemDetailScreen', { item })}>
+          <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item })}>
             <View style={styles.recommendationItem}>
               <Image
                 source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
@@ -387,10 +374,8 @@ const ItemDetailScreen = ({ route }) => {
         contentContainerStyle={{ paddingHorizontal: 10 }}
       />
     </View>
-      )}
-
     <View style={styles.recommendationContainer}>
-      <Text style={styles.sectionTitle}>Books You may like...</Text>
+      <Text style={styles.sectionTitle}>Books You will love...</Text>
       <FlatList
         data={bookRecommendations}
         horizontal
@@ -631,4 +616,7 @@ const styles = StyleSheet.create({
 });
 
 export default ItemDetailScreen;
+
+
+
 
