@@ -1,19 +1,27 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useNavigation } from 'expo-router';
 
 const MovieDetailScreen = ({ route }) => {
   const { item } = route.params; // Get the movie item from navigation
+ // const { navigation } = useNavigation();
 
   return (
     <ScrollView style={styles.container}>
       <Image
-        source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
+        source={{ uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}` }}
         style={styles.movieImage}
-      />
-      <Text style={styles.movieTitle}>{item.title || item.name}</Text>
-      <Text style={styles.movieOverview}>{item.overview}</Text>
-      <Text style={styles.movieDetails}>Release Date: {item.release_date}</Text>
-      <Text style={styles.movieDetails}>Vote Average: {item.vote_average}</Text>
+        />
+
+      <View style={styles.detailsContainer}>
+        <Text style={styles.movieTitle}>{item.item || item.name}</Text>
+    <Text style={styles.movieOverview}>{item.overview}</Text>
+
+    <TouchableOpacity style={styles.button}>
+      <Text style={styles.buttonText}>Add Review</Text>
+    </TouchableOpacity>
+      </View>
+
     </ScrollView>
   );
 };
@@ -27,6 +35,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
     marginBottom: 16,
+    resizeMode: 'cover',
   },
   movieTitle: {
     fontSize: 24,

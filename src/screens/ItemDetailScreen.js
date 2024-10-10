@@ -363,10 +363,13 @@ const ItemDetailScreen = ({ route }) => {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item })}>
             <View style={styles.recommendationItem}>
-              <Image
+              {item.poster_path && (
+                <Image
                 source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
                 style={styles.recommendationImage}
-              />
+                />
+                )}
+             
             </View>
           </TouchableOpacity>
         )}
@@ -381,7 +384,7 @@ const ItemDetailScreen = ({ route }) => {
         horizontal
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.push('BookDetailScreen', { book: item })}>
+          <TouchableOpacity onPress={() => navigation.push('BookDetailscreen', { book: item })}>
             <View style={styles.recommendationItem}>
               <Image
                 source={{ uri: item.volumeInfo.imageLinks?.thumbnail || 'default_image_url' }}
