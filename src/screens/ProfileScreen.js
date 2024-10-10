@@ -1,36 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/authContext'
+import { db } from '../../firebaseConfig'; // firestore instance
+import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
 
+
+
+// Furniture image Imports
 import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; // importing the profile room image
 import heartButton from '../../assets/ProfileRoom/heartButton.png'; // importing the heart button image
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; // importing the decorate button image
 //lamps
-import countryLamp from '../../assets/ProfileRoom/Country_Lamp.png'; // importing the country lamp image
-import ornateLamp from '../../assets/ProfileRoom/Ornate_Lamp.png'; // importing the ornate lamp image
-import boxLamp from '../../assets/ProfileRoom/Box_Lamp.png'; // importing the ornate lamp image
-import retroLamp from '../../assets/ProfileRoom/Retro_Lamp.png'; // importing the ornate lamp image
-import classicLamp from '../../assets/ProfileRoom/Classic_Lamp.png'; // importing the ornate lamp image
-import junimoLamp from '../../assets/ProfileRoom/Junimo_Lamp.png'; // importing the ornate lamp image
-import jojaLamp from '../../assets/ProfileRoom/Joja_Lamp.png'; // importing the ornate lamp image
-import OrnateLampOverlay from '../../assets/ProfileRoom/OrnateLamp_Overlay.png'; // Overlay image when item selected
+import countryLamp from '../../assets/ProfileRoom/Country_Lamp.png';
+import ornateLamp from '../../assets/ProfileRoom/Ornate_Lamp.png'; 
+import boxLamp from '../../assets/ProfileRoom/Box_Lamp.png'; 
+import retroLamp from '../../assets/ProfileRoom/Retro_Lamp.png'; 
+import classicLamp from '../../assets/ProfileRoom/Classic_Lamp.png'; 
+import junimoLamp from '../../assets/ProfileRoom/Junimo_Lamp.png'; 
+import jojaLamp from '../../assets/ProfileRoom/Joja_Lamp.png'; 
+import ornateLampOverlay from '../../assets/ProfileRoom/OrnateLamp_Overlay.png'; 
+import boxLampOverlay from '../../assets/ProfileRoom/BoxLamp_Overlay.png'; 
 //couch
 import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png'; // importing the ornate lamp image
 import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; // importing the ornate lamp image
 import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; // importing the ornate lamp image
 import largeBrownCouch from '../../assets/ProfileRoom/Large_Brown_Couch.png'; // importing the ornate lamp image
 import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; // importing the ornate lamp image
+import wizardCouchOverlay from '../../assets/ProfileRoom/WizardCouch_Overlay.png'; // Overlay image when item selected
+//armchair
+import brownArmchair from '../../assets/ProfileRoom/Brown_Armchair.png'; // importing the ornate lamp image
 
 
 export default function ProfileScreen() {
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
   const [activeTab, setActiveTab] = useState('Lamp'); // Default active tab is 'Lamp'
-  const [selectedItem, setSelectedItem] = useState(null); // State to store selected item for overlay
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
+  const { user } = useAuth(); // Get the current logged-in user from authContext
+
+
+    //Separate states for each furniture type
+    const [selectedLamp, setSelectedLamp] = useState(null);
+    const [selectedCouch, setSelectedCouch] = useState(null);
+    const [selectedArmchair, setSelectedArmchair] = useState(null);
+    const [selectedFireplace, setSelectedFireplace] = useState(null);
+    const [selectedChair, setSelectedChair] = useState(null);
+    const [selectedTV, setSelectedTV] = useState(null);
 
       
+
+
+
+
+
+  // Function to save selected furniture to Firestore
+  const saveSelectedFurniture = async () => {
+    if (user) {
+      try {
+        const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+  
+        // Log the selected items to ensure they have values
+        console.log("Saving selected furniture:", selectedLamp, selectedCouch);
+  
+        await setDoc(furnitureDoc, {
+          lamp: selectedLamp,
+          couch: selectedCouch,
+        }, { merge: true });
+  
+        console.log("Furniture selection saved successfully!");
+      } catch (error) {
+        console.error("Error saving furniture selection:", error);
+      }
+    } else {
+      console.log("User is not authenticated. Cannot save furniture.");
+    }
+  };
+  
+  // Trigger save when modal closes or furniture is selected
+  const handleModalClose = () => {
+    saveSelectedFurniture();
+    setModalVisible(false); // Close the modal
+  };
+
+
+
+      // Function to fetch the saved furniture selection from Firestore
+      const fetchSelectedFurniture = async () => {
+        if (user) {
+          try {
+            const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+            const docSnap = await getDoc(furnitureDoc);
+      
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              console.log("Fetched furniture data:", data);
+              setSelectedLamp(data.lamp);
+              setSelectedCouch(data.couch);
+            } else {
+              console.log("No furniture selections found.");
+            }
+          } catch (error) {
+            console.error("Error fetching furniture selections:", error);
+          }
+        } else {
+          console.log("User is not authenticated. Cannot fetch furniture.");
+        }
+      };
+
+  // Fetch the furniture selection when the component mounts or user changes
+  useEffect(() => {
+    if (user) {
+      console.log("User detected, fetching furniture selections...");
+      fetchSelectedFurniture();
+    }
+  }, [user]); // Only run when the user changes
+
+
+
+
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible); // Toggle modal visibility
@@ -40,43 +128,50 @@ export default function ProfileScreen() {
     setLogoutModalVisible(!isLogoutModalVisible); // Toggle logout confirmation modal visibility
   };
 
-        // LOG OUT
-            //Accessing the logout function from authContext
-            const {logout} = useAuth()
 
-            // Function to open the logout confirmation modal
-            const handleLogoutButtonPress = () => {
-              setLogoutModalVisible(true); // Open the confirmation modal
-            };
 
-            // Function to handle the actual logout process
-            const onLogOutPressed = async () => {
-              setLogoutModalVisible(false); // Close confirmation modal first
-              console.log("Logout Button was pressed!");
+  // LOG OUT
+      //Accessing the logout function from authContext
+      const {logout} = useAuth()
 
-              const response = await logout();
-              console.log("Results", response); // Print out the results
+      // Function to open the logout confirmation modal
+      const handleLogoutButtonPress = () => {
+        setLogoutModalVisible(true); // Open the confirmation modal
+      };
 
-              if (response.success) {
-                navigation.navigate('Login'); // Navigate to the login screen
-              } else {
-                console.log("Logout error:", response.msg);
-              }
-            };
+      // Function to handle the actual logout process
+      const onLogOutPressed = async () => {
+        setLogoutModalVisible(false); // Close confirmation modal first
+        console.log("Logout Button was pressed!");
+
+        const response = await logout();
+        console.log("Results", response); // Print out the results
+
+        if (response.success) {
+          navigation.navigate('Login'); // Navigate to the login screen
+        } else {
+          console.log("Logout error:", response.msg);
+        }
+      };
 
 
     // Function to handle item selection and update the state with the selected item
-  const handleItemSelect = (item) => {
-    // Check if the selected item is countryLamp
-    if (item === 'countryLamp') {
-      // If countryLamp is selected, reset the selected item
-      setSelectedItem(null);
-    } else {
-      // Otherwise, set the selected item
-      setSelectedItem(item);
-    }
-    // setModalVisible(false); // Close the modal after selection
-  };
+    const handleItemSelect = (item) => {
+      if (activeTab === 'Lamp') {
+        setSelectedLamp(item); // only set the lamp state if the active tab is 'Lamp'
+      } else if (activeTab === 'Couch') {
+        setSelectedCouch(item); // only set the couch state if the active tab is 'Couch'
+      } else if (activeTab === 'Armchair') {
+        setSelectedArmchair(item);
+      } else if (activeTab === 'Fireplace') {
+        setSelectedFireplace(item);
+      } else if (activeTab === 'Chair') {
+        setSelectedChair(item);
+      } else if (activeTab === 'TV') {
+        setSelectedTV(item);
+      }
+    };
+    
 
 
   const renderItemsForActiveTab = () => {
@@ -103,10 +198,22 @@ export default function ProfileScreen() {
             {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('junimoLamp')}>
+            <Image source={junimoLamp} style={styles.itemImage} />
+            {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('jojaLamp')}>
+            <Image source={jojaLamp} style={styles.itemImage} />
+            {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('retroLamp')}>
             <Image source={retroLamp} style={styles.retroLampImage} />
             {/* <Text style={styles.itemText}>Ornate Lamp</Text> */}
           </TouchableOpacity>
+
+
 
 
         </ScrollView>
@@ -175,14 +282,24 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       
-
-
+      {/* Default Profile Room */}
       <Image source={profileRoom} style={styles.profileRoomImg} />
 
+
       {/* Conditionally render the selected item as an overlay */}
-      {selectedItem === 'ornateLamp' && (
-        <Image source={OrnateLampOverlay} style={styles.overlayImage} />
+        {/* Lamps */}
+        {selectedLamp === 'ornateLamp' && (
+          <Image source={ornateLampOverlay} style={styles.lampOverlay} />
+        )}
+        {selectedLamp === 'boxLamp' && (
+          <Image source={boxLampOverlay} style={styles.lampOverlay} />
+        )}
+
+      {selectedCouch === 'wizardCouch' && (
+        <Image source={wizardCouchOverlay} style={styles.couchOverlay_wizard} />
       )}
+
+      
 
 
       <View style={styles.buttonContainer}>
@@ -201,12 +318,12 @@ export default function ProfileScreen() {
         transparent={true}
         animationType="slide"
         visible={isModalVisible}
-        onRequestClose={toggleModal}
-      >
+        onRequestClose={handleModalClose} // Save furniture on modal close
+        >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             {/* <Text style={styles.modalText}>Customize Your Room</Text> */}
-            <TouchableOpacity onPress={toggleModal}>
+            <TouchableOpacity onPress={handleModalClose}>
               <Text style={styles.closeButton}>Close</Text>
             </TouchableOpacity>
 
@@ -263,6 +380,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black', // Set background to black
   },
+
+  // Default Room
   profileRoomImg: {
     flex: 1,
     height: '100%',
@@ -270,19 +389,30 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     position: 'absolute',
   },
-  overlayImage: {
+
+  //Overlay styles
+  //lamps
+  lampOverlay: {
     position: 'absolute',
     top: 395, // Adjust position of overlay image
     left: -5, // Adjust left alignment of overlay image
     height: 105,
     resizeMode: 'contain',
   },
+  //couches
+  couchOverlay_wizard: {
+    position: 'absolute',
+    height: 86,
+    resizeMode: 'contain',
+    top: 367.5, 
+    left: 17, // Adjust left alignment of overlay image
+  },
 
+  // Buttons style
   buttonContainer: {
     flexDirection: 'row',
     position: 'absolute',
     bottom: 30,
-    // alignSelf: 'center',
     marginLeft: 8,
     marginBottom: 104,
   },
@@ -291,14 +421,13 @@ const styles = StyleSheet.create({
     height: 50,
     resizeMode: 'contain',
   },
-  decorateButton: {
-    // marginLeft: 8,
-  },
   decorateButtonImage: {
     width: 50,
     height: 50,
     resizeMode: 'contain',
   },
+
+  // Modal style
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -375,6 +504,8 @@ const styles = StyleSheet.create({
     marginLeft: 310,
     bottom: 10,
   },
+
+  // LogOut style
   logOutButton: {
     top: 80,
     height: 30, 
