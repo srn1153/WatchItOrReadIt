@@ -343,10 +343,7 @@ const ItemDetailScreen = ({ route }) => {
                 <View style={styles.castContainer}>
                 <Text style={styles.infoTitle}>GENRE</Text>
                 <Text style={styles.mainCast}>{displayGenres}</Text>
-                </View>
-
-              
-                
+                </View>    
           </>
             )}
             </View>
@@ -361,7 +358,7 @@ const ItemDetailScreen = ({ route }) => {
         horizontal
         keyExtractor={(recommendation) => recommendation.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item })}>
+          <TouchableOpacity onPress={() => navigation.push('MovieDetailScreen', { item})}>
             <View style={styles.recommendationItem}>
               {item.poster_path && (
                 <Image
@@ -384,7 +381,7 @@ const ItemDetailScreen = ({ route }) => {
         horizontal
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.push('BookDetailscreen', { book: item })}>
+          <TouchableOpacity onPress={() => navigation.push('BookDetailScreen', { book: item })}>
             <View style={styles.recommendationItem}>
               <Image
                 source={{ uri: item.volumeInfo.imageLinks?.thumbnail || 'default_image_url' }}
@@ -470,7 +467,7 @@ const styles = StyleSheet.create({
   },
   titleDetails:{
     marginTop: 2,
-    flexDirection: 'row',
+   flexDirection: 'row',
   },
   releaseDate: {
     fontStyle: 'none',
