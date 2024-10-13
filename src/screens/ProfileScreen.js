@@ -5,6 +5,7 @@ import { useAuth } from '../context/authContext'
 import { db } from '../../firebaseConfig'; // firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
 import { useTVModal } from './useTVModal.js';
+import { useBookshelfModal } from './useBookshelfModal.js';
 
 
 
@@ -67,7 +68,6 @@ import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png';
 import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; 
 import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; 
 import largeBrownCouch from '../../assets/ProfileRoom/Large_Brown_Couch.png'; 
-import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; 
 import jojaCouchOverlay from '../../assets/ProfileRoom/JojaCouch_Overlay.png';
 import wizardCouchOverlay from '../../assets/ProfileRoom/WizardCouch_Overlay.png'; 
 import yellowCouchOverlay from '../../assets/ProfileRoom/YellowCouch_Overlay.png'; 
@@ -101,7 +101,6 @@ import orangechair from '../../assets/ProfileRoom/orangechair.png';
 import orangechairO from '../../assets/ProfileRoom/Retro_Chair.png'; 
 //wallpapers
 import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; 
-import wall from '../../assets/ProfileRoom/wall.png'; 
 import pinkwall from '../../assets/ProfileRoom/pinkwall.png'; 
 import pinkwallO from '../../assets/ProfileRoom/pinkwallO.png'; 
 import winter from '../../assets/ProfileRoom/winter.png'; 
@@ -135,12 +134,7 @@ import mat2 from '../../assets/ProfileRoom/mat2.png';
 import darkmat from '../../assets/ProfileRoom/darkmat.png';
 import strawbmat from '../../assets/ProfileRoom/strawbmat.png';
 
-import tvstatic from '../../assets/ProfileRoom/tvstatic.gif';
 import saveTV from '../../assets/ProfileRoom/saveTV2.png';
-
-
-
-
 
 
 
@@ -148,11 +142,11 @@ import saveTV from '../../assets/ProfileRoom/saveTV2.png';
 export default function ProfileScreen() {
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
-  const [activeTab, setActiveTab] = useState('Pet'); // Default active tab is 'Lamp'
+  const [activeTab, setActiveTab] = useState('Wall'); // Default active tab is 'Lamp'
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
   const { user } = useAuth(); // Get the current logged-in user from authContext
 
-
+  // useTVModal
   const {
     tvModalVisible,
     searchModalVisible,
@@ -169,6 +163,23 @@ export default function ProfileScreen() {
     setSearchModalVisible,
     handleTVClose,
   } = useTVModal();
+
+    // useBookshelfModal
+    const {
+      bookshelfModalVisible,
+      searchModalVisible: bookSearchModalVisible,
+      searchType: bookSearchType,
+      searchQuery: bookSearchQuery,
+      searchResults: bookSearchResults,
+      loading: bookLoading,
+      selectedBooks,
+      toggleBookshelf,
+      handleContainerClick: handleBookContainerClick,
+      handleBookSelect,
+      handleSearch: handleBookSearch,
+      setSearchModalVisible: setBookSearchModalVisible,
+      handleBookshelfClose,
+    } = useBookshelfModal();
 
 
     //Separate states for each furniture type
@@ -729,6 +740,7 @@ export default function ProfileScreen() {
       
       {/* Default Profile Room */}
       <Image source={profileRoom} style={styles.profileRoomImg} />
+      <Image source={whitecarpet} style={styles.carpetOverlay} />
 
       {/* Rendered Items as an Overlay */}
       {/* WALL */}
@@ -785,7 +797,7 @@ export default function ProfileScreen() {
       
       {/* Bookshelf */}
       {selectedBookshelf === 'bookshelf' && (
-          <TouchableOpacity onPress={toggleTVfaves} style={styles.bookshelf}>
+          <TouchableOpacity onPress={toggleBookshelf} style={styles.bookshelf}>
               <Image source={bookshelf} style={styles.bookshelf} />
           </TouchableOpacity>
       )} 
@@ -939,6 +951,8 @@ export default function ProfileScreen() {
         {/* Default Furnitures */}
         <Image source={retrolamp} style={styles.retrolamp} />
         <Image source={bookstack} style={styles.bookstack} />
+        
+
         {/* <Image source={bookstack2} style={styles.bookstack2} /> */}
 
 
@@ -1036,14 +1050,16 @@ export default function ProfileScreen() {
               {/* <Text style={styles.tvModalTitle}>Film & Show favourites</Text> */}
 
               {/* Movie containers */}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
+              <Text style={styles.showsTitle}>FILM</Text>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 15,  marginHorizontal: -8 }}>
               {/* <Image source={tvstatic} style={styles.tvstatic} /> */}
 
                 {[...Array(4)].map((_, index) => (
                   <TouchableOpacity key={index} onPress={() => handleContainerClick('movie', index)} style={styles.containerBox}>
                     {selectedMovies[index] ? (
                       <Image
-                        source={{ uri: `https://image.tmdb.org/t/p/w200${selectedMovies[index].poster_path}` }}
+                        source={{ uri: `https://image.tmdb.org/t/p/w500${selectedMovies[index].poster_path}` }}
                         style={styles.posterImage}
                       />
                     ) : (
@@ -1053,13 +1069,18 @@ export default function ProfileScreen() {
                 ))}
               </View>
 
+              {/* Separator */}
+              <View style={styles.separator} />
+              <Text style={styles.showsTitle}>TV</Text>
+
+
               {/* TV Show containers */}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginHorizontal: -8}}>
                 {[...Array(4)].map((_, index) => (
                   <TouchableOpacity key={index} onPress={() => handleContainerClick('tv', index)} style={styles.containerBox}>
                     {selectedTVShows[index] ? (
                       <Image
-                        source={{ uri: `https://image.tmdb.org/t/p/w200${selectedTVShows[index].poster_path}` }}
+                        source={{ uri: `https://image.tmdb.org/t/p/w500${selectedTVShows[index].poster_path}` }}
                         style={styles.posterImage}
                       />
                     ) : (
@@ -1070,9 +1091,9 @@ export default function ProfileScreen() {
               </View>
 
                 {/* SAVE BUTTON */}
-              <TouchableOpacity onPress={handleTVClose} style={styles.saveTV}>
-                {/* <Text style={styles.saveTvButtonText}>Save</Text> */}
-                <Image source={saveButton} style={styles.saveTV} />
+              <TouchableOpacity onPress={handleTVClose} style={styles.saveTVButton}>
+                <Text style={styles.saveTvButtonText}>x</Text>
+                {/* <Image source={saveButton} style={styles.saveTV} /> */}
               </TouchableOpacity>
 
             </View>
@@ -1113,6 +1134,80 @@ export default function ProfileScreen() {
             </View>
           </View>
         </Modal>
+
+        {/* Bookshelf Modal: Books */}
+
+        {/* Bookshelf Container */}
+        <Modal visible={bookshelfModalVisible} transparent={true} animationType="fade">
+            <View style={styles.bookshelfContainer}>
+                <View style={styles.bookshelfContent}>
+
+                    {/* Title for Books Section */}
+                    <Text style={styles.booksTitle}>BOOKS</Text>
+
+                    {/* Book containers */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10, marginHorizontal: 10 }}>
+                        {[...Array(4)].map((_, index) => (
+                            <TouchableOpacity key={index} onPress={() => handleBookContainerClick('book', index)} style={styles.booksContainerBox}>
+                                {selectedBooks[index] ? (
+                                    <Image
+                                        source={{ uri: selectedBooks[index].volumeInfo.imageLinks?.thumbnail }}
+                                        style={styles.bookCover}
+                                    />
+                                ) : (
+                                    <>
+                                        <Text style={styles.plusSign}></Text>
+                                        <Text style={styles.plusSign}>Book</Text>
+                                    </>
+                                )}
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+
+                    {/* SAVE BUTTON */}
+                    <TouchableOpacity onPress={handleBookshelfClose} style={styles.saveBookshelfButton}>
+                        <Text style={styles.saveBookshelfButtonText}>x</Text>
+                    </TouchableOpacity>
+
+                </View>
+            </View>
+        </Modal>
+
+        {/* Bookshelf Search Modal */}
+        <Modal visible={bookSearchModalVisible} transparent={true} animationType="slide">
+            <View style={styles.searchModalContainer}>
+                <View style={styles.searchModalContent}>
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder="Search for books..."
+                        value={bookSearchQuery}
+                        onChangeText={handleBookSearch}
+                    />
+
+                    {bookLoading ? (
+                        <ActivityIndicator size="large" color="#777" />
+                    ) : (
+                        <View style={styles.resultsContainer}>
+                            <FlatList
+                                data={bookSearchResults}
+                                keyExtractor={(item) => `book-${item.id}`}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity style={styles.resultItem} onPress={() => handleBookSelect(item)}>
+                                        <Image source={{ uri: item.volumeInfo.imageLinks?.thumbnail }} style={styles.posterImage} />
+                                        <Text style={styles.resultText}>{item.volumeInfo.title}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                    )}
+
+                    <TouchableOpacity onPress={() => setBookSearchModalVisible(false)} style={styles.closeButton}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
+
 
 
 
@@ -1435,134 +1530,6 @@ const styles = StyleSheet.create({
     // bottom: 7,
   },
 
-  saveTVButton:{
-    marginTop: 20,
-    width: 100,
-    paddingVertical: 10,
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-    left: 165,
-  },
-  saveTvButtonText: {
-    fontFamily: 'courier',
-    size: 14,
-
-  },
-
-  tvFavesModal: {
-    position: 'absolute',
-    top: 100,
-    right: 20,
-  },
-
-  tvstatic: {
-    position: 'absolute',
-    resizeMode: 'contain',
-    width: 280,
-    height: 500,
-    right: -1,
-    top: -140,
-
-  },
-
-  tvContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  },
-  tvContent: {
-    width: '80%',
-    backgroundColor:'rgba(0,0,0, 0.75)',
-    padding: 20,
-    borderRadius: 10,
-    bottom: 15,
-    height: 300,
-  },
-  tvModalTitle: {
-    fontSize: 18,
-    marginBottom: 20,
-    color: 'white',
-    // fontFamily: 'Courier',
-    fontWeight: 'bold',
-  },
-  saveTV: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-    position: 'absolute',
-    left: 130,
-    top: 128,
-  },
-  
-  containerBox: {
-    width: 60,
-    height: 100,
-    borderWidth: 2,
-    borderColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 3,
-    backgroundColor: 'gray',
-  },
-  plusSign: {
-    fontSize: 15,
-    color: 'rgba(0, 0, 0, 0.2)',
-  },
-
-  searchModalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-  },
-  searchModalContent: {
-    width: '90%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-  },
-  searchBar: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingLeft: 10,
-    marginBottom: 20,
-  },
-  resultsContainer: {
-    maxHeight: 300, // Limit the height of the results container
-    overflow: 'scroll', // Allow scrolling if results exceed max height
-  },
-  resultItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  posterImage: {
-    width: 62,
-    height: 100,
-    marginRight: 0,
-    borderRadius: 2,
-  },
-  resultText: {
-    fontSize: 16,
-  },
-  closeButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'black',
-    fontSize: 16,
-  },
-
 
   // Modal style
   modalContainer: {
@@ -1729,6 +1696,210 @@ const styles = StyleSheet.create({
     // fontFamily: 'courier',
   },
 
+
+  // TV Modal
+  saveTVButton:{
+    bottom: 302,
+    width: 21,
+    paddingVertical: 2,
+    alignItems: 'center',
+    backgroundColor: 'rgba(232,232,232,0.9)',
+    borderColor: '#D4D4ED',
+    // borderWidth: 2,
+    borderRadius: 20,
+    left: 300,
+  },
+  saveTvButtonText: {
+    // fontFamily: 'courier',
+    size: 14,
+    fontWeight: 'bold',
+    color: 'rgba(0,0,0,0.3)',
+    top:-1,
+  },
+
+  tvFavesModal: {
+    position: 'absolute',
+    top: 100,
+    right: 20,
+  },
+
+  tvContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  tvContent: {
+    width: '86%',
+    backgroundColor:'rgba(30,37,45, 0.94)',
+    padding: 20,
+    borderRadius: 10,
+    bottom: 30,
+    height: 320,
+  },
+  tvModalTitle: {
+    fontSize: 18,
+    marginBottom: 20,
+    color: 'white',
+    // fontFamily: 'Courier',
+    fontWeight: 'bold',
+  },
+  saveTV: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    position: 'absolute',
+    left: 130,
+    top: 150,
+  },
+
+  separator: {
+    height: 0.5, // Height of the separator
+    backgroundColor: '#445466', // Color of the separator
+    marginVertical: 10, // Vertical spacing around the separator
+    bottom: 10,
+  },
+  showsTitle: {
+    bottom: 7,
+    fontSize: 12,
+    letterSpacing: 1,
+    color: '#8995A1',
+    left: -3,
+    paddingTop: 0,
+  },
+  
+  containerBox: {
+    width: 70,
+    height: 105,
+    // borderWidth: 2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 3,
+    backgroundColor: 'gray',
+  },
+  posterImage: {
+    width: 70,
+    height: 105,
+    marginRight: 0,
+    borderRadius: 2,
+
+  },
+  plusSign: {
+    fontSize: 15,
+    color: 'rgba(0, 0, 0, 0.2)',
+  },
+
+  searchModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  searchModalContent: {
+    width: '90%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+  },
+  searchBar: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingLeft: 10,
+    marginBottom: 20,
+  },
+  resultsContainer: {
+    maxHeight: 300, // Limit the height of the results container
+    overflow: 'scroll', // Allow scrolling if results exceed max height
+  },
+  resultItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+
+  resultText: {
+    fontSize: 16,
+    left: 15,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'black',
+    fontSize: 16,
+  },
+
+
+  // Books Modal
+  bookshelfContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      bottom: 40,
+  },
+
+  bookshelfContent: {
+      width: '94%',
+      backgroundColor: 'rgba(245,245,245, 0.97)',
+      paddingTop: 30,
+      borderRadius: 10,
+  },
+
+  booksContainerBox: {
+    width: 80,
+    height: 120,
+    // borderWidth: 2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 3,
+    backgroundColor: '#D3D3D3',
+  },
+
+  saveBookshelfButton: {
+      width: 21,
+      paddingVertical: 2,
+      alignItems: 'center',
+      backgroundColor: 'rgba(232,232,232,0.9)',
+      borderColor: '#D4D4ED',
+      // borderWidth: 2,
+      borderRadius: 20,
+      left: 333,
+      top: -170,
+    
+  },
+  saveBookshelfButtonText: {
+      size: 14,
+      fontWeight: 'bold',
+      color: 'rgba(0,0,0,0.3)',
+      top:-1,
+  },
+  booksTitle: {
+    bottom: 10,
+    left: 20,
+    color: 'black',
+    fontSize: 12,
+    letterSpacing: 1,
+    fontWeight: '600',
+  },
+
+  bookCover: {
+    width: 80,
+    height: 120,
+    marginRight: 0,
+    borderRadius: 2,
+
+  },
 
   
 
