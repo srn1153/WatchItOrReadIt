@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/authContext';
 import { db } from '../../firebaseConfig'; // Firestore instance
-import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
+import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 
 export const useBookshelfModal = () => {
   const { user } = useAuth(); // Get the current logged-in user from authContext
@@ -48,6 +48,8 @@ export const useBookshelfModal = () => {
 
     setLoading(true);
     setSearchQuery(text);
+
+    
 
     try {
       const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);

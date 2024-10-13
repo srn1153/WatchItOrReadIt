@@ -3,10 +3,9 @@ import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView, Tex
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/authContext'
 import { db } from '../../firebaseConfig'; // firestore instance
-import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
+import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 import { useTVModal } from './useTVModal.js';
 import { useBookshelfModal } from './useBookshelfModal.js';
-
 
 
 // Furniture image Imports
@@ -42,7 +41,6 @@ import bookshelf from '../../assets/ProfileRoom/bookshelf.png';
 import artistBookshelf from '../../assets/ProfileRoom/artistBookshelf.png';
 import wizardBookshelf from '../../assets/ProfileRoom/Wizard_Bookshelf.png';
 import bookshelf3 from '../../assets/ProfileRoom/bookshelf3.png';
-
 //mini shelf
 import miniBookshelf from '../../assets/ProfileRoom/mini_bookshelf.png';
 import minishelf from '../../assets/ProfileRoom/minishelf.png';
@@ -802,13 +800,19 @@ export default function ProfileScreen() {
           </TouchableOpacity>
       )} 
       {selectedBookshelf === 'wizardBookshelf' && (
-        <Image source={wizardBookshelf} style={styles.wizardBookshelf} />
+          <TouchableOpacity onPress={toggleBookshelf} style={styles.bookshelf}>
+            <Image source={wizardBookshelf} style={styles.bookshelf} />
+          </TouchableOpacity>
       )}
       {selectedBookshelf === 'artistBookshelf' && (
-        <Image source={artistBookshelf} style={styles.wizardBookshelf} />
+          <TouchableOpacity onPress={toggleBookshelf} style={styles.bookshelf}>
+            <Image source={artistBookshelf} style={styles.bookshelf} />
+            </TouchableOpacity>
       )}
       {selectedBookshelf === 'bookshelf3' && (
-        <Image source={bookshelf3} style={styles.wizardBookshelf} />
+          <TouchableOpacity onPress={toggleBookshelf} style={styles.bookshelf}>
+            <Image source={bookshelf3} style={styles.bookshelf} />
+            </TouchableOpacity>
       )}
 
       {/* RUG */}
@@ -866,14 +870,21 @@ export default function ProfileScreen() {
         )}
 
       {/* SHELF */}
+
       {selectedShelf === 'miniBookshelf' && (
-        <Image source={miniBookshelf} style={styles.miniBookshelf} />
+          <TouchableOpacity onPress={toggleBookshelf} style={styles.miniBookshelf}>
+            <Image source={miniBookshelf} style={styles.miniBookshelf} />
+          </TouchableOpacity>
       )}
       {selectedShelf === 'minishelf' && (
-        <Image source={minishelf} style={styles.miniBookshelf} />
+          // <TouchableOpacity onPress={toggleBookshelf} style={styles.miniBookshelf}>
+            <Image source={minishelf} style={styles.miniBookshelf2} />
+            // </TouchableOpacity>
       )}
       {selectedShelf === 'minishelf2' && (
-        <Image source={minishelf2} style={styles.miniBookshelf} />
+          // <TouchableOpacity onPress={toggleBookshelf} style={styles.miniBookshelf}>
+            <Image source={minishelf2} style={styles.miniBookshelf2} />
+          // </TouchableOpacity>
       )}
 
         {/* Lamps */}
@@ -950,7 +961,9 @@ export default function ProfileScreen() {
 
         {/* Default Furnitures */}
         <Image source={retrolamp} style={styles.retrolamp} />
-        <Image source={bookstack} style={styles.bookstack} />
+        <TouchableOpacity onPress={toggleBookshelf} style={styles.bookstack}>
+          <Image source={bookstack} style={styles.bookstack} />
+        </TouchableOpacity>
         
 
         {/* <Image source={bookstack2} style={styles.bookstack2} /> */}
@@ -1143,7 +1156,9 @@ export default function ProfileScreen() {
                 <View style={styles.bookshelfContent}>
 
                     {/* Title for Books Section */}
-                    <Text style={styles.booksTitle}>BOOKS</Text>
+                    <Text style={styles.booksTitle}>FAVOURITE  BOOKS</Text>
+                    {/* Separator */}
+                      <View style={styles.bookSeparator} />
 
                     {/* Book containers */}
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10, marginHorizontal: 10 }}>
@@ -1255,6 +1270,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 97,
     height: 97,
+    top: 203,
+    left: 47,
+  },
+  miniBookshelf2: {
+    resizeMode: 'contain',
+    position: 'absolute',
+    width: 97,
+    height: 97,
     top: 409,
     left: 97,
   },
@@ -1281,8 +1304,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 66,
     height: 66,
-    top: 437,
-    right: 140,
+    top: 215,
+    right: 70,
   },
   bookstack2:{
     resizeMode: 'contain',
@@ -1290,7 +1313,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     top: 435,
-    right: 130,
+    right: 70,
   },
 
   bigrug: {
@@ -1851,7 +1874,7 @@ const styles = StyleSheet.create({
   bookshelfContent: {
       width: '94%',
       backgroundColor: 'rgba(245,245,245, 0.97)',
-      paddingTop: 30,
+      paddingTop: 13,
       borderRadius: 10,
   },
 
@@ -1870,12 +1893,12 @@ const styles = StyleSheet.create({
       width: 21,
       paddingVertical: 2,
       alignItems: 'center',
-      backgroundColor: 'rgba(232,232,232,0.9)',
+      backgroundColor: 'rgba(225,225,225,0.9)',
       borderColor: '#D4D4ED',
       // borderWidth: 2,
       borderRadius: 20,
-      left: 333,
-      top: -170,
+      left: 348,
+      top: -185,
     
   },
   saveBookshelfButtonText: {
@@ -1885,12 +1908,20 @@ const styles = StyleSheet.create({
       top:-1,
   },
   booksTitle: {
-    bottom: 10,
-    left: 20,
-    color: 'black',
-    fontSize: 12,
-    letterSpacing: 1,
-    fontWeight: '600',
+    bottom: -4,
+    left: 15,
+    color: 'rgba(0,0,0,0.7)',
+    fontSize: 11.5,
+    letterSpacing: 0,
+    fontWeight: '555',
+  },
+  bookSeparator: {
+    height: 0.5, // Height of the separator
+    backgroundColor: 'rgba(0,0,0,0.2)', // Color of the separator
+    marginVertical: 10, // Vertical spacing around the separator
+    bottom: 0,
+    width: '90%',
+    left: 14,
   },
 
   bookCover: {
