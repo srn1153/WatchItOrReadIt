@@ -418,7 +418,6 @@ const styles = StyleSheet.create({
   },
   ButtonText: {
     color: 'white',
-    fontWeight: 'bold',
     fontSize: 14,
     fontFamily: 'courier',
   },

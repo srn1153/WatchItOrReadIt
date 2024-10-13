@@ -4,6 +4,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const BookDetailScreen = ({ route, navigation }) => {
   const { book } = route.params;
+  if(!book || !book.volumeInfo) {
+    return ( 
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Book details not available...</Text>
+      </View>
+    );
+  }
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getTruncatedDescription = () => {
@@ -163,38 +170,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
   },
-  addToListButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    flex: 1,
-    marginRight: 8,
-    alignItems: 'center',
-  },
   reviewButton: {
-    backgroundColor: '#28a745',
-    padding: 10,
-    borderRadius: 5,
-    flex: 1,
+    backgroundColor: '#41509A',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 8,
     alignItems: 'center',
+    marginVertical: 5,
+    width: 130,
   },
   ButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontFamily: 'courier',
+  },
+  addToListButton: {
+    backgroundColor: '#41509A',
+    paddingVertical: 14,
+    paddingHorizontal: 0,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: 130,
+   // marginVertical: 10,
+  
   },
   descriptionContainer: {
     marginBottom: 16,
   },
   infoTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 16,
     marginBottom: 8,
+    fontWeight: 'bold',
   },
   bookDescription: {
     fontSize: 16,
   },
   showMore: {
-    color: '#007BFF',
+    color: '#41509A',
   },
   infoBox: {
     marginTop: 20,
