@@ -1,51 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Modal, Text, ScrollView, TextInput, FlatList, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/authContext'
 import { db } from '../../firebaseConfig'; // firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
+import { useTVModal } from './useTVModal.js';
+
 
 
 // Furniture image Imports
-import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; // importing the profile room image
-import wall from '../../assets/ProfileRoom/wall.png'; // importing the profile room image
-import pinkwall from '../../assets/ProfileRoom/pinkwall.png'; // importing the profile room image
-import pinkwallO from '../../assets/ProfileRoom/pinkwallO.png'; // importing the profile room image
-
-//carpets
-import pinkcarpet from '../../assets/ProfileRoom/pinkcarpet.png'; // importing the profile room image
-import pinkcarpet1 from '../../assets/ProfileRoom/pinkcarpet1.png'; // importing the profile room image
-import carpet from '../../assets/ProfileRoom/carpet.png'; // importing the profile room image
-
 //Default furnitures
 import retrolamp from '../../assets/ProfileRoom/retrolamp.png';
 import tv from '../../assets/ProfileRoom/tv.png';
 import bookstack from '../../assets/ProfileRoom/bookstack.png';
 import bookstack2 from '../../assets/ProfileRoom/bookstack2.png';
+//carpets
+import pinkcarpet from '../../assets/ProfileRoom/pinkcarpet.png';
+import pinkcarpet1 from '../../assets/ProfileRoom/pinkcarpet1.png';
+import bluecarpet from '../../assets/ProfileRoom/bluecarpet.png'; 
+import stripedcarpet from '../../assets/ProfileRoom/stripedcarpet.png';
+import blackcarpet from '../../assets/ProfileRoom/blackcarpet.png';
+import woodcarpet from '../../assets/ProfileRoom/woodcarpet.png';
+import orangecarpet from '../../assets/ProfileRoom/orangecarpet.png';
+import whitecarpet from '../../assets/ProfileRoom/whitecarpet.png';
+import redcarpet from '../../assets/ProfileRoom/redcarpet.png';
+import stripes1 from '../../assets/ProfileRoom/stripes1.png';
+import redcarpet1 from '../../assets/ProfileRoom/redcarpet1.png';
+import wood1 from '../../assets/ProfileRoom/wood1.png';
+import blue1 from '../../assets/ProfileRoom/blue1.png';
+import white1 from '../../assets/ProfileRoom/white1.png';
+import black1 from '../../assets/ProfileRoom/black1.png';
+import orange1 from '../../assets/ProfileRoom/orange1.png';
 //buttons
-import heartButton from '../../assets/ProfileRoom/heartButton.png'; // importing the heart button image
-import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; // importing the decorate button image
+import heartButton from '../../assets/ProfileRoom/heartButton.png'; 
+import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; 
 import saveButton from '../../assets/ProfileRoom/saveButton.png';
 import removeButton from '../../assets/ProfileRoom/removeButton.png';
 //bookshelf
 import bookshelf from '../../assets/ProfileRoom/bookshelf.png';
 import artistBookshelf from '../../assets/ProfileRoom/artistBookshelf.png';
 import wizardBookshelf from '../../assets/ProfileRoom/Wizard_Bookshelf.png';
+import bookshelf3 from '../../assets/ProfileRoom/bookshelf3.png';
+
 //mini shelf
 import miniBookshelf from '../../assets/ProfileRoom/mini_bookshelf.png';
 import minishelf from '../../assets/ProfileRoom/minishelf.png';
 import minishelf2 from '../../assets/ProfileRoom/minishelf2.png';
-
 //pets
 import cat from '../../assets/ProfileRoom/catOverlay.png';
 import dog from '../../assets/ProfileRoom/dog.png';
 import dog2 from '../../assets/ProfileRoom/dog2.png';
 import cat2 from '../../assets/ProfileRoom/cat2.png';
 import cat3 from '../../assets/ProfileRoom/cat3.png';
-
-
-
-//lamps 
+//lamps
 import countryLamp from '../../assets/ProfileRoom/Country_Lamp.png';
 import countryLampOverlay from '../../assets/ProfileRoom/CountryLamp_Overlay.png';
 import ornateLamp from '../../assets/ProfileRoom/Ornate_Lamp.png'; 
@@ -53,20 +60,21 @@ import boxLamp from '../../assets/ProfileRoom/Box_Lamp.png';
 import retroLamp from '../../assets/ProfileRoom/Retro_Lamp.png'; 
 import classicLamp from '../../assets/ProfileRoom/Classic_Lamp.png'; 
 import classicLampOverlay from '../../assets/ProfileRoom/ClassicLamp_Overlay.png'; 
-import junimoLamp from '../../assets/ProfileRoom/Junimo_Lamp.png'; 
-import jojaLamp from '../../assets/ProfileRoom/Joja_Lamp.png'; 
 import ornateLampOverlay from '../../assets/ProfileRoom/OrnateLamp_Overlay.png'; 
 import boxLampOverlay from '../../assets/ProfileRoom/BoxLamp_Overlay.png'; 
 //couch
-import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png'; // importing the ornate lamp image
+import jojaCouch from '../../assets/ProfileRoom/Joja_Couch.png'; 
 import wizardCouch from '../../assets/ProfileRoom/Wizard_Couch.png'; 
 import yellowCouch from '../../assets/ProfileRoom/Yellow_Couch.png'; 
 import largeBrownCouch from '../../assets/ProfileRoom/Large_Brown_Couch.png'; 
 import blueCouch from '../../assets/ProfileRoom/Blue_Couch.png'; 
-import jojaCouchOverlay from '../../assets/ProfileRoom/JojaCouch_Overlay.png'; // importing the ornate lamp image
+import jojaCouchOverlay from '../../assets/ProfileRoom/JojaCouch_Overlay.png';
 import wizardCouchOverlay from '../../assets/ProfileRoom/WizardCouch_Overlay.png'; 
 import yellowCouchOverlay from '../../assets/ProfileRoom/YellowCouch_Overlay.png'; 
-import largeBrownCouchOverlay from '../../assets/ProfileRoom/LargeBrownCouch_Overlay.png'; 
+import largeBrownCouchOverlay from '../../assets/ProfileRoom/LargeBrownCouch_Overlay.png';
+import darkcouch from '../../assets/ProfileRoom/darkcouch.png';
+import darkcouch1 from '../../assets/ProfileRoom/Dark_Couch.png';
+
 //armchair
 import brownArmchair from '../../assets/ProfileRoom/Brown_Armchair.png';
 import blueArmchair from '../../assets/ProfileRoom/Blue_Armchair.png';
@@ -91,19 +99,47 @@ import cuteChair from '../../assets/ProfileRoom/Cute_Chair.png';
 import cuteChairOverlay from '../../assets/ProfileRoom/cuteChair_Overlay.png'; 
 import orangechair from '../../assets/ProfileRoom/orangechair.png'; 
 import orangechairO from '../../assets/ProfileRoom/Retro_Chair.png'; 
-
-
+//wallpapers
+import profileRoom from '../../assets/ProfileRoom/profileRoom.png'; 
+import wall from '../../assets/ProfileRoom/wall.png'; 
+import pinkwall from '../../assets/ProfileRoom/pinkwall.png'; 
+import pinkwallO from '../../assets/ProfileRoom/pinkwallO.png'; 
+import winter from '../../assets/ProfileRoom/winter.png'; 
+import rosy from '../../assets/ProfileRoom/rosy.png'; 
+import woods from '../../assets/ProfileRoom/woods.png'; 
+import underwater from '../../assets/ProfileRoom/underwater.png'; 
+import strawb from '../../assets/ProfileRoom/strawb.png'; 
+import stripes from '../../assets/ProfileRoom/stripes.png'; 
+import forest from '../../assets/ProfileRoom/forest.png'; 
+import strawb1 from '../../assets/ProfileRoom/checkered1.png';
+import rosy1 from '../../assets/ProfileRoom/rosy1.png';
+import maroon1 from '../../assets/ProfileRoom/maroon1.png';
+import winter1 from '../../assets/ProfileRoom/winter1.png';
+import forest1 from '../../assets/ProfileRoom/forest1.png';
+import underwater1 from '../../assets/ProfileRoom/underwater1.png';
+import woods1 from '../../assets/ProfileRoom/woods1.png';
+import stripeswall from '../../assets/ProfileRoom/stripeswall.png';
 //rug
 import bigrug from '../../assets/ProfileRoom/bigrug.png';
 import blossomrug from '../../assets/ProfileRoom/blossomrug.png'; 
 import redrug from '../../assets/ProfileRoom/redrug.png';
-
+import swirlmat from '../../assets/ProfileRoom/swirlmat.png';
+import desertrug from '../../assets/ProfileRoom/desertrug.png';
+import polkarug from '../../assets/ProfileRoom/polkarug.png';
 //mat
 import snowyRug from '../../assets/ProfileRoom/Snowy_Rug.png'; 
 import mysticRug from '../../assets/ProfileRoom/Mystic_Rug.png'; 
 import mysticRugOverlay from '../../assets/ProfileRoom/MysticRug_Overlay.png';
 import snowyRugOverlay from '../../assets/ProfileRoom/SnowyRug_Overlay.png'; 
 import mat2 from '../../assets/ProfileRoom/mat2.png'; 
+import darkmat from '../../assets/ProfileRoom/darkmat.png';
+import strawbmat from '../../assets/ProfileRoom/strawbmat.png';
+
+import tvstatic from '../../assets/ProfileRoom/tvstatic.gif';
+import saveTV from '../../assets/ProfileRoom/saveTV2.png';
+
+
+
 
 
 
@@ -115,6 +151,24 @@ export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState('Pet'); // Default active tab is 'Lamp'
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
   const { user } = useAuth(); // Get the current logged-in user from authContext
+
+
+  const {
+    tvModalVisible,
+    searchModalVisible,
+    searchType,
+    searchQuery,
+    searchResults,
+    loading,
+    selectedMovies,
+    selectedTVShows,
+    toggleTVfaves,
+    handleContainerClick,
+    handleShowSelect,
+    handleSearch,
+    setSearchModalVisible,
+    handleTVClose,
+  } = useTVModal();
 
 
     //Separate states for each furniture type
@@ -129,8 +183,6 @@ export default function ProfileScreen() {
     const [selectedRug, setSelectedRug] = useState(null);
     const [selectedWall, setSelectedWall] = useState(null);
     const [selectedCarpet, setSelectedCarpet] = useState(null);
-
-
 
 
     // Saves selected furniture to Firestore
@@ -296,32 +348,21 @@ export default function ProfileScreen() {
           <Image source={removeButton} style={styles.removeButton} />
           </TouchableOpacity>
 
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('countryLamp')}>
-          <Image source={countryLamp} style={styles.itemImage} />
+          <Image source={countryLamp} style={styles.lampImages} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('ornateLamp')}>
-            <Image source={ornateLamp} style={styles.itemImage} />
+            <Image source={ornateLamp} style={styles.lampImages} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('boxLamp')}>
-            <Image source={boxLamp} style={styles.itemImage} />
+            <Image source={boxLamp} style={styles.lampImages} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('classicLamp')}>
-            <Image source={classicLamp} style={styles.itemImage} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('junimoLamp')}>
-            <Image source={junimoLamp} style={styles.itemImage} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('jojaLamp')}>
-            <Image source={jojaLamp} style={styles.itemImage} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('retroLamp')}>
-            <Image source={retroLamp} style={styles.retroLampImage} />
+            <Image source={classicLamp} style={styles.lampImages} />
           </TouchableOpacity>
 
 
@@ -342,6 +383,10 @@ export default function ProfileScreen() {
           <Image source={largeBrownCouch} style={styles.itemImage} />
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('darkcouch')}>
+          <Image source={darkcouch1} style={styles.itemImage} />
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('jojaCouch')}>
           <Image source={jojaCouch} style={styles.itemImage} />
           </TouchableOpacity>
@@ -352,11 +397,6 @@ export default function ProfileScreen() {
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('yellowCouch')}>
           <Image source={yellowCouch} style={styles.itemImage} />
-          </TouchableOpacity>
-
-
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('blueCouch')}>
-          <Image source={blueCouch} style={styles.itemImage} />
           </TouchableOpacity>
 
 
@@ -408,13 +448,20 @@ export default function ProfileScreen() {
           <Image source={bookshelf} style={styles.itemImage} />
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('artistBookshelf')}>
+          <Image source={artistBookshelf} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('bookshelf3')}>
+          <Image source={bookshelf3} style={styles.itemImage} />
+          </TouchableOpacity>
+          
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('wizardBookshelf')}>
           <Image source={wizardBookshelf} style={styles.itemImage} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('artistBookshelf')}>
-          <Image source={artistBookshelf} style={styles.itemImage} />
-          </TouchableOpacity>
+          
 
         </ScrollView>
       );
@@ -435,6 +482,14 @@ export default function ProfileScreen() {
           <Image source={countryChair} style={styles.itemImage} />
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('cuteChair')}>
+          <Image source={cuteChair} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('yellowChair')}>
+          <Image source={yellowChair} style={styles.itemImage} />
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('orangechair')}>
           <Image source={orangechairO} style={styles.itemImage} />
           </TouchableOpacity>
@@ -443,13 +498,7 @@ export default function ProfileScreen() {
           <Image source={redDinerChair} style={styles.itemImage} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('yellowChair')}>
-          <Image source={yellowChair} style={styles.itemImage} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('cuteChair')}>
-          <Image source={cuteChair} style={styles.itemImage} />
-          </TouchableOpacity>
+          
 
           
 
@@ -463,18 +512,35 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect(null)}>
           <Image source={removeButton} style={styles.removeButton} />
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('mysticRug')}>
-          <Image source={mysticRug} style={styles.itemImage} />
-          </TouchableOpacity>
+
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('snowyRug')}>
           <Image source={snowyRug} style={styles.itemImage} />
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('swirlmat')}>
+          <Image source={swirlmat} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('darkmat')}>
+          <Image source={darkmat} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('strawbmat')}>
+          <Image source={strawbmat} style={styles.itemImage} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('mysticRug')}>
+          <Image source={mysticRug} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('mat2')}>
           <Image source={mat2} style={styles.itemImage} />
           </TouchableOpacity>
+
+          
 
         </ScrollView>
       );
@@ -524,10 +590,6 @@ export default function ProfileScreen() {
           <Image source={removeButton} style={styles.removeButton} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('miniBookshelf')}>
-          <Image source={miniBookshelf} style={styles.itemImage} />
-          </TouchableOpacity>
-
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('minishelf')}>
           <Image source={minishelf} style={styles.itemImage} />
           </TouchableOpacity>
@@ -535,6 +597,12 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('minishelf2')}>
           <Image source={minishelf2} style={styles.itemImage} />
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('miniBookshelf')}>
+          <Image source={miniBookshelf} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          
 
 
         </ScrollView>
@@ -545,12 +613,25 @@ export default function ProfileScreen() {
         <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
           
           {/* Rug */}
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect(null)}>
+          <Image source={removeButton} style={styles.removeButton} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('desertrug')}>
+          <Image source={desertrug} style={styles.itemImage} />
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('redrug')}>
           <Image source={redrug} style={styles.itemImage} />
           </TouchableOpacity>
-
+          
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('bigrug')}>
           <Image source={bigrug} style={styles.itemImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('polkarug')}>
+          <Image source={polkarug} style={styles.itemImage} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('blossomrug')}>
@@ -569,11 +650,30 @@ export default function ProfileScreen() {
           {/* Wall */}
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect(null)}>
-          <Image source={wall} style={styles.carpetItems} />
+          <Image source={forest1} style={styles.carpetItems} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('pinkwall')}>
           <Image source={pinkwall} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('winter')}>
+          <Image source={winter1} style={styles.carpetItems} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('rosy')}>
+          <Image source={rosy1} style={styles.carpetItems} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('woods')}>
+          <Image source={woods1} style={styles.carpetItems} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('underwater')}>
+          <Image source={underwater1} style={styles.carpetItems} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('strawb')}>
+          <Image source={strawb1} style={styles.carpetItems} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('stripes')}>
+          <Image source={stripeswall} style={styles.carpetItems} />
           </TouchableOpacity>
 
         </ScrollView>
@@ -585,14 +685,39 @@ export default function ProfileScreen() {
           
           {/* Carpet */}
 
-          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect(null)}>
-          <Image source={carpet} style={styles.carpetItems} />
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('redcarpet')}>
+          <Image source={redcarpet1} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('whitecarpet')}>
+          <Image source={white1} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('bluecarpet')}>
+          <Image source={blue1} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('stripedcarpet')}>
+          <Image source={stripes1} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('blackcarpet')}>
+          <Image source={black1} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('woodcarpet')}>
+          <Image source={wood1} style={styles.carpetItems} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('orangecarpet')}>
+          <Image source={orange1} style={styles.carpetItems} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemSelect('pinkcarpet1')}>
           <Image source={pinkcarpet1} style={styles.carpetItems} />
           </TouchableOpacity>
 
+          
         </ScrollView>
       );   
     }
@@ -605,28 +730,73 @@ export default function ProfileScreen() {
       {/* Default Profile Room */}
       <Image source={profileRoom} style={styles.profileRoomImg} />
 
+      {/* Rendered Items as an Overlay */}
       {/* WALL */}
       {selectedWall === 'pinkwall' && (
           <Image source={pinkwallO} style={styles.wallOverlay} />
-
+      )} 
+      {selectedWall === 'winter' && (
+          <Image source={winter} style={styles.profileRoomImg} />
+      )} 
+      {selectedWall === 'rosy' && (
+          <Image source={rosy} style={styles.profileRoomImg} />
+      )} 
+      {selectedWall === 'woods' && (
+          <Image source={woods} style={styles.profileRoomImg} />
+      )} 
+      {selectedWall === 'underwater' && (
+          <Image source={underwater} style={styles.profileRoomImg} />
+      )} 
+      {selectedWall === 'strawb' && (
+          <Image source={strawb} style={styles.profileRoomImg} />
+      )} 
+      {selectedWall === 'stripes' && (
+          <Image source={stripes} style={styles.profileRoomImg} />
+      )} 
+      {selectedWall === 'forest' && (
+          <Image source={forest} style={styles.profileRoomImg} />
       )} 
 
-      {/* Conditionally render the selected item as an overlay */}
       {/* CARPET */}
       {selectedCarpet === 'pinkcarpet1' && (
           <Image source={pinkcarpet} style={styles.carpetOverlay} />
-
+      )}
+      {selectedCarpet === 'whitecarpet' && (
+        <Image source={whitecarpet} style={styles.carpetOverlay} />
       )} 
-
+      {selectedCarpet === 'bluecarpet' && (
+        <Image source={bluecarpet} style={styles.carpetOverlay} />
+      )} 
+      {selectedCarpet === 'stripedcarpet' && (
+        <Image source={stripedcarpet} style={styles.carpetOverlay} />
+      )} 
+      {selectedCarpet === 'blackcarpet' && (
+        <Image source={blackcarpet} style={styles.carpetOverlay} />
+      )} 
+      {selectedCarpet === 'woodcarpet' && (
+        <Image source={woodcarpet} style={styles.carpetOverlay} />
+      )} 
+      {selectedCarpet === 'orangecarpet' && (
+        <Image source={orangecarpet} style={styles.carpetOverlay} />
+      )} 
+      {selectedCarpet === 'redcarpet' && (
+        <Image source={redcarpet} style={styles.carpetOverlay} />
+      )} 
+      
       {/* Bookshelf */}
       {selectedBookshelf === 'bookshelf' && (
-          <Image source={bookshelf} style={styles.bookshelf} />
+          <TouchableOpacity onPress={toggleTVfaves} style={styles.bookshelf}>
+              <Image source={bookshelf} style={styles.bookshelf} />
+          </TouchableOpacity>
       )} 
       {selectedBookshelf === 'wizardBookshelf' && (
         <Image source={wizardBookshelf} style={styles.wizardBookshelf} />
       )}
       {selectedBookshelf === 'artistBookshelf' && (
         <Image source={artistBookshelf} style={styles.wizardBookshelf} />
+      )}
+      {selectedBookshelf === 'bookshelf3' && (
+        <Image source={bookshelf3} style={styles.wizardBookshelf} />
       )}
 
       {/* RUG */}
@@ -639,7 +809,32 @@ export default function ProfileScreen() {
       {selectedRug === 'blossomrug' && (
         <Image source={blossomrug} style={styles.blossomrug} />
       )}
+      {selectedRug === 'desertrug' && (
+        <Image source={desertrug} style={styles.redrug} />
+      )}
+      {selectedRug === 'polkarug' && (
+        <Image source={polkarug} style={styles.redrug} />
+      )}
 
+       {/* Mat */}
+       {selectedMat=== 'snowyRug' && (
+          <Image source={snowyRugOverlay} style={styles.matOverlay} />
+        )}
+        {selectedMat=== 'mysticRug' && (
+          <Image source={mysticRugOverlay} style={styles.matOverlay_mystic} />
+        )}
+        {selectedMat=== 'mat2' && (
+          <Image source={mat2} style={styles.matOverlay_mat2} />
+        )}
+        {selectedMat=== 'darkmat' && (
+          <Image source={darkmat} style={styles.matOverlay_dark} />
+        )}
+        {selectedMat=== 'strawbmat' && (
+          <Image source={strawbmat} style={styles.matOverlay_strawb} />
+        )}
+        {selectedMat=== 'swirlmat' && (
+          <Image source={swirlmat} style={styles.matOverlay_swirl} />
+        )}
 
       {/* Couch */}
       {selectedCouch === 'jojaCouch' && (
@@ -654,6 +849,9 @@ export default function ProfileScreen() {
         {selectedCouch === 'largeBrownCouch' && (
           <Image source={largeBrownCouchOverlay} style={styles.couchOverlay_lbrown} />
         )}
+        {selectedCouch === 'darkcouch' && (
+          <Image source={darkcouch} style={styles.couchOverlay_small} />
+        )}
 
       {/* SHELF */}
       {selectedShelf === 'miniBookshelf' && (
@@ -666,11 +864,6 @@ export default function ProfileScreen() {
         <Image source={minishelf2} style={styles.miniBookshelf} />
       )}
 
-
-
-
-      
-
         {/* Lamps */}
         {selectedLamp === 'countryLamp' && (
           <Image source={countryLampOverlay} style={styles.lampOverlay_country} />
@@ -681,22 +874,10 @@ export default function ProfileScreen() {
         {selectedLamp === 'boxLamp' && (
           <Image source={boxLampOverlay} style={styles.lampOverlay} />
         )}
-                {selectedLamp === 'classicLamp' && (
+        {selectedLamp === 'classicLamp' && (
           <Image source={classicLampOverlay} style={styles.lampOverlay} />
         )}
-
         
-        {/* Mat */}
-        {selectedMat=== 'snowyRug' && (
-          <Image source={snowyRugOverlay} style={styles.matOverlay} />
-        )}
-        {selectedMat=== 'mysticRug' && (
-          <Image source={mysticRugOverlay} style={styles.matOverlay_mystic} />
-        )}
-        {selectedMat=== 'mat2' && (
-          <Image source={mat2} style={styles.matOverlay_mat2} />
-        )}
-
         {/* Armchair */}
         {selectedArmchair === 'brownArmchair' && (
           <Image source={brownArmchairOverlay} style={styles.armchairOverlay_brown} />
@@ -714,6 +895,13 @@ export default function ProfileScreen() {
           <Image source={greenArmchairOverlay} style={styles.armchairOverlay} />
         )}
 
+        {selectedChair === 'yellowChair' && (
+          <Image source={yellowChairOverlay} style={styles.chairOverlay} />
+        )}
+        {selectedChair === 'cuteChair' && (
+          <Image source={cuteChairOverlay} style={styles.chairOverlay} />
+        )}
+
         {/* Chair */}
         {selectedChair === 'purpleOfficeChair' && (
           <Image source={purpleOfficeChairOverlay} style={styles.chairOverlay} />
@@ -728,14 +916,7 @@ export default function ProfileScreen() {
         {selectedChair === 'redDinerChair' && (
           <Image source={redDinerChairOverlay} style={styles.chairOverlay} />
         )}
-        {selectedChair === 'yellowChair' && (
-          <Image source={yellowChairOverlay} style={styles.chairOverlay} />
-        )}
-        {selectedChair === 'cuteChair' && (
-          <Image source={cuteChairOverlay} style={styles.chairOverlay} />
-        )}
-
-
+      
         {/* Pets */}
         {selectedPet === 'cat' && (
           <Image source={cat} style={styles.cat_Overlay} />
@@ -755,19 +936,26 @@ export default function ProfileScreen() {
         )}
 
 
-      {/* Buttons: Decorate & Lists */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.heartButton} onPress={() => navigation.navigate('List')}>
-          <Image source={heartButton} style={styles.heartButtonImage} />
-        </TouchableOpacity>
+        {/* Default Furnitures */}
+        <Image source={retrolamp} style={styles.retrolamp} />
+        <Image source={bookstack} style={styles.bookstack} />
+        {/* <Image source={bookstack2} style={styles.bookstack2} /> */}
 
-        <TouchableOpacity style={styles.decorateButton} onPress={toggleModal}>
-          <Image source={decorateButton} style={styles.decorateButtonImage} />
-        </TouchableOpacity>
-      </View>
+
+
+        {/* Buttons: Decorate & Lists */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.heartButton} onPress={() => navigation.navigate('List')}>
+            <Image source={heartButton} style={styles.heartButtonImage} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.decorateButton} onPress={toggleModal}>
+            <Image source={decorateButton} style={styles.decorateButtonImage} />
+          </TouchableOpacity>
+        </View>
       
 
-      {/* Modal for popup */}
+      {/* Decorate Modal */}
       <Modal
         transparent={true}
         animationType="slide"
@@ -782,23 +970,31 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
             {/* Tab Bar */}
-            <View style={styles.tabBar}>
-              {['Pet','Lamp', 'Couch', 'Bookshelf', 'Chair', 'Mat','Armchair', 'Shelf', 'Rug','Wall','Carpet'].map((tab) => (
-                <TouchableOpacity
-                  key={tab}
-                  style={[styles.tabButton, activeTab === tab && styles.activeTab]}
-                  onPress={() => setActiveTab(tab)}
-                >
-                  <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-                    {tab}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              <View style={styles.fixedTabBar}>
+                <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
+                  <View style={styles.tabBar}>
+                    {['Wall','Carpet', 'Lamp', 'Couch', 'Rug', 'Shelf', 'Pet', 'Bookshelf', 'Chair', 'Mat','Armchair'].map((tab) => (
+                      <TouchableOpacity
+                        key={tab}
+                        style={[styles.tabButton, activeTab === tab && styles.activeTab]}
+                        onPress={() => setActiveTab(tab)}
+                      >
+                        <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+                          {tab}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
+
+              {/* Scrollable Content */}
+              <ScrollView contentContainerStyle={styles.scrollableContent}>
+                {renderItemsForActiveTab()}
+              </ScrollView>
             </View>
-              {/* Scrollable items for the selected tab */}
-              {renderItemsForActiveTab()}
-          </View>
         </View>
+      
       </Modal>
 
 
@@ -824,15 +1020,100 @@ export default function ProfileScreen() {
         <Image style={styles.logOutButton} source={require("../../assets/ProfileRoom/logoutButton.png")} />
       </TouchableOpacity>
 
-      {/* Default Furnitures */}
-      <Image source={retrolamp} style={styles.retrolamp} />
-      <Image source={tv} style={styles.tv}/>
 
 
+      {/* TV Modal: Movies & Shows */}
+      <TouchableOpacity onPress={toggleTVfaves} style={styles.tvFavesModal}>
+            <Image source={tv} style={styles.tv}/>
+      </TouchableOpacity>
 
-      {/* add to furniture selection */}
-      <Image source={bookstack} style={styles.bookstack} />
-      {/* <Image source={bookstack2} style={styles.bookstack2} /> */}
+        {/* Container */}
+        <Modal visible={tvModalVisible} transparent={true} animationType="fade">
+          <View style={styles.tvContainer}>
+            <View style={styles.tvContent}>
+
+
+              {/* <Text style={styles.tvModalTitle}>Film & Show favourites</Text> */}
+
+              {/* Movie containers */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
+              {/* <Image source={tvstatic} style={styles.tvstatic} /> */}
+
+                {[...Array(4)].map((_, index) => (
+                  <TouchableOpacity key={index} onPress={() => handleContainerClick('movie', index)} style={styles.containerBox}>
+                    {selectedMovies[index] ? (
+                      <Image
+                        source={{ uri: `https://image.tmdb.org/t/p/w200${selectedMovies[index].poster_path}` }}
+                        style={styles.posterImage}
+                      />
+                    ) : (
+                      <><Text style={styles.plusSign}></Text><Text style={styles.plusSign}>Movie</Text></>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* TV Show containers */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                {[...Array(4)].map((_, index) => (
+                  <TouchableOpacity key={index} onPress={() => handleContainerClick('tv', index)} style={styles.containerBox}>
+                    {selectedTVShows[index] ? (
+                      <Image
+                        source={{ uri: `https://image.tmdb.org/t/p/w200${selectedTVShows[index].poster_path}` }}
+                        style={styles.posterImage}
+                      />
+                    ) : (
+                      <Text style={styles.plusSign}>Show</Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+                {/* SAVE BUTTON */}
+              <TouchableOpacity onPress={handleTVClose} style={styles.saveTV}>
+                {/* <Text style={styles.saveTvButtonText}>Save</Text> */}
+                <Image source={saveButton} style={styles.saveTV} />
+              </TouchableOpacity>
+
+            </View>
+          </View>
+        </Modal>
+
+        {/* Search Modal */}
+        <Modal visible={searchModalVisible} transparent={true} animationType="slide">
+          <View style={styles.searchModalContainer}>
+            <View style={styles.searchModalContent}>
+              <TextInput
+                style={styles.searchBar}
+                placeholder={`Search for ${searchType === 'movie' ? 'movies' : 'TV shows'}...`}
+                value={searchQuery}
+                onChangeText={handleSearch}
+              />
+
+              {loading ? (
+                <ActivityIndicator size="large" color="#777" />
+              ) : (
+                <View style={styles.resultsContainer}>
+                <FlatList
+                  data={searchResults}
+                  keyExtractor={(item) => `${searchType}-${item.id}`}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={styles.resultItem} onPress={() => handleShowSelect(item)}>
+                      <Image source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }} style={styles.posterImage} />
+                      <Text style={styles.resultText}>{item.title || item.name}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+                </View>
+              )}
+
+              <TouchableOpacity onPress={() => setSearchModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
 
 
 
@@ -895,8 +1176,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 103,
     height: 103,
-    top: 256,
-    right: 146,
+    top: 150,
+    right: 129,
   },
 
   //to fix
@@ -923,7 +1204,7 @@ const styles = StyleSheet.create({
     width: 235,
     height: 235,
     top: 338,
-    left: 30,
+    left: 52,
   },
   blossomrug: {
     resizeMode: 'contain',
@@ -936,9 +1217,9 @@ const styles = StyleSheet.create({
   redrug: {
     resizeMode: 'contain',
     position: 'absolute',
-    width: 252,
-    height: 252,
-    top: 330,
+    width: 240,
+    height: 240,
+    top: 340,
     left: 15,
   },
 
@@ -946,16 +1227,16 @@ const styles = StyleSheet.create({
   //pets
   cat_Overlay: {
     position: 'absolute',
-    top: 490, // Adjust position of overlay image
-    left: 33, // Adjust left alignment of overlay image
+    top: 490, 
+    left: 33, 
     height: 59,
     width: 59,
     resizeMode: 'contain',
   },
   cat2_Overlay: {
     position: 'absolute',
-    top: 545, // Adjust position of overlay image
-    left: 120, // Adjust left alignment of overlay image
+    top: 545, 
+    left: 120,
     height: 68,
     width: 68,
     resizeMode: 'contain',
@@ -975,8 +1256,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 142,
     height: 142,
-    top: 211,
-    right: -23,
+    top: 105,
+    right: -12,
   },
   wizardBookshelf: {
     resizeMode: 'contain',
@@ -1002,6 +1283,14 @@ const styles = StyleSheet.create({
     height: 112,
     resizeMode: 'contain',
   },
+  lampOverlay_retro: {
+  position: 'absolute',
+    top: 395, // Adjust position of overlay image
+    left: -33, // Adjust left alignment of overlay image
+    height: 107,
+    resizeMode: 'contain',
+  },
+
   //couches
   couchOverlay_joja: {
     position: 'absolute',
@@ -1071,17 +1360,41 @@ const styles = StyleSheet.create({
   matOverlay: {
     resizeMode: 'contain',
     position: 'absolute',
-    width: 140,
-    height: 140,
-    top: 518.9,
-    left: 102,
+    width: 130,
+    height: 130,
+    top: 526,
+    left: 120,
+  },
+  matOverlay_dark: {
+    resizeMode: 'contain',
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    top: 535,
+    left: 127,
+  },
+  matOverlay_strawb: {
+    resizeMode: 'contain',
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    top: 530,
+    left: 122,
+  },
+  matOverlay_swirl: {
+    resizeMode: 'contain',
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    top: 534,
+    left: 125,
   },
   matOverlay_mat2: {
     resizeMode: 'contain',
     position: 'absolute',
-    width: 94,
-    height: 94,
-    top: 540,
+    width: 88,
+    height: 88,
+    top: 545,
     left: 140,
   },
 
@@ -1113,14 +1426,143 @@ const styles = StyleSheet.create({
     left: 130,
     bottom: 8,
   },
+
   removeButton: {
-    width: 28,
-    height: 28,
-    // position: 'absolute',
-    left: 0,
+    width: 29,
+    height: 29,
+    left: 2,
     right: 10,
     // bottom: 7,
   },
+
+  saveTVButton:{
+    marginTop: 20,
+    width: 100,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    left: 165,
+  },
+  saveTvButtonText: {
+    fontFamily: 'courier',
+    size: 14,
+
+  },
+
+  tvFavesModal: {
+    position: 'absolute',
+    top: 100,
+    right: 20,
+  },
+
+  tvstatic: {
+    position: 'absolute',
+    resizeMode: 'contain',
+    width: 280,
+    height: 500,
+    right: -1,
+    top: -140,
+
+  },
+
+  tvContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  tvContent: {
+    width: '80%',
+    backgroundColor:'rgba(0,0,0, 0.75)',
+    padding: 20,
+    borderRadius: 10,
+    bottom: 15,
+    height: 300,
+  },
+  tvModalTitle: {
+    fontSize: 18,
+    marginBottom: 20,
+    color: 'white',
+    // fontFamily: 'Courier',
+    fontWeight: 'bold',
+  },
+  saveTV: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    position: 'absolute',
+    left: 130,
+    top: 128,
+  },
+  
+  containerBox: {
+    width: 60,
+    height: 100,
+    borderWidth: 2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 3,
+    backgroundColor: 'gray',
+  },
+  plusSign: {
+    fontSize: 15,
+    color: 'rgba(0, 0, 0, 0.2)',
+  },
+
+  searchModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  searchModalContent: {
+    width: '90%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+  },
+  searchBar: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingLeft: 10,
+    marginBottom: 20,
+  },
+  resultsContainer: {
+    maxHeight: 300, // Limit the height of the results container
+    overflow: 'scroll', // Allow scrolling if results exceed max height
+  },
+  resultItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  posterImage: {
+    width: 62,
+    height: 100,
+    marginRight: 0,
+    borderRadius: 2,
+  },
+  resultText: {
+    fontSize: 16,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'black',
+    fontSize: 16,
+  },
+
 
   // Modal style
   modalContainer: {
@@ -1140,26 +1582,36 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
   },
+  fixedTabBar: {
+    position: 'absolute',
+    top: 20, // Adjust based on where you want the tab bar
+    width: '100%',
+    backgroundColor: 'black', // Optional background color for tab bar
+    zIndex: 1, // Ensure the tab bar stays on top
+  },
+  scrollableContent: {
+    top: 60, // Adjust padding based on tab bar height
+    justifyContent: 'space-around',
+    },
   tabBar: {
-    paddingLeft: 0,
-    paddingRight: 0,
-    // justifyContent: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 8,
   },
   tabButton: {
-    paddingVertical: 13,
-    paddingHorizontal: 5,
-    borderRadius: 0,
+    paddingVertical: 12.3,
+    paddingHorizontal: 14, // Set a consistent padding for all buttons
+    borderRadius: 5,
+    marginHorizontal: 1,
     backgroundColor: '#FFD186', // Inactive tab color
+    alignItems: 'center', // Center the text horizontally
+    justifyContent: 'center', // Center the text vertically
+    minWidth: 80, // Set a minimum width for uniform size
   },
   activeTab: {
     backgroundColor: '#794A3E', // Active tab color
   },
   tabText: {
-    fontSize: 8.5,
+    fontSize: 11.5,
     color: '#000',
     fontWeight: 'bold',
     fontFamily: 'courier'
@@ -1172,24 +1624,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
+
   },
   itemContainer: {
     alignItems: 'center',
     marginHorizontal: 5, // Space between items
-    bottom: 10,
-    left: 10,
+    marginTop: 20,
+    marginBottom: 30,
   },
   itemImage: {
+    bottom: 0,
+    width: 80, // Adjust size of the item images
+    height: 80,
+    resizeMode: 'contain',
+    marginHorizontal: 3, // Space between items
+  },  
+  lampImages: {
+    bottom: 0,
     width: 80, // Adjust size of the item images
     height: 80,
     resizeMode: 'contain',
     marginHorizontal: 3, // Space between items
   },  
   petImages: {
-    width: 80, // Adjust size of the item images
-    height: 80,
+    top: 10,
+    width: 50, // Adjust size of the item images
+    height: 50,
     resizeMode: 'contain',
-    marginHorizontal: 6, // Space between items
+    marginHorizontal: 4, // Space between items
   },
   
   carpetItems: {
@@ -1204,12 +1666,6 @@ const styles = StyleSheet.create({
     height: 70,
     resizeMode: 'contain',
     marginHorizontal: 4, // Space between items
-  },
-  retroLampImage:{
-    width: 120,
-    height: 120,
-    left: -21,
-    resizeMode: 'contain',
   },
 
   // LogOut style
@@ -1272,6 +1728,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // fontFamily: 'courier',
   },
+
+
   
 
 });
