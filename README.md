@@ -4,6 +4,8 @@
 Entertainment social network platforms like Letterboxd and Goodreads have become recognised for their user-friendly interfaces and interactive communities where users can share their options, participate in discussions and discover new entertainment. Building on these concepts, WatchItOrReadIt aims to combine the best features of both platforms into a seamless moible application. Allowing users to experience a fictional world through movies, tv shows and books. 
 <br />
 
+<h2>Features within our app</h2>
+
 
 <h2>Languages Used</h2>
 
