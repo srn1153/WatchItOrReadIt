@@ -16,7 +16,7 @@ const ItemDetailScreen = ({ route }) => {
   const [releaseDate, setReleaseDate] = useState('Release date not available.');
   const [mainCast, setMainCast] = useState([]);
   const [genres, setGenres] = useState('Genres not available.');
-  const [headerImage, setHeaderImage] = useState(null);
+ const [headerImage, setHeaderImage] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const navigation = useNavigation(); 
@@ -31,34 +31,45 @@ const ItemDetailScreen = ({ route }) => {
         let movieRecommendations = [];
         let bookRecommendations = [];
   
-        // Fetch movie recommendations based on book title if item is a book
-        if (item && item.volumeInfo && item.volumeInfo.title) {
+        // Check if item and item.volumeInfo exist before trying to access properties
+        if (item?.volumeInfo?.title) {
+          // Fetch movie recommendations based on book title
           const movieResponse = await axios.get(
             `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(item.volumeInfo.title)}&api_key=${API_KEY}`
           );
           movieRecommendations = movieResponse.data.results || [];
           setRecommendations(movieRecommendations); // Set movie recommendations state
         }
-  
+    
         // Fetch TV or movie recommendations if item is a TV or movie
-        if (item.type === 'movie' || item.type === 'tv') {
+        if (item?.type === 'movie' || item?.type === 'tv') {
           let response;
-          if (item.type === 'movie') {
+          if (item?.type === 'movie') {
             response = await axios.get(`https://api.themoviedb.org/3/movie/${item.id}/recommendations?api_key=${API_KEY}`);
-          } else if (item.type === 'tv') {
+          } else if (item?.type === 'tv') {
             response = await axios.get(`https://api.themoviedb.org/3/tv/${item.id}/recommendations?api_key=${API_KEY}`);
           }
           setRecommendations(response.data.results || []); // Set TV or movie recommendations state
         }
-  
-        // Fetch book recommendations based on movie title
-        if(item.title || (item.volumeInfo && item.volumeInfo.title)) {
+    
+        // Fetch book recommendations based on the movie title or book title
+        const bookTitle = item?.title || item?.volumeInfo?.title;
+        if (bookTitle) {
           const bookResponse = await axios.get(
-            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(item.title || item.volumeInfo.title)}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
+            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookTitle)}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
           );
-        
-        bookRecommendations = bookResponse.data.items || [];
-        setBookRecommendations(bookRecommendations); // Set book recommendations state
+          bookRecommendations = bookResponse.data.items || [];
+          setBookRecommendations(bookRecommendations);
+        }
+  
+        // Fetch book recommendations based on genre
+        if (item?.volumeInfo?.categories && Array.isArray(item.volumeInfo.categories)) {
+          const genres = item.volumeInfo.categories.map((category) => encodeURIComponent(category)).join('|');
+          const genreBookResponse = await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=subject:${genres}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
+          );
+          const genreBookRecommendations = genreBookResponse.data.items || [];
+          setBookRecommendations((prev) => [...prev, ...genreBookRecommendations]); // Combine with previous book recommendations
         }
       } catch (error) {
         console.error('Error fetching recommendations:', error);
@@ -234,6 +245,8 @@ const ItemDetailScreen = ({ route }) => {
 
   const { poster, synopsis, directorName: displayDirectorName, mainCast: displayMainCast, genres: displayGenres} = getDetails();
 
+  console.log(item);
+
   return (
     // <SafeAreaView style={styles.container}> 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -350,32 +363,40 @@ const ItemDetailScreen = ({ route }) => {
             )}
             </View>
             <View style={styles.infoBox2}>
+
   <View style={styles.bookDetails}>
     {/* Display book details here */}
   </View>
+
   <View style={styles.recommendationContainer}>
-      <Text style={styles.sectionTitle}>You May Also Like to Watch...</Text>
-      <FlatList
-        data={recommendations}
-        horizontal
-        keyExtractor={(recommendation) => recommendation.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.push('MovieDetailScreen', { item})}>
-            <View style={styles.recommendationItem}>
-              {item.poster_path && (
-                <Image
+  <Text style={styles.sectionTitle}>You May Also Like to Watch...</Text>
+  <FlatList
+    data={recommendations}
+    horizontal
+    keyExtractor={(recommendation) => recommendation.id.toString()}
+    renderItem={({ item }) => {
+      // See if type of item is movie or tv
+      const itemType = (item.media_type === 'tv') ? 'tv' : 'movie';
+
+      return ( // Make sure to return the JSX
+        <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item: { ...item, type: itemType } })}>
+          <View style={styles.recommendationItem}>
+            {item.poster_path && (
+              <Image
                 source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
                 style={styles.recommendationImage}
-                />
-                )}
-             
-            </View>
-          </TouchableOpacity>
-        )}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 10 }}
-      />
-    </View>
+              />
+            )}
+          </View>
+        </TouchableOpacity>
+      );
+    }}
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={{ paddingHorizontal: 10 }}
+  />
+</View>
+
+
     <View style={styles.recommendationContainer}>
       <Text style={styles.sectionTitle}>Books You will love...</Text>
       <FlatList
@@ -383,7 +404,7 @@ const ItemDetailScreen = ({ route }) => {
         horizontal
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.push('BookDetailScreen', { book: item })}>
+          <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item: {...item, type: 'book' } })}>
             <View style={styles.recommendationItem}>
               <Image
                 source={{ uri: item.volumeInfo.imageLinks?.thumbnail || 'default_image_url' }}
@@ -596,19 +617,20 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
+   //fontWeight: 'bold',
+    //fontFamily: 'courier',
     marginBottom: 10,
-    marginLeft: -10
+    marginLeft: -10,
+    textTransform: 'uppercase',
   },
   recommendationItem: {
-    margin: 5,
+    margin: 2,
 
   },
   recommendationImage: {
     width: 100,
     height: 150,
-    margin: 5,
+    margin: 1,
     },
   
     bookRecommendations: {
@@ -618,6 +640,7 @@ const styles = StyleSheet.create({
 });
 
 export default ItemDetailScreen;
+
 
 
 
