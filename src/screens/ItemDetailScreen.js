@@ -190,7 +190,8 @@ const ItemDetailScreen = ({ route }) => {
   return (
     // <SafeAreaView style={styles.container}> 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        
+      <StatusBar barStyle="light-content"/>
+
         <View style={styles.headerContainer}>
           {headerImage && (
             <>

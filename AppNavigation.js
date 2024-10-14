@@ -45,7 +45,7 @@ const AppNavigation = () => {
                 <Stack.Navigator>
                 <Stack.Screen name="Back" component={NavigationBar} options={{ headerShown: false }} />
                 <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
-                <Stack.Screen name="ItemDetail" component={ItemDetailScreen} />
+                <Stack.Screen name="ItemDetail" component={ItemDetailScreen} options={{ headerShown: false }}/>
                 <Stack.Screen name="ProfileRoom" component={ProfileScreen} />
                 <Stack.Screen name="List" component={ListScreen} />
                 <Stack.Screen name="ListSearchScreen" component={ListSearchScreen} />
