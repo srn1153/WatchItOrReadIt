@@ -12,8 +12,6 @@ import ItemDetailScreen from './src/screens/ItemDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import ListScreen from './src/screens/ListScreen' 
 import ListSearchScreen from './src/screens/ListSearchScreen'
-import BookDetailScreen from './src/screens/BookDetailScreen';
-import MovieDetailScreen from './src/screens/MovieDetailScreen';
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
@@ -50,8 +48,6 @@ const AppNavigation = () => {
                 <Stack.Screen name="ProfileRoom" component={ProfileScreen} />
                 <Stack.Screen name="List" component={ListScreen} />
                 <Stack.Screen name="ListSearchScreen" component={ListSearchScreen} />
-                <Stack.Screen name="BookDetailScreen" component={BookDetailScreen} />
-                <Stack.Screen name="MovieDetailScreen" component={MovieDetailScreen} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator
