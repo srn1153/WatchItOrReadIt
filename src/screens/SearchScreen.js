@@ -3,7 +3,7 @@ import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, A
 import axios from 'axios';
 import { db } from '../../firebaseConfig'; 
 import { collection, query, where, getDocs } from 'firebase/firestore'; 
-import FollowUser from './FollowUser';
+import FollowUser from './FollowUser'; // Import followUser component for following functionality
 
 const SearchScreen = ({ navigation }) => {
   // State variables
@@ -12,10 +12,11 @@ const SearchScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false); // Indicates if data is being fetched
   const [searchType, setSearchType] = useState('user'); // Tracks the type of search (movie, tv, or book)
 
+  // Show the FollowUser component if the search type is user
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
     <Text style={styles.itemTitle}>{searchType === 'user' ? item.username : item.title || item.name || item.volumeInfo?.title}</Text>
-    {searchType === 'user' && <FollowUser user={item} />}
+    {searchType === 'user' && <FollowUser user={item} />}  
     </View>
   );
   // Resets search results and query when searchType changes
