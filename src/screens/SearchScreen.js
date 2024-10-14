@@ -169,13 +169,19 @@ const SearchScreen = ({ navigation }) => {
 
       {/* List of search results */}
       <FlatList
-      data={searchResults}
-      keyExtractor={(item) => (searchType === 'user' ? item.username : `${searchType}-${item.id}`)}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.itemContainer}
-          onPress={() => handleItemPress(item)}
-        >
+  data={searchResults}
+  keyExtractor={(item, index) => {
+    if (searchType === 'user') {
+      return item.username || `user-${index}`; // Fallback to index if username is undefined
+    }
+    return `${searchType}-${item.id || index}`; // Fallback to index if item.id is undefined
+  }}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleItemPress(item)}
+    >
+
       {/* Display poster image based on search type */}
       {(searchType === 'movie' || searchType === 'tv') && item.poster_path && (
         <Image
