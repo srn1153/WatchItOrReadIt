@@ -964,11 +964,7 @@ export default function ProfileScreen() {
         <TouchableOpacity onPress={toggleBookshelf} style={styles.bookstack}>
           <Image source={bookstack} style={styles.bookstack} />
         </TouchableOpacity>
-        
-
         {/* <Image source={bookstack2} style={styles.bookstack2} /> */}
-
-
 
         {/* Buttons: Decorate & Lists */}
         <View style={styles.buttonContainer}>
