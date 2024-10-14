@@ -32,7 +32,7 @@ const ItemDetailScreen = ({ route }) => {
         let bookRecommendations = [];
   
         // Fetch movie recommendations based on book title if item is a book
-        if (item.volumeInfo && item.volumeInfo.title) {
+        if (item && item.volumeInfo && item.volumeInfo.title) {
           const movieResponse = await axios.get(
             `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(item.volumeInfo.title)}&api_key=${API_KEY}`
           );
@@ -52,12 +52,14 @@ const ItemDetailScreen = ({ route }) => {
         }
   
         // Fetch book recommendations based on movie title
-        const bookResponse = await axios.get(
-          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(item.title || item.volumeInfo.title)}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
-        );
+        if(item.title || (item.volumeInfo && item.volumeInfo.title)) {
+          const bookResponse = await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(item.title || item.volumeInfo.title)}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
+          );
+        
         bookRecommendations = bookResponse.data.items || [];
         setBookRecommendations(bookRecommendations); // Set book recommendations state
-  
+        }
       } catch (error) {
         console.error('Error fetching recommendations:', error);
       }

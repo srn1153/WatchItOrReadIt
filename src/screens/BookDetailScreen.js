@@ -4,13 +4,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const BookDetailScreen = ({ route, navigation }) => {
   const { book } = route.params;
-  if(!book || !book.volumeInfo) {
-    return ( 
+
+  if (!book || !book.volumeInfo) {
+    return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Book details not available...</Text>
       </View>
     );
   }
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getTruncatedDescription = () => {
@@ -25,67 +27,65 @@ const BookDetailScreen = ({ route, navigation }) => {
   };
 
   const addReview = () => {
-    console.log("Add review button pressed!");
-    let type; 
-  
-    // Determine the type based on categories
+    let type;
     if (Array.isArray(book.volumeInfo.categories)) {
-      if (book.volumeInfo.categories.includes('movie')) {
-        type = 'movie';
-      } else if (book.volumeInfo.categories.includes('tv')) {
-        type = 'tv'; 
-      } else {
-        type = 'book';
-      }
-    } else if (typeof book.volumeInfo.categories === 'string') {
-      if (book.volumeInfo.categories.includes('movie')) {
-        type = 'movie';
-      } else if (book.volumeInfo.categories.includes('tv')) {
-        type = 'tv'; 
-      } else {
-        type = 'book';
-      }
+      type = book.volumeInfo.categories.includes('movie') ? 'movie' : 'book';
+    } else {
+      type = 'book';
     }
-  
-    // Create a plain object with only serializable properties
+
     const itemWithType = {
       title: book.volumeInfo.title,
       authors: book.volumeInfo.authors,
       type: type,
-      // Include other properties you need
     };
-    
-    console.log('Navigating with item:', itemWithType);
+
     navigation.navigate('WriteReview', { item: itemWithType });
   };
-  
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: book.volumeInfo.imageLinks?.thumbnail || 'default_image_url' }}
-          style={styles.bookImage}
-        />
-        <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']} style={styles.gradient} />
+      {/* Header with Book Image */}
+      <View style={styles.headerContainer}>
+        {book.volumeInfo.imageLinks?.thumbnail ? (
+          <Image
+            source={{ uri: book.volumeInfo.imageLinks.thumbnail }}
+            style={styles.bookImage}
+          />
+        ) : (
+          <Text style={styles.errorText}>Image not available</Text>
+        )}
+        {/*Title over image*/}
+        <View style={styles.overlay}>
+          <Text style={styles.bookTitle}>{book.volumeInfo.title}</Text>
+          <Text style={styles.bookAuthor}>by {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}</Text>
+        </View>
+        <LinearGradient
+          colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)']}
+          style={styles.gradient}
+          />
       </View>
 
-      <View style={styles.textContainer}>
-        <Text style={styles.bookTitle}>{book.volumeInfo.title}</Text>
-        <Text style={styles.bookAuthor}>by {book.volumeInfo.authors?.join(', ')}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.addToListButton} onPress={addToList}>
-            <Text style={styles.ButtonText}>Add to List</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reviewButton} onPress={addReview}>
-            <Text style={styles.ButtonText}>Add Review</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.infoTitle}>DESCRIPTION</Text>
-          <Text style={styles.bookDescription}>
+      {/* Small poster*/}
+      <View style={styles.smallPosterContainer}>
+        {book.volumeInfo.imageLinks?.thumbnail && (
+          <Image
+            source={{ uri: book.volumeInfo.imageLinks.thumbnail }}
+            style={styles.smallPoster}
+            />
+        )}
+      </View>
+
+      {/* Book Details */}
+      <View style={styles.detailsContainer}>
+        <Text style={styles.category}>{book.volumeInfo.categories?.join(', ') || 'General'}</Text>
+
+        {/* Description */}
+        <View style={styles.synopsisContainer}>
+          <Text style={styles.infoTitle}>SYNOPSIS</Text>
+          <Text style={styles.synopsis}>
             {getTruncatedDescription()}
-            {!isExpanded && book.volumeInfo.description.length > 400 && (
+            {!isExpanded && book.volumeInfo.description?.length > 400 && (
               <Text style={styles.showMore} onPress={() => setIsExpanded(true)}>
                 {' read more '}
               </Text>
@@ -97,11 +97,17 @@ const BookDetailScreen = ({ route, navigation }) => {
             )}
           </Text>
         </View>
-      </View>
 
-      <View style={styles.infoBox}>
-        <Text style={styles.infoTitle}>GENRES</Text>
-        <Text style={styles.genresNames}>{book.volumeInfo.categories?.join(', ') || 'No genres available.'}</Text>
+        {/* Buttons */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.addToListButton} onPress={addToList}>
+            <Text style={styles.buttonText}>Add to List</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.reviewButton} onPress={addReview}>
+            <Text style={styles.buttonText}>Add Review</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -110,108 +116,112 @@ const BookDetailScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#fff',
   },
-  imageContainer: {
+  headerContainer: {
     position: 'relative',
-    backgroundColor: 'black',
-    top: -10,
+    marginBottom: 20,
   },
   bookImage: {
-    width: '120',
-    aspectRatio: 2/3,
+    width: '100%',
+    height: '110%',
     resizeMode: 'cover',
-    marginTop: 8,
-    marginLeft: 30,
-    borderRadius: 8,
   },
   gradient: {
     position: 'absolute',
-   // top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
-    height: '400',
+    height: 100,
+  },
+  detailsContainer: {
+    padding: 20,
   },
   overlay: {
     position: 'absolute',
-    flexDirection: 'row',
-    padding: 16,
-    bottom: -50, // Move overlay to slightly below the header image
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0)', // no background for now
-    alignItems: 'center', // Center items vertically within the overlay
-  },
-  textContainer: {
-    marginTop: -30,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    elevation: 2, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
+    bottom: 10,
+    left: 20,
+    right: 20,
   },
   bookTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 10,
     textTransform: 'uppercase',
-    color: 'black'
+    color: 'white',
   },
   bookAuthor: {
-    fontSize: 18,
-    color: 'gray',
-    marginBottom: 16,
+    fontSize: 16,
+    color: 'white',
+    marginBottom: 10,
+  },
+  smallPosterContainer: {
+    position: 'absolute',
+    top: 229,  // Position small poster over the large image
+    right: 20,  // Adjust as necessary
+    width: 100, 
+    height: 150,
+    elevation: 10, // Add some depth to the poster
+  },
+  smallPoster: {
+    width: 100,
+    aspectRatio: 2/3,
+    height: 150,
+    resizeMode: 'cover',
+    borderRadius: 5,
+  },
+  category: {
+    fontSize: 16,
+    color: '#999',
+    marginBottom: 20,
+  },
+  synopsisContainer: {
+    marginBottom: 20,
+  },
+  infoTitle: {
+    fontWeight: '700',
+    marginBottom: 6,
+    fontSize: 16,
+  },
+  synopsis: {
+    fontSize: 14,
+    color: '#555',
+  },
+  showMore: {
+    color: '#41509A',
+    fontWeight: '700',
+    fontStyle: 'italic',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  reviewButton: {
-    backgroundColor: '#41509A',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginVertical: 5,
-    width: 130,
-  },
-  ButtonText: {
-    color: 'white',
-    fontFamily: 'courier',
+    justifyContent: 'space-around',
   },
   addToListButton: {
     backgroundColor: '#41509A',
     paddingVertical: 14,
-    paddingHorizontal: 0,
+    paddingHorizontal: 20,
     borderRadius: 8,
+    width: '130',
     alignItems: 'center',
-    width: 130,
-   // marginVertical: 10,
-  
   },
-  descriptionContainer: {
-    marginBottom: 16,
+  reviewButton: {
+    flexDirection: 'row',
+    backgroundColor: '#41509A',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    width: '130',
+    //alignItems: 'center',
   },
-  infoTitle: {
-    fontSize: 16,
-    marginBottom: 8,
-    fontWeight: 'bold',
+  buttonText: {
+    color: 'white',
+    fontSize: 14,
+    fontFamily: 'courier',
   },
-  bookDescription: {
-    fontSize: 16,
-  },
-  showMore: {
-    color: '#41509A',
-  },
-  infoBox: {
-    marginTop: 20,
-  },
-  genresNames: {
-    fontSize: 16,
+  errorText: {
+    color: '#999',
+    textAlign: 'center',
+    marginVertical: 20,
   },
 });
 
