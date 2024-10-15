@@ -223,7 +223,7 @@ const SearchScreen = ({ navigation }) => {
         )}
 
         <Text style={styles.itemType}>{getTypeLabel()}</Text>
-        <FollowUser user={item} />
+        {searchType === 'user' && <FollowUser user={item} />}
       </View>
     </TouchableOpacity>
   )}
