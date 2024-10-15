@@ -373,7 +373,7 @@ const ItemDetailScreen = ({ route }) => {
   <FlatList
     data={recommendations}
     horizontal
-    keyExtractor={(recommendation) => recommendation.id.toString()}
+    keyExtractor={(item) => item.id.toString()}
     renderItem={({ item }) => {
       // See if type of item is movie or tv
       const itemType = (item.media_type === 'tv') ? 'tv' : 'movie';
