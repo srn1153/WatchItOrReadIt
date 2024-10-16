@@ -4,9 +4,7 @@ import { useAuth } from '../context/authContext';
 import { db } from '../../firebaseConfig'; // Firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 
-export const useBookshelfModal = () => {
-  const { user } = useAuth(); // Get the current logged-in user from authContext
-
+export const useBookshelfModal = ({ userId }) => {
   const [bookshelfModalVisible, setBookshelfModalVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [searchType, setSearchType] = useState('book'); // 'book'
@@ -63,9 +61,9 @@ export const useBookshelfModal = () => {
 
   // Save the selected books to Firestore
   const saveSelectedBooks = async () => {
-    if (user) {
+    if (userId) {
       try {
-        const booksDoc = doc(db, "users", user.uid, "bookshelf", "selected");
+        const booksDoc = doc(db, "users", userId, "bookshelf", "selected");
 
         console.log("Saving selected books:", selectedBooks);
 
@@ -90,9 +88,9 @@ export const useBookshelfModal = () => {
 
   // Fetch saved books from Firestore
   const fetchSelectedBooks = async () => {
-    if (user) {
+    if (userId) {
       try {
-        const booksDoc = doc(db, "users", user.uid, "bookshelf", "selected");
+        const booksDoc = doc(db, "users", userId, "bookshelf", "selected");
         const docSnap = await getDoc(booksDoc);
 
         if (docSnap.exists()) {
@@ -112,11 +110,11 @@ export const useBookshelfModal = () => {
 
   // Fetch the books selection when the component mounts or user changes
   useEffect(() => {
-    if (user) {
+    if (userId) {
       console.log("User detected, fetching book selections...");
       fetchSelectedBooks();
     }
-  }, [user]); // Only run when the user changes
+  }, [userId]); // Only run when the user changes
 
   return {
     bookshelfModalVisible,

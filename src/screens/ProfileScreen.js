@@ -181,7 +181,7 @@ export default function ProfileScreen({ route }) {
       handleSearch: handleBookSearch,
       setSearchModalVisible: setBookSearchModalVisible,
       handleBookshelfClose,
-    } = useBookshelfModal();
+    } = useBookshelfModal({ userId: displayingUser?.uid || displayingUser?.userid});
 
 
     //Separate states for each furniture type
