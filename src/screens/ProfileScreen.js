@@ -6,6 +6,8 @@ import { db } from '../../firebaseConfig'; // firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 import { useTVModal } from './useTVModal.js';
 import { useBookshelfModal } from './useBookshelfModal.js';
+import { useFocusEffect } from '@react-navigation/native'; 
+import { useCallback } from 'react';
 
 
 // Furniture image Imports
@@ -198,11 +200,48 @@ export default function ProfileScreen({ route }) {
     const [selectedCarpet, setSelectedCarpet] = useState(null);
 
 
+    // Saves selected furniture to Firestore
+    const saveSelectedFurniture = async () => {
+      const userId = displayingUser?.uid || displayingUser?.userid; 
+      if (userId) {
+        try {
+          const furnitureDoc = doc(db, "users", userId, "furnitures", "selected");
+    
+          // Log selected items to ensure they have values
+          console.log("Saving selected furniture:", selectedLamp, selectedCouch, selectedArmchair, selectedBookshelf, selectedChair, selectedMat, selectedPet, selectedShelf, selectedRug, selectedWall, selectedCarpet);
+    
+          await setDoc(furnitureDoc, {
+            lamp: selectedLamp || null,
+            couch: selectedCouch || null,
+            armchair: selectedArmchair || null,
+            bookshelf: selectedBookshelf || null,
+            chair: selectedChair || null,
+            mat: selectedMat || null,
+            pet: selectedPet || null,
+            shelf: selectedShelf || null,
+            rug: selectedRug || null,
+            wall: selectedWall || null,
+            carpet: selectedCarpet || null,
+
+          }, { merge: true });
+    
+          console.log("Furniture selection saved successfully!");
+        } catch (error) {
+          console.error("Error saving furniture selection:", error);
+        }
+      } else {
+        console.log("User is not authenticated. Cannot save furniture.");
+      }
+    };    
+
+
     // Fetch saved furniture selection from Firestore
     const fetchSelectedFurniture = async (displayingUser) => {
-        if (displayingUser && displayingUser.userid) {
+      const userId = displayingUser?.uid || displayingUser?.userid; 
+        if (userId) {
+
           try {
-          const furnitureDoc = doc(db, "users", displayingUser.userid, "furnitures", "selected");
+          const furnitureDoc = doc(db, "users", userId, "furnitures", "selected");
                    
           const docSnap = await getDoc(furnitureDoc);
     
@@ -234,44 +273,11 @@ export default function ProfileScreen({ route }) {
 
       // Fetch the furniture selection when the component mounts or user changes
       useEffect(() => {
-        if (displayingUser && displayingUser.userid) {
+        if (displayingUser && displayingUser) {
+          console.log("Diplsaying furniture for fetch: ", displayingUser); 
           fetchSelectedFurniture(displayingUser);
         } 
       }, [displayingUser]); // Only run when the user changes
-
-    
-    // Saves selected furniture to Firestore
-    const saveSelectedFurniture = async () => {
-      if (displayingUser) {
-        try {
-          const furnitureDoc = doc(db, "users", displayingUser.uid, "furnitures", "selected");
-    
-          // Log selected items to ensure they have values
-          console.log("Saving selected furniture:", selectedLamp, selectedCouch, selectedArmchair, selectedBookshelf, selectedChair, selectedMat, selectedPet, selectedShelf, selectedRug, selectedWall, selectedCarpet);
-    
-          await setDoc(furnitureDoc, {
-            lamp: selectedLamp || null,
-            couch: selectedCouch || null,
-            armchair: selectedArmchair || null,
-            bookshelf: selectedBookshelf || null,
-            chair: selectedChair || null,
-            mat: selectedMat || null,
-            pet: selectedPet || null,
-            shelf: selectedShelf || null,
-            rug: selectedRug || null,
-            wall: selectedWall || null,
-            carpet: selectedCarpet || null,
-
-          }, { merge: true });
-    
-          console.log("Furniture selection saved successfully!");
-        } catch (error) {
-          console.error("Error saving furniture selection:", error);
-        }
-      } else {
-        console.log("User is not authenticated. Cannot save furniture.");
-      }
-    };
   
     // Trigger save when modal closes
     const handleModalClose = () => 
