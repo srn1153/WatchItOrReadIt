@@ -200,14 +200,16 @@ export default function ProfileScreen({ route }) {
 
     // Fetch saved furniture selection from Firestore
     const fetchSelectedFurniture = async (displayingUser) => {
-        console.log("Displaying user object: ", displayingUser.uid); 
+        console.log("Displaying user object: ", displayingUser); 
+        console.log("Fetching furniture for user:", displayingUser.userid);
 
-        if (displayingUser && displayingUser.uid) {
+        if (displayingUser && displayingUser.userid) {
           try {
-          console.log("Fetching furniture for user:", displayingUser.uid);
+          console.log("Fetching furniture for user:", displayingUser.userid);
 
-          const furnitureDoc = doc(db, "users", displayingUser.uid, "furnitures", "selected");
-                   
+          const furnitureDoc = doc(db, "users", displayingUser.userid, "furnitures", "selected");
+          console.log("firestore doc reference: ", furnitureDoc); 
+
           const docSnap = await getDoc(furnitureDoc);
     
           if (docSnap.exists()) {
@@ -238,10 +240,13 @@ export default function ProfileScreen({ route }) {
 
       // Fetch the furniture selection when the component mounts or user changes
       useEffect(() => {
-        console.log("displayingUser inside userEffect:", displayingUser); 
-        if (displayingUser && displayingUser.uid) {
-          console.log("User detected, fetching furniture selections...", displayingUser.uid);
+        console.log("displayingUser inside userEffect:", displayingUser);
+
+        if (displayingUser && displayingUser.userid) {
+          console.log("User detected, fetching furniture selections...", displayingUser.userid);
           fetchSelectedFurniture(displayingUser);
+        } else {
+          console.log("No valid user to fetch furniture for"); 
         }
       }, [displayingUser]); // Only run when the user changes
 
