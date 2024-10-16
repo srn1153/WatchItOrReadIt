@@ -5,9 +5,7 @@ import { db } from '../../firebaseConfig'; // firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; // Add Firebase Firestore methods
 
 
-export const useTVModal = () => {
-  const { user } = useAuth(); // Get the current logged-in user from authContext
-
+export const useTVModal = ({ userId }) => {
   const [tvModalVisible, setTVModalVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [searchType, setSearchType] = useState('movie'); // 'movie' or 'tv'
@@ -80,12 +78,10 @@ export const useTVModal = () => {
     }
   };
 
-
-
   const saveSelectedShows = async () => {
-    if (user) {
+    if (userId) {
       try {
-        const showsDoc = doc(db, "users", user.uid, "shows", "selected");
+        const showsDoc = doc(db, "users", userId, "shows", "selected");
   
         console.log("Saving selected shows:", selectedMovies, selectedTVShows);
   
@@ -112,9 +108,9 @@ export const useTVModal = () => {
 
 
   const fetchSelectedShows = async () => {
-    if (user) {
+    if (userId) {
       try {
-        const showsDoc = doc(db, "users", user.uid, "shows", "selected");
+        const showsDoc = doc(db, "users", userId, "shows", "selected");
         const docSnap = await getDoc(showsDoc);
   
         if (docSnap.exists()) {
@@ -135,17 +131,12 @@ export const useTVModal = () => {
   
   // Fetch the shows selection when the component mounts or user changes
   useEffect(() => {
-    if (user) {
+    if (userId) {
       console.log("User detected, fetching movie and TV show selections...");
       fetchSelectedShows();
     }
-  }, [user]); // Only run when the user changes
+  }, [userId]); // Only run when the user changes
   
-  
-
-
-
-
 
   return {
     tvModalVisible,

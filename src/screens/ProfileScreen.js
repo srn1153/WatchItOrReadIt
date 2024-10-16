@@ -137,10 +137,8 @@ import strawbmat from '../../assets/ProfileRoom/strawbmat.png';
 import saveTV from '../../assets/ProfileRoom/saveTV2.png';
 
 
-
-
 export default function ProfileScreen({ route }) {
-  const { user: searchedUser } = route.params || {}; //Get searched user 
+  const { user: searchedUser } = route?.params || {}; //Get searched user 
   const { user: currentUser } = useAuth(); // Get the current logged-in user from authContext
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
@@ -166,7 +164,7 @@ export default function ProfileScreen({ route }) {
     handleSearch,
     setSearchModalVisible,
     handleTVClose,
-  } = useTVModal();
+  } = useTVModal({ userId: displayingUser?.uid || displayingUser?.userid});
 
     // useBookshelfModal
     const {
