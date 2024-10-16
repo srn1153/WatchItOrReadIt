@@ -32,7 +32,7 @@ import white1 from '../../assets/ProfileRoom/white1.png';
 import black1 from '../../assets/ProfileRoom/black1.png';
 import orange1 from '../../assets/ProfileRoom/orange1.png';
 //buttons
-import heartButton from '../../assets/ProfileRoom/heartButton.png'; 
+import heartButton from '../../assets/ProfileRoom/heartbutton.png'; 
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; 
 import saveButton from '../../assets/ProfileRoom/saveButton.png';
 import removeButton from '../../assets/ProfileRoom/removeButton.png';
@@ -137,12 +137,16 @@ import saveTV from '../../assets/ProfileRoom/saveTV2.png';
 
 
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ route }) {
+  const { user: searchedUser } = route.params || {}; //Get searched user 
+  const { user: currentUser } = useAuth(); // Get the current logged-in user from authContext
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
   const [activeTab, setActiveTab] = useState('Wall'); // Default active tab is 'Lamp'
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
-  const { user } = useAuth(); // Get the current logged-in user from authContext
+
+  //Figuring out which user's profile room to display
+  const displayingUser = searchedUser || currentUser; 
 
   // useTVModal
   const {
@@ -194,11 +198,59 @@ export default function ProfileScreen() {
     const [selectedCarpet, setSelectedCarpet] = useState(null);
 
 
+    // Fetch saved furniture selection from Firestore
+    const fetchSelectedFurniture = async (displayingUser) => {
+        console.log("Displaying user object: ", displayingUser.uid); 
+
+        if (displayingUser && displayingUser.uid) {
+          try {
+          console.log("Fetching furniture for user:", displayingUser.uid);
+
+          const furnitureDoc = doc(db, "users", displayingUser.uid, "furnitures", "selected");
+                   
+          const docSnap = await getDoc(furnitureDoc);
+    
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            console.log("Fetched furniture data:", data);
+            setSelectedLamp(data.lamp);
+            setSelectedCouch(data.couch);
+            setSelectedArmchair(data.armchair);
+            setSelectedBookshelf(data.bookshelf || null);
+            setSelectedChair(data.chair || null);
+            setSelectedMat(data.mat || null);
+            setSelectedPet(data.pet || null);
+            setSelectedShelf(data.shelf || null);
+            setSelectedRug(data.rug || null);
+            setSelectedWall(data.wall || null);
+            setSelectedCarpet(data.carpet || null);
+
+          } else {
+            console.log("No furniture selections found.");
+          }
+        } catch (error){
+          console.error("Error fetching furniture", error);
+        }
+      } else  {
+        console.log("Invalid user id, idk bruh");
+      }
+    };
+
+      // Fetch the furniture selection when the component mounts or user changes
+      useEffect(() => {
+        console.log("displayingUser inside userEffect:", displayingUser); 
+        if (displayingUser && displayingUser.uid) {
+          console.log("User detected, fetching furniture selections...", displayingUser.uid);
+          fetchSelectedFurniture(displayingUser);
+        }
+      }, [displayingUser]); // Only run when the user changes
+
+    
     // Saves selected furniture to Firestore
     const saveSelectedFurniture = async () => {
-      if (user) {
+      if (displayingUser) {
         try {
-          const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+          const furnitureDoc = doc(db, "users", displayingUser.uid, "furnitures", "selected");
     
           // Log selected items to ensure they have values
           console.log("Saving selected furniture:", selectedLamp, selectedCouch, selectedArmchair, selectedBookshelf, selectedChair, selectedMat, selectedPet, selectedShelf, selectedRug, selectedWall, selectedCarpet);
@@ -233,51 +285,6 @@ export default function ProfileScreen() {
       saveSelectedFurniture();
       setModalVisible(false); // Close the modal
     };
-
-
-    // Fetch saved furniture selection from Firestore
-    const fetchSelectedFurniture = async () => {
-      if (user) {
-        try {
-          const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
-          const docSnap = await getDoc(furnitureDoc);
-    
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            console.log("Fetched furniture data:", data);
-            setSelectedLamp(data.lamp);
-            setSelectedCouch(data.couch);
-            setSelectedArmchair(data.armchair);
-            setSelectedBookshelf(data.bookshelf || null);
-            setSelectedChair(data.chair || null);
-            setSelectedMat(data.mat || null);
-            setSelectedPet(data.pet || null);
-            setSelectedShelf(data.shelf || null);
-            setSelectedRug(data.rug || null);
-            setSelectedWall(data.wall || null);
-            setSelectedCarpet(data.carpet || null);
-
-          } else {
-            console.log("No furniture selections found.");
-          }
-        } catch (error) {
-          console.error("Error fetching furniture selections:", error);
-        }
-      } else {
-        console.log("User is not authenticated. Cannot fetch furniture.");
-      }
-    };
-
-      // Fetch the furniture selection when the component mounts or user changes
-      useEffect(() => {
-        if (user) {
-          console.log("User detected, fetching furniture selections...");
-          fetchSelectedFurniture();
-        }
-      }, [user]); // Only run when the user changes
-
-
-
 
       // Toggle modal visibility
       const toggleModal = () => {
@@ -1218,11 +1225,6 @@ export default function ProfileScreen() {
                 </View>
             </View>
         </Modal>
-
-
-
-
-
     </View>
   );
 }
