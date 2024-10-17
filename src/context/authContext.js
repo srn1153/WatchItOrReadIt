@@ -65,7 +65,8 @@ export const AuthContextProvider = ({children})=> {
 
             //Creating a document (setDoc) in the database under the 'users' collection 
             await setDoc(doc(db, "users", user.uid), {
-                username, 
+                username: username,
+                email: email, 
                 userid: user.uid
             })
             return {success: true, data: user} //returning success status and user information
