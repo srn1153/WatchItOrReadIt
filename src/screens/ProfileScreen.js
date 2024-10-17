@@ -1001,7 +1001,7 @@ export default function ProfileScreen({ route }) {
               <View style={styles.fixedTabBar}>
                 <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
                   <View style={styles.tabBar}>
-                    {['Wall','Carpet', 'Lamp', 'Couch', 'Rug', 'Shelf', 'Pet', 'Bookshelf', 'Chair', 'Mat','Armchair'].map((tab) => (
+                    {['Carpet','Wall', 'Lamp', 'Couch', 'Rug', 'Shelf', 'Pet', 'Bookshelf', 'Chair', 'Mat','Armchair'].map((tab) => (
                       <TouchableOpacity
                         key={tab}
                         style={[styles.tabButton, activeTab === tab && styles.activeTab]}
