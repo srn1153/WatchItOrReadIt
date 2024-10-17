@@ -80,8 +80,8 @@ const SearchScreen = ({ navigation }) => {
     //if searchType is movie, tv show or book, then go to the ItemDetailScreen 
     if(searchType === 'movie' || searchType === 'tv' || searchType === 'book'){
       navigation.navigate('ItemDetail', { item: itemWithType });
-    } else { //else go to Temporary Profile Room
-      navigation.navigate('TempUserProfileRoom'); 
+    } else if( searchType == 'user') { //else go to user profile room
+      navigation.navigate('ProfileRoom', { user : item }); //Goes to specific users profile room
     }
   };
 

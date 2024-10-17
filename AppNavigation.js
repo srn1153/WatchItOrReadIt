@@ -12,7 +12,6 @@ import ItemDetailScreen from './src/screens/ItemDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import ListScreen from './src/screens/ListScreen' 
 import ListSearchScreen from './src/screens/ListSearchScreen'
-import TempUserProfileRoom from './src/screens/TempUserProfileRoom'
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
@@ -44,12 +43,11 @@ const AppNavigation = () => {
             {isAuthenticated ? (
                 <Stack.Navigator>
                 <Stack.Screen name="Back" component={NavigationBar} options={{ headerShown: false }} />
-                <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
-                <Stack.Screen name="ItemDetail" component={ItemDetailScreen} options={{ headerShown: false }}/>
-                <Stack.Screen name="ProfileRoom" component={ProfileScreen} />
+                <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ headerTitle: '', headerTintColor: 'black'}}/>
+                <Stack.Screen name="ItemDetail" component={ItemDetailScreen} options={{ headerTransparent: true, headerTitle: '', headerTintColor: 'white' }}/>
+                <Stack.Screen name="ProfileRoom" component={ProfileScreen} options={{ headerStyle: {backgroundColor: 'black'}, headerTitle: '', headerTintColor: 'white' }}/>
                 <Stack.Screen name="List" component={ListScreen} />
                 <Stack.Screen name="ListSearchScreen" component={ListSearchScreen} />
-                <Stack.Screen name='TempUserProfileRoom' component={TempUserProfileRoom} />
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator

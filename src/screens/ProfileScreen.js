@@ -6,6 +6,8 @@ import { db } from '../../firebaseConfig'; // firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 import { useTVModal } from './useTVModal.js';
 import { useBookshelfModal } from './useBookshelfModal.js';
+import { useFocusEffect } from '@react-navigation/native'; 
+import { useCallback } from 'react';
 
 
 // Furniture image Imports
@@ -32,7 +34,7 @@ import white1 from '../../assets/ProfileRoom/white1.png';
 import black1 from '../../assets/ProfileRoom/black1.png';
 import orange1 from '../../assets/ProfileRoom/orange1.png';
 //buttons
-import heartButton from '../../assets/ProfileRoom/heartButton.png'; 
+import heartButton from '../../assets/ProfileRoom/heartbutton.png'; 
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; 
 import saveButton from '../../assets/ProfileRoom/saveButton.png';
 import removeButton from '../../assets/ProfileRoom/removeButton.png';
@@ -135,14 +137,16 @@ import strawbmat from '../../assets/ProfileRoom/strawbmat.png';
 import saveTV from '../../assets/ProfileRoom/saveTV2.png';
 
 
-
-
-export default function ProfileScreen() {
+export default function ProfileScreen({ route }) {
+  const { user: searchedUser } = route?.params || {}; //Get searched user 
+  const { user: currentUser } = useAuth(); // Get the current logged-in user from authContext
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
   const [activeTab, setActiveTab] = useState('Wall'); // Default active tab is 'Lamp'
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
-  const { user } = useAuth(); // Get the current logged-in user from authContext
+
+  //Figuring out which user's profile room to display
+  const displayingUser = searchedUser || currentUser; 
 
   // useTVModal
   const {
@@ -160,7 +164,7 @@ export default function ProfileScreen() {
     handleSearch,
     setSearchModalVisible,
     handleTVClose,
-  } = useTVModal();
+  } = useTVModal({ userId: displayingUser?.uid || displayingUser?.userid});
 
     // useBookshelfModal
     const {
@@ -177,7 +181,7 @@ export default function ProfileScreen() {
       handleSearch: handleBookSearch,
       setSearchModalVisible: setBookSearchModalVisible,
       handleBookshelfClose,
-    } = useBookshelfModal();
+    } = useBookshelfModal({ userId: displayingUser?.uid || displayingUser?.userid});
 
 
     //Separate states for each furniture type
@@ -196,9 +200,10 @@ export default function ProfileScreen() {
 
     // Saves selected furniture to Firestore
     const saveSelectedFurniture = async () => {
-      if (user) {
+      const userId = displayingUser?.uid || displayingUser?.userid; 
+      if (userId) {
         try {
-          const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+          const furnitureDoc = doc(db, "users", userId, "furnitures", "selected");
     
           // Log selected items to ensure they have values
           console.log("Saving selected furniture:", selectedLamp, selectedCouch, selectedArmchair, selectedBookshelf, selectedChair, selectedMat, selectedPet, selectedShelf, selectedRug, selectedWall, selectedCarpet);
@@ -225,21 +230,17 @@ export default function ProfileScreen() {
       } else {
         console.log("User is not authenticated. Cannot save furniture.");
       }
-    };
-  
-    // Trigger save when modal closes
-    const handleModalClose = () => 
-      {
-      saveSelectedFurniture();
-      setModalVisible(false); // Close the modal
-    };
+    };    
 
 
     // Fetch saved furniture selection from Firestore
-    const fetchSelectedFurniture = async () => {
-      if (user) {
-        try {
-          const furnitureDoc = doc(db, "users", user.uid, "furnitures", "selected");
+    const fetchSelectedFurniture = async (displayingUser) => {
+      const userId = displayingUser?.uid || displayingUser?.userid; 
+        if (userId) {
+
+          try {
+          const furnitureDoc = doc(db, "users", userId, "furnitures", "selected");
+                   
           const docSnap = await getDoc(furnitureDoc);
     
           if (docSnap.exists()) {
@@ -260,24 +261,28 @@ export default function ProfileScreen() {
           } else {
             console.log("No furniture selections found.");
           }
-        } catch (error) {
-          console.error("Error fetching furniture selections:", error);
+        } catch (error){
+          console.error("Error fetching furniture", error);
         }
-      } else {
-        console.log("User is not authenticated. Cannot fetch furniture.");
+      } else  {
+        console.log("Invalid user id, idk bruh");
       }
     };
 
       // Fetch the furniture selection when the component mounts or user changes
       useEffect(() => {
-        if (user) {
-          console.log("User detected, fetching furniture selections...");
-          fetchSelectedFurniture();
-        }
-      }, [user]); // Only run when the user changes
-
-
-
+        if (displayingUser && displayingUser) {
+          console.log("Diplsaying furniture for fetch: ", displayingUser); 
+          fetchSelectedFurniture(displayingUser);
+        } 
+      }, [displayingUser]); // Only run when the user changes
+  
+    // Trigger save when modal closes
+    const handleModalClose = () => 
+      {
+      saveSelectedFurniture();
+      setModalVisible(false); // Close the modal
+    };
 
       // Toggle modal visibility
       const toggleModal = () => {
@@ -1218,11 +1223,6 @@ export default function ProfileScreen() {
                 </View>
             </View>
         </Modal>
-
-
-
-
-
     </View>
   );
 }
