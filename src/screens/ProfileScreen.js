@@ -32,7 +32,7 @@ import white1 from '../../assets/ProfileRoom/white1.png';
 import black1 from '../../assets/ProfileRoom/black1.png';
 import orange1 from '../../assets/ProfileRoom/orange1.png';
 //buttons
-import heartButton from '../../assets/ProfileRoom/heartButton.png'; 
+import heartButton from '../../assets/ProfileRoom/heartbutton.png'; 
 import decorateButton from '../../assets/ProfileRoom/decorateButton.png'; 
 import saveButton from '../../assets/ProfileRoom/saveButton.png';
 import removeButton from '../../assets/ProfileRoom/removeButton.png';

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import LikeDislikeButtons from '../components/LikeDislikeButtons';
 
 const loadReviews = async () => {
   try {
@@ -88,6 +89,7 @@ export default function WriteReviewScreen({ route }) {
             <View style={styles.reviewItem}>
               <Text>{item?.item?.title || item?.item?.name || item?.item?.volumeInfo?.title || 'Unknown Title'}</Text>
               <Text>{item.text}</Text>
+              <LikeDislikeButtons reviewId={item.id} /> 
             </View>
           )}
         />
