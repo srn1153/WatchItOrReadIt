@@ -3,6 +3,7 @@ import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, A
 import axios from 'axios';
 import { db } from '../../firebaseConfig'; 
 import { collection, query, where, getDocs } from 'firebase/firestore'; 
+import FollowUser from './FollowUser'; // Import followUser component for following functionality
 
 const SearchScreen = ({ navigation }) => {
   // State variables
@@ -11,6 +12,13 @@ const SearchScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false); // Indicates if data is being fetched
   const [searchType, setSearchType] = useState('user'); // Tracks the type of search (movie, tv, or book)
 
+  // Show the FollowUser component if the search type is user
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+    <Text style={styles.itemTitle}>{searchType === 'user' ? item.username : item.title || item.name || item.volumeInfo?.title}</Text>
+    {searchType === 'user' && <FollowUser user={item} />}  
+    </View>
+  );
   // Resets search results and query when searchType changes
   useEffect(() => {
     setSearchResults([]);
@@ -162,18 +170,19 @@ const SearchScreen = ({ navigation }) => {
 
       {/* List of search results */}
       <FlatList
-      data={searchResults}
-      keyExtractor={(item) => {
-        if(searchType === 'user') {
-          return item.username; 
-        }
-          return `${searchType}-${item.id}`} // Composite key for uniqueness
-      }
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.itemContainer}
-          onPress={() => handleItemPress(item)}
-        >
+  data={searchResults}
+  keyExtractor={(item, index) => {
+    if (searchType === 'user') {
+      return item.username || `user-${index}`; // Fallback to index if username is undefined
+    }
+    return `${searchType}-${item.id || index}`; // Fallback to index if item.id is undefined
+  }}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleItemPress(item)}
+    >
+
       {/* Display poster image based on search type */}
       {(searchType === 'movie' || searchType === 'tv') && item.poster_path && (
         <Image
@@ -214,6 +223,7 @@ const SearchScreen = ({ navigation }) => {
         )}
 
         <Text style={styles.itemType}>{getTypeLabel()}</Text>
+        {searchType === 'user' && <FollowUser user={item} />}
       </View>
     </TouchableOpacity>
   )}
