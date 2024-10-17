@@ -142,7 +142,7 @@ export default function ProfileScreen({ route }) {
   const { user: currentUser } = useAuth(); // Get the current logged-in user from authContext
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
-  const [activeTab, setActiveTab] = useState('Wall'); // Default active tab is 'Lamp'
+  const [activeTab, setActiveTab] = useState('Carpet'); // Default active tab is 'Lamp'
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
 
   //Figuring out which user's profile room to display
