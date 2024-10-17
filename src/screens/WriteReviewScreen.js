@@ -60,7 +60,7 @@ export default function WriteReviewScreen({ route }) {
         {selectedItem ? (
           <>
             <Text style={styles.itemTitle}>
-              Reviewing: {selectedItem.title || selectedItem.name}
+              Reviewing: {selectedItem.title || selectedItem.name || selectedItem.volumeInfo.title}
             </Text>
             {selectedItem.poster_path && (
               <Image

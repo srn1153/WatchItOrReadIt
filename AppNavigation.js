@@ -12,8 +12,6 @@ import ItemDetailScreen from './src/screens/ItemDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import ListScreen from './src/screens/ListScreen' 
 import ListSearchScreen from './src/screens/ListSearchScreen'
-import TempUserProfileRoom from './src/screens/TempUserProfileRoom'
-import FollowUser from './src/screens/FollowUser';
 
 //Creating an instance of createNativeStackNavigator, to handle screen stacking
 const Stack = createNativeStackNavigator()
@@ -50,8 +48,6 @@ const AppNavigation = () => {
                 <Stack.Screen name="ProfileRoom" component={ProfileScreen} />
                 <Stack.Screen name="List" component={ListScreen} />
                 <Stack.Screen name="ListSearchScreen" component={ListSearchScreen} />
-                <Stack.Screen name='TempUserProfileRoom' component={TempUserProfileRoom} />
-                <Stack.Screen name="FollowUser" component={FollowUser}/>
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator

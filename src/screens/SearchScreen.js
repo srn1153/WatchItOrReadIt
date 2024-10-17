@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import { db } from '../../firebaseConfig'; 
-import { collection, query, where, getDocs } from 'firebase/firestore'; 
-import FollowUser from './FollowUser'; // Import followUser component for following functionality
+
 
 const SearchScreen = ({ navigation }) => {
   // State variables
   const [searchQuery, setSearchQuery] = useState(''); // Stores the current search query
   const [searchResults, setSearchResults] = useState([]); // Stores search results from API
   const [loading, setLoading] = useState(false); // Indicates if data is being fetched
-  const [searchType, setSearchType] = useState('user'); // Tracks the type of search (movie, tv, or book)
+  const [searchType, setSearchType] = useState('movie'); // Tracks the type of search (movie, tv, or book)
 
-  // Show the FollowUser component if the search type is user
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-    <Text style={styles.itemTitle}>{searchType === 'user' ? item.username : item.title || item.name || item.volumeInfo?.title}</Text>
-    {searchType === 'user' && <FollowUser user={item} />}  
-    </View>
-  );
   // Resets search results and query when searchType changes
   useEffect(() => {
     setSearchResults([]);
@@ -40,39 +31,18 @@ const SearchScreen = ({ navigation }) => {
 
     try {
       const API_KEY = '79c14b18444432a1b856be277e49212d';
-      let response;
 
       // Fetch data based on searchType
       if (searchType === 'movie') {
-        response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${text}&api_key=${API_KEY}`);
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${searchQuery}&api_key=${API_KEY}`);
+        setSearchResults(response.data.results);
       } else if (searchType === 'tv') {
-        response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${text}&api_key=${API_KEY}`);
+        const response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${searchQuery}&api_key=${API_KEY}`);
+        setSearchResults(response.data.results);
       } else if (searchType === 'book') {
-        response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);
-      } //Fetching users from database (firebase)
-      else if (searchType === 'user'){
-        const userQuery = query(
-          collection(db, 'users'), 
-          where('username', '>=', text), 
-          where('username', '<=', text + '\uf8ff')
-        ); 
-        const querySnapShot = await getDocs(userQuery); 
-        response = querySnapShot.docs.map(doc => doc.data()); 
+        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}`);
+        setSearchResults(response.data.items);
       }
-
-      // Update search results based on response
-      if (response) {
-        if(searchType === 'book') {
-          if(response.data.items) {
-            setSearchResults(response.data.items || [])
-          }
-        } else if(searchType === 'user') {
-          setSearchResults(response); 
-        } else {
-          setSearchResults(response.data.results || []);
-        }
-      }
-
     } catch (error) {
       console.error('Error fetching data:', error);
       setSearchResults([]);
@@ -85,12 +55,7 @@ const SearchScreen = ({ navigation }) => {
    const handleItemPress = (item) => {
     const itemWithType = { ...item, type: searchType };
     console.log('Navigating with item:', itemWithType);
-    //if searchType is movie, tv show or book, then go to the ItemDetailScreen 
-    if(searchType === 'movie' || searchType === 'tv' || searchType === 'book'){
-      navigation.navigate('ItemDetail', { item: itemWithType });
-    } else if( searchType == 'user') { //else go to user profile room
-      navigation.navigate('ProfileRoom', { user : item }); //Goes to specific users profile room
-    }
+    navigation.navigate('ItemDetail', { item: itemWithType });
   };
 
   // Function to get the label for the current search type
@@ -102,8 +67,6 @@ const SearchScreen = ({ navigation }) => {
         return 'TV Show';
       case 'book':
         return 'Book';
-      case 'user':
-        return 'View my profile room!'; 
       default:
         return '';
     }
@@ -114,7 +77,7 @@ const SearchScreen = ({ navigation }) => {
       <Text style={styles.title}>Search</Text>
 
       {/* Search type buttons */}
-      <SafeAreaView style={styles.searchTypeContainer}>
+      <View style={styles.searchTypeContainer}>
         <TouchableOpacity
           style={[
             styles.searchTypeButton,
@@ -124,7 +87,6 @@ const SearchScreen = ({ navigation }) => {
         >
           <Text style={styles.searchTypeText}>Movies</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.searchTypeButton,
@@ -134,7 +96,6 @@ const SearchScreen = ({ navigation }) => {
         >
           <Text style={styles.searchTypeText}>TV Shows</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.searchTypeButton,
@@ -144,23 +105,12 @@ const SearchScreen = ({ navigation }) => {
         >
           <Text style={styles.searchTypeText}>Books</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.searchTypeButton,
-            searchType === 'user' && styles.searchTypeButtonActive,
-          ]}
-          onPress={() => setSearchType('user')}
-        >
-          <Text style={styles.searchTypeText}>Users</Text>
-        </TouchableOpacity>
-
-      </SafeAreaView>
+      </View>
 
       {/* Search bar */}
       <TextInput
         style={styles.searchBar}
-        placeholder="Find movies, TV shows, books, or users..."
+        placeholder="Find books, films, or TV shows..."
         value={searchQuery}
         onChangeText={handleSearch}
       />
@@ -170,21 +120,15 @@ const SearchScreen = ({ navigation }) => {
 
       {/* List of search results */}
       <FlatList
-  data={searchResults}
-  keyExtractor={(item, index) => {
-    if (searchType === 'user') {
-      return item.username || `user-${index}`; // Fallback to index if username is undefined
-    }
-    return `${searchType}-${item.id || index}`; // Fallback to index if item.id is undefined
-  }}
-  renderItem={({ item }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => handleItemPress(item)}
-    >
-
+      data={searchResults}
+      keyExtractor={(item) => `${searchType}-${item.id}`} // Composite key for uniqueness
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.itemContainer}
+          onPress={() => handleItemPress(item)}
+        >
       {/* Display poster image based on search type */}
-      {(searchType === 'movie' || searchType === 'tv') && item.poster_path && (
+      {item.poster_path && (
         <Image
           source={{
             uri: `https://image.tmdb.org/t/p/w200${item.poster_path}`,
@@ -193,16 +137,15 @@ const SearchScreen = ({ navigation }) => {
         />
       )}
 
-      {searchType === 'book' && item.volumeInfo?.imageLinks?.thumbnail && (
+      {item.volumeInfo?.imageLinks?.thumbnail && (
         <Image
           source={{ uri: item.volumeInfo.imageLinks.thumbnail }}
           style={styles.posterImage}
         />
       )}
-
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle}>
-          {searchType === 'user' ? item.username : item.title || item.name || item.volumeInfo?.title}
+          {item.title || item.name || item.volumeInfo?.title}
         </Text>
 
         {/* Display additional information based on searchType */}
@@ -223,7 +166,6 @@ const SearchScreen = ({ navigation }) => {
         )}
 
         <Text style={styles.itemType}>{getTypeLabel()}</Text>
-        {searchType === 'user' && <FollowUser user={item} />}
       </View>
     </TouchableOpacity>
   )}
@@ -236,7 +178,7 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    padding: 16,
     backgroundColor: '#fff',
   },
   title: {
@@ -254,8 +196,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   searchTypeButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 30,
     borderRadius: 9,
     borderWidth: 0.3,
     borderColor: '#ccc',
