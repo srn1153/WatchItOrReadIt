@@ -48,6 +48,7 @@ const AppNavigation = () => {
                 <Stack.Screen name="ProfileRoom" component={ProfileScreen} options={{ headerStyle: {backgroundColor: 'black'}, headerTitle: '', headerTintColor: 'white' }}/>
                 <Stack.Screen name="List" component={ListScreen} />
                 <Stack.Screen name="ListSearchScreen" component={ListSearchScreen} />
+                <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }}/>
                 </Stack.Navigator>
             ) : (
                 <Stack.Navigator
