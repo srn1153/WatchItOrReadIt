@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
+import { View, TextInput, FlatList, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';  // Import icon library
 
 
 export default function WriteReviewScreen({ route }) {
@@ -90,6 +91,10 @@ export default function WriteReviewScreen({ route }) {
                 setModalVisible(true); // Open modal
               }}
             >
+                {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-back" size={30} color="white" />
+      </TouchableOpacity>
               <Text style={styles.threeDots}>⋮</Text>
             </TouchableOpacity>
 
@@ -291,6 +296,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     marginVertical: 10,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 10,
+    Index: 1,
   },
 });
 
