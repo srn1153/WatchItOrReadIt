@@ -43,7 +43,7 @@ const AppNavigation = () => {
             {isAuthenticated ? (
                 <Stack.Navigator>
                 <Stack.Screen name="Back" component={NavigationBar} options={{ headerShown: false }} />
-                <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ headerTitle: '', headerTintColor: 'black'}}/>
+                <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ headerShown: false, headerTintColor: 'black'}}/>
                 <Stack.Screen name="ItemDetail" component={ItemDetailScreen} options={{ headerTransparent: true, headerTitle: '', headerTintColor: 'white' }}/>
                 <Stack.Screen name="ProfileRoom" component={ProfileScreen} options={{ headerStyle: {backgroundColor: 'black'}, headerTitle: '', headerTintColor: 'white' }}/>
                 <Stack.Screen name="List" component={ListScreen} />

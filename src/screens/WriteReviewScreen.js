@@ -1,35 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { FontAwesome } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-const loadReviews = async () => {
-  try {
-    const reviews = JSON.parse(await AsyncStorage.getItem('reviews')) || [];
-    return reviews;
-  } catch (error) {
-    console.error('Failed to load reviews:', error);
-    return [];
-  }
-};
-
-const saveReview = async (review) => {
-  try {
-    const existingReviews = JSON.parse(await AsyncStorage.getItem('reviews')) || [];
-    const updatedReviews = [...existingReviews, review];
-    await AsyncStorage.setItem('reviews', JSON.stringify(updatedReviews));
-  } catch (error) {
-    console.error('Failed to save review:', error);
-  }
-};
 
 export default function WriteReviewScreen({ route }) {
   const { item: selectedItem } = route.params; 
   const [reviewText, setReviewText] = useState('');
   const [loading, setLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
+
+  const loadReviews = async () => {
+    try {
+      const reviews = JSON.parse(await AsyncStorage.getItem('reviews')) || [];
+      return reviews;
+    } catch (error) {
+      console.error('Failed to load reviews:', error);
+      return [];
+    }
+  };
+
+  const saveReview = async (review) => {
+    try {
+      const existingReviews = JSON.parse(await AsyncStorage.getItem('reviews')) || [];
+      const updatedReviews = [...existingReviews, review];
+      await AsyncStorage.setItem('reviews', JSON.stringify(updatedReviews));
+    } catch (error) {
+      console.error('Failed to save review:', error);
+    }
+  };
+
+  const handleDeleteReview = async (reviewToDelete) => {
+    try {
+      const updatedReviews = reviews.filter((review) => review !== reviewToDelete);
+      setReviews(updatedReviews);
+      await AsyncStorage.setItem('reviews', JSON.stringify(updatedReviews));
+    } catch (error) {
+      console.error('Failed to delete review:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -55,19 +65,92 @@ export default function WriteReviewScreen({ route }) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}> 
-      <View style={styles.container}>
-        {selectedItem ? (
-          <>
-            <Text style={styles.itemTitle}>
-              Reviewing: {selectedItem.title || selectedItem.name || selectedItem.volumeInfo.title}
-            </Text>
-            {selectedItem.poster_path && (
-              <Image
-                source={{ uri: `https://image.tmdb.org/t/p/w200${selectedItem.poster_path}` }}
-                style={styles.itemPoster}
-              />
+    <FlatList
+      data={reviews}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => (
+        <View style={styles.reviewItem}>
+          <View style={styles.reviewContent}>
+            <Image
+              source={{ uri: item?.item?.poster_path ? `https://image.tmdb.org/t/p/w200${item.item.poster_path}` : item?.item?.volumeInfo?.imageLinks?.thumbnail || 'placeholder-image' }}
+              style={styles.reviewPoster}
+            />
+            <View style={styles.reviewTextContainer}>
+              <Text style={styles.reviewTitle}>
+                {item?.item?.title || item?.item?.name || item?.item?.volumeInfo?.title || 'Unknown Title'}
+              </Text>
+              <Text>{item.text}</Text>
+            </View>
+
+            {/* Three-Dot Button */}
+            <TouchableOpacity
+              style={styles.threeDotButton}
+              onPress={() => {
+                setSelectedReview(item); // Set the selected review to handle edit/delete
+                setModalVisible(true); // Open modal
+              }}
+            >
+              <Text style={styles.threeDots}>⋮</Text>
+            </TouchableOpacity>
+
+            {/* Modal for Edit/Delete */}
+            {selectedReview && (
+              <Modal
+                transparent={true}
+                visible={modalVisible}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+              >
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Options</Text>
+                    <TouchableOpacity onPress={() => handleDeleteReview(selectedReview)}>
+                      <Text style={styles.modalButton}>Delete Review</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                      setModalVisible(false);
+                      //  add edit functionality here
+                    }}>
+                      <Text style={styles.modalButton}>Edit Review</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setModalVisible(false)}>
+                      <Text style={styles.modalCloseButton}>Close</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
             )}
+          </View>
+        </View>
+      )}
+      ListHeaderComponent={
+        <View style={styles.headerContainer}>
+          {/* Poster Section */}
+          {selectedItem && (
+            <View style={styles.posterContainer}>
+              {selectedItem.poster_path ? (
+                <Image
+                  source={{ uri: `https://image.tmdb.org/t/p/w500${selectedItem.poster_path}` }}
+                  style={styles.itemPoster}
+                />
+              ) : selectedItem.volumeInfo && selectedItem.volumeInfo.imageLinks ? (
+                <Image
+                  source={{ uri: selectedItem.volumeInfo.imageLinks.thumbnail }}
+                  style={styles.bookPoster}
+                />
+              ) : (
+                <Text>No poster available</Text>
+              )}
+                    <View style={styles.overlay}>
+                <Text style={styles.itemTitle}>
+                  Reviewing: {selectedItem.title || selectedItem.name || (selectedItem.volumeInfo.title)}
+                </Text>
+              </View>
+            </View>
+            )}      
+
+          {/* Review Input Section */}
+          <View style={[styles.reviewInputContainer, { marginTop: 20 }]}>
             <TextInput
               style={styles.input}
               multiline
@@ -76,142 +159,139 @@ export default function WriteReviewScreen({ route }) {
               onChangeText={setReviewText}
               placeholder="Write your review here..."
             />
-            <Button title="Post Review" onPress={handleSubmitReview} />
-          </>
-        ) : (
-          loading ? <ActivityIndicator size="large" color="#0000ff" /> : <Text>No item selected</Text>
-        )}
-        <FlatList
-          data={reviews}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.reviewItem}>
-              <Text>{item?.item?.title || item?.item?.name || item?.item?.volumeInfo?.title || 'Unknown Title'}</Text>
-              <Text>{item.text}</Text>
-            </View>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+            <TouchableOpacity style={styles.postButton} onPress={handleSubmitReview}>
+              <Text style={styles.postButtonText}>Post Review</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1, 
-    backgroundColor: '#f8f8f8',
-  },
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f5f5f5',
   },
-  segmentedControl: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+  posterContainer: {
+    height: 380, // Adjust height based on how much space you want the poster to take
+    position: 'relative',
   },
-  segmentButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-    marginHorizontal: 5,
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: Adds a translucent black overlay
+    justifyContent: 'flex-end',
+    padding: 16,
   },
-  activeSegment: {
-    backgroundColor: '#007bff',
-  },
-  segmentText: {
-    color: '#333',
-    fontSize: 16,
-    fontFamily: 'ibm-plex-mono',
-  },
-  activeSegmentText: {
-    color: '#fff',
+  itemTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
+    color: 'white', 
+    marginBottom: 10,
+    textAlign: 'left',
+    textTransform: 'uppercase',
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+  itemPoster: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
-  searchIcon: {
-    marginRight: 10,
+  bookPoster: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
-  searchInput: {
-    flex: 1,
-    height: 40,
+  reviewInputContainer: {
+    marginTop: 20,
+    borderColor: '#ddd',
+    borderRadius: 12,
+    width: '90%',
+    alignSelf: 'center', // Center the container
+  },
+  input: {
+    height: 120,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 15,
+    backgroundColor: '#fafafa',
     fontSize: 16,
-    fontFamily: 'ibm-plex-mono',
     color: '#333',
+    marginBottom: 15,
+    fontFamily: 'courier',
   },
-  searchButton: {
-    backgroundColor: 'orange',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+  postButton: {
+    backgroundColor: '#FFC0CB',
+    paddingVertical: 12,
     borderRadius: 30,
     alignItems: 'center',
     marginBottom: 20,
   },
-  searchButtonText: {
+  postButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontFamily: 'ibm-plex-mono',
     fontWeight: 'bold',
-  },
-  input: {
-    height: 100,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 20,
-    padding: 10,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontFamily: 'ibm-plex-mono',
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  itemPoster: {
-    width: 100,
-    height: 150,
-    marginBottom: 20,
-    borderRadius: 10,
-  },
-  resultItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  posterImage: {
-    width: 50,
-    height: 75,
-    marginRight: 10,
   },
   reviewItem: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+    marginBottom: -10,
+    padding: 15,
+    borderRadius: 12,
   },
-  reviewText: {
-    fontFamily: 'ibm-plex-mono',
+  reviewContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  reviewPoster: {
+    width: 60,
+    height: 85,
+    marginRight: 10,
+    borderRadius: 8,
+  },
+  reviewTextContainer: {
+    flex: 1,
+  },
+  reviewTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  threeDots: {
+    fontSize: 20,
+    color: '#333',
+    paddingLeft: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 250,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalButton: {
+    fontSize: 16,
+    color: '#007BFF',
+    marginVertical: 10,
+  },
+  modalCloseButton: {
+    fontSize: 16,
+    color: 'black',
+    marginVertical: 10,
   },
 });
+
 
