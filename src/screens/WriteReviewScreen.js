@@ -91,10 +91,6 @@ export default function WriteReviewScreen({ route }) {
                 setModalVisible(true); // Open modal
               }}
             >
-                {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back" size={30} color="white" />
-      </TouchableOpacity>
               <Text style={styles.threeDots}>⋮</Text>
             </TouchableOpacity>
 
@@ -296,12 +292,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     marginVertical: 10,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 10,
-    Index: 1,
   },
 });
 
