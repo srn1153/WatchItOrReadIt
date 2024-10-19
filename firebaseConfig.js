@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getReactNativePersistence, initializeAuth} from 'firebase/auth'; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getFirestore, collection } from 'firebase/firestore'; 
+import { getStorage } from "firebase/storage"; // import firebase storage
+
 
 //Firebase Database configuration - including necessary information  
 const firebaseConfig = {
@@ -21,9 +23,13 @@ export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)
 })
 
+
 //Creating Firebase instance to access cloud-hosted database 
 export const db = getFirestore(app)
 //Creating a reference to 'user' collection for future use
 export const userRef = collection(db, 'users')
 //Creating a reference to 'rooms' collection to manage future data 
 export const roomRef = collection(db, 'rooms')
+
+// initialising Firebase Storage
+export const storage = getStorage(app); // Add Firebase Storage initialization here

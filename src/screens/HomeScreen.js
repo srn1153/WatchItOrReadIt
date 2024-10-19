@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, ScrollView, StyleSheet, TouchableOpacity, Modal, SafeAreaView } from 'react-native';
+import { View, Text, Image, FlatList, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
 export default function HomeScreen({ navigation }) {
@@ -91,10 +91,16 @@ const fetchBooks = async () => {
     );
   }; 
 
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView>
-        <View style={styles.section}>
+        <Image
+          source={require('../../assets/row.png')}
+          style={styles.logo}
+          />
+
+        <View style={[styles.section, styles.firstSection]}>
           <Text style={styles.sectionTitle}>Popular Movies</Text>
           <FlatList
             data={movies}
@@ -124,53 +130,43 @@ const fetchBooks = async () => {
           />
         </View>
       </ScrollView>
-
-   
-
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    paddingVertical: 20,
   },
   section: {
-    marginVertical: 10,
+    marginVertical: 5,
+    width: '100%',
+    alignItems: 'flex-start',
+    paddingHorizontal: 10,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'ibm-plex-mono',
+    fontSize: 22,
+    //fontWeight: 'bold',
     marginLeft: 10,
+    textTransform: 'uppercase',
   },
   poster: {
     width: 120,
     height: 180,
     margin: 5,
   },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+  logo: {
+    width: 100,
+    height: 50,
+    position: 'absolute',
+    right: 10,
+    top: 20,
   },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    fontFamily: 'ibm-plex-mono',
-  },
-  closeButton: {
-    marginTop: 10,
-    color: 'grey',
+  firstSection: {
+    paddingTop: 70,
   },
 });
 
