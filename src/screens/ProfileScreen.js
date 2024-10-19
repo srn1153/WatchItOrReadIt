@@ -743,7 +743,6 @@ export default function ProfileScreen({ route }) {
       
       {/* Default Profile Room */}
       <Image source={profileRoom} style={styles.profileRoomImg} />
-      <Image source={whitecarpet} style={styles.carpetOverlay} />
 
       {/* Rendered Items as an Overlay */}
       {/* WALL */}
@@ -773,6 +772,8 @@ export default function ProfileScreen({ route }) {
       )} 
 
       {/* CARPET */}
+      <Image source={whitecarpet} style={styles.carpetOverlay} />
+
       {selectedCarpet === 'pinkcarpet1' && (
           <Image source={pinkcarpet} style={styles.carpetOverlay} />
       )}
@@ -797,6 +798,9 @@ export default function ProfileScreen({ route }) {
       {selectedCarpet === 'redcarpet' && (
         <Image source={redcarpet} style={styles.carpetOverlay} />
       )} 
+
+
+
       
       {/* Bookshelf */}
       {selectedBookshelf === 'bookshelf' && (
