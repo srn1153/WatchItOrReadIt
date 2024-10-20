@@ -23,7 +23,7 @@ export default function HomeScreen({ navigation }) {
 
     const fetchTvShows = async () => {
       try {
-        const response = await axios.get('https://api.themoviedb.org/3/trending/tv/day', {
+        const response = await axios.get('https://api.themoviedb.org/3/tv/top_rated', {
           params: { api_key: '79c14b18444432a1b856be277e49212d' }
         });
         setTvShows(response.data.results);
@@ -37,7 +37,7 @@ const fetchBooks = async () => {
   try {
     const response = await axios.get('https://www.googleapis.com/books/v1/volumes', {
       params: {
-        q: '2022 best reads',
+        q: 'Neil'+'Gaiman'+'best books',
         maxResults: 20,
         key: 'AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU'
       }
@@ -94,11 +94,19 @@ const fetchBooks = async () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+    
+      {/* Header containing Logo and Discover Box */}
+      <View style={styles.header}>
+        
+        <View style={styles.discoverBox}>
+          <Text style={styles.discoverText}>Discover</Text>
+        </View>
         <Image
           source={require('../../assets/row.png')}
           style={styles.logo}
-          />
+        />
+      </View>
+
 
         <View style={[styles.section, styles.firstSection]}>
           <Text style={styles.sectionTitle}>Popular Movies</Text>
@@ -107,6 +115,8 @@ const fetchBooks = async () => {
             horizontal
             renderItem={(item) => renderItem(item, 'movie')}
             keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingLeft: 13, paddingRight: 13 }} 
+
           />
         </View>
 
@@ -117,19 +127,21 @@ const fetchBooks = async () => {
             horizontal
             renderItem={(item) => renderItem(item, 'tv')}
             keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingLeft: 13, paddingRight: 13  }}
           />
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.sectionBooks}>
           <Text style={styles.sectionTitle}>Best Books</Text>
           <FlatList
             data={books}
             horizontal
             renderItem={(item) => renderItem(item, 'book')}
             keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingLeft: 13, paddingRight: 13  }}
           />
         </View>
-      </ScrollView>
+      
     </View>
   );
 }
@@ -141,33 +153,102 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 20,
   },
-  section: {
-    marginVertical: 5,
+  header: {
+    bottom: 20,
+    marginBottom: -10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     width: '100%',
-    alignItems: 'flex-start',
+    height: 110,
     paddingHorizontal: 10,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    //fontWeight: 'bold',
-    marginLeft: 10,
-    textTransform: 'uppercase',
-  },
-  poster: {
-    width: 120,
-    height: 180,
-    margin: 5,
+    backgroundColor: '#EEEEEE',
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+      },
+      shadowOpacity: 0.05,
+      shadowRadius: 1,
   },
   logo: {
-    width: 100,
-    height: 50,
-    position: 'absolute',
-    right: 10,
-    top: 20,
+    width: 68,
+    height: 30,
+    marginTop: 60,
+    right: 5,
+    // position: 'absolute',
+    // right: 10,
+    // top: 60,
   },
+
+  discoverBox: {
+    backgroundColor: '#41509A', // Light background color
+    paddingHorizontal: 26,
+    paddingVertical: 7,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // position: 'absolute',
+    top: 30,
+    left: 15,
+  },
+  discoverText: {
+    fontSize: 12,
+    // fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'white',
+    // fontFamily: 'Menlo',
+    // fontWeight: '50',
+    textTransform: 'uppercase',
+  },
+
   firstSection: {
-    paddingTop: 70,
+    paddingTop: 0,
   },
+  section: {
+    marginVertical: 5,
+    width: 400,
+    alignItems: 'flex-start',
+    backgroundColor: '#F3F3F3',
+    marginLeft: 10,
+    // shadowColor: '#000', // Shadow for iOS
+    shadowOffset: 
+    {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 1,
+  },
+  sectionBooks: {
+    marginVertical: 5,
+    width: 400,
+    alignItems: 'flex-start',
+    backgroundColor: '#F3F3F3',
+    marginLeft: 10,
+
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '400',
+    marginLeft: 20,
+    // textTransform: 'uppercase',
+    bottom: 3,
+    marginTop: 6,
+    // fontFamily: 'Menlo',
+    letterSpacing: 0,
+
+  },
+  poster: {
+    width: 100,
+    height: 160,
+    margin: 5,
+    borderRadius: 5,
+    marginBottom: 13,
+  },
+
+
+  
 });
 
 

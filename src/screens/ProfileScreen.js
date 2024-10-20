@@ -142,7 +142,7 @@ export default function ProfileScreen({ route }) {
   const { user: currentUser } = useAuth(); // Get the current logged-in user from authContext
   const navigation = useNavigation(); // navigation object to navigate between screens
   const [isModalVisible, setModalVisible] = useState(false); // state to manage modal visibility
-  const [activeTab, setActiveTab] = useState('Carpet'); // Default active tab is 'Lamp'
+  const [activeTab, setActiveTab] = useState('Wall'); // Default active tab
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false); // New state for logout confirmation modal
 
   //Figuring out which user's profile room to display
@@ -1005,7 +1005,7 @@ export default function ProfileScreen({ route }) {
               <View style={styles.fixedTabBar}>
                 <ScrollView horizontal={true} contentContainerStyle={styles.scrollViewContent}>
                   <View style={styles.tabBar}>
-                    {['Carpet','Wall', 'Lamp', 'Couch', 'Rug', 'Shelf', 'Pet', 'Bookshelf', 'Chair', 'Mat','Armchair'].map((tab) => (
+                    {['Wall','Carpet', 'Lamp', 'Couch', 'Rug', 'Shelf', 'Pet', 'Bookshelf', 'Chair', 'Mat','Armchair'].map((tab) => (
                       <TouchableOpacity
                         key={tab}
                         style={[styles.tabButton, activeTab === tab && styles.activeTab]}
@@ -1868,7 +1868,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'rgba(0, 0, 0, 0.1)',
-      bottom: 40,
+      // marginBottom: 40,
   },
 
   bookshelfContent: {
