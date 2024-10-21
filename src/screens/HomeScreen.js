@@ -39,7 +39,7 @@ const fetchBooks = async () => {
       params: {
         q: 'Neil'+'Gaiman'+'best books',
         maxResults: 20,
-        key: 'AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU'
+        key: 'AIzaSyCyQO6NBxcssJ8QNvlbRecvfj7ic_LAJ4I'
       }
     });
     setBooks(response.data.items);

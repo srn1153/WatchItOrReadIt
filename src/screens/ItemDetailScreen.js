@@ -56,7 +56,7 @@ const ItemDetailScreen = ({ route }) => {
         const bookTitle = item?.title || item?.volumeInfo?.title;
         if (bookTitle) {
           const bookResponse = await axios.get(
-            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookTitle)}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
+            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookTitle)}&key=AIzaSyA3zuZaTA8tqqlm83lg4qnHJZPGzwODLQY`
           );
           bookRecommendations = bookResponse.data.items || [];
           setBookRecommendations(bookRecommendations);
@@ -66,7 +66,7 @@ const ItemDetailScreen = ({ route }) => {
         if (item?.volumeInfo?.categories && Array.isArray(item.volumeInfo.categories)) {
           const genres = item.volumeInfo.categories.map((category) => encodeURIComponent(category)).join('|');
           const genreBookResponse = await axios.get(
-            `https://www.googleapis.com/books/v1/volumes?q=subject:${genres}&key=AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU`
+            `https://www.googleapis.com/books/v1/volumes?q=subject:${genres}&key=AIzaSyA3zuZaTA8tqqlm83lg4qnHJZPGzwODLQY`
           );
           const genreBookRecommendations = genreBookResponse.data.items || [];
           setBookRecommendations((prev) => [...prev, ...genreBookRecommendations]); // Combine with previous book recommendations

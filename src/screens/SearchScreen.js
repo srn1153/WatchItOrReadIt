@@ -57,7 +57,7 @@ const SearchScreen = ({ navigation }) => {
 
     try {
     const API_KEY = '79c14b18444432a1b856be277e49212d'; // TMDB API key
-    const GOOGLE_BOOKS_API_KEY = 'AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU'; // Google Books API key
+    const GOOGLE_BOOKS_API_KEY = 'AIzaSyA3zuZaTA8tqqlm83lg4qnHJZPGzwODLQY'; // Google Books API key
 
     let response;
 
