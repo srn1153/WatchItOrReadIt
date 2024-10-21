@@ -13,7 +13,6 @@ const StarRating = ({ item.id, item.type }) => {  // item.id = The ID of the mov
   const { user } = useAuth();  
 
   // Fetch the existing rating from Firebase
-
   useEffect(() => {
     const fetchRating = async () => {
       if (!user) return;  // Makes sure user is logged in
