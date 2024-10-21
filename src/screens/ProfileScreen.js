@@ -969,7 +969,7 @@ export default function ProfileScreen({ route }) {
 
 
         {/* Default Furnitures */}
-        <Image source={retrolamp} style={styles.retrolamp} />
+        {/* <Image source={retrolamp} style={styles.retrolamp} /> */}
         <TouchableOpacity onPress={toggleBookshelf} style={styles.bookstack}>
           <Image source={bookstack} style={styles.bookstack} />
         </TouchableOpacity>
