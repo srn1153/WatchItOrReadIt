@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../context/authContext';
 import { db } from '../../firebaseConfig'; // Firestore instance
 import { doc, getDoc, setDoc } from 'firebase/firestore'; 
 
@@ -37,27 +36,32 @@ export const useBookshelfModal = ({ userId }) => {
   };
 
   // Function to search for books
-  const handleSearch = async (text) => {
-    if (!text.trim()) {
-      setSearchQuery('');
-      setSearchResults([]);
-      return;
-    }
+const handleSearch = async (text) => {
+  if (!text.trim()) {
+    setSearchQuery('');
+    setSearchResults([]);
+    return;
+  }
 
-    setLoading(true);
-    setSearchQuery(text);
+  setLoading(true);
+  setSearchQuery(text);
 
-    
+  try {
+    const response = await axios.get('https://www.googleapis.com/books/v1/volumes', {
+      params: {
+        q: text,
+        key: 'AIzaSyB2QQ4yWOz7n6fmp9hfNE0o0GpJ-gCfRhU', 
+        maxResults: 20 
+      }
+    });
+    setSearchResults(response.data.items || []);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    try {
-      const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);
-      setSearchResults(response.data.items || []);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Save the selected books to Firestore
   const saveSelectedBooks = async () => {

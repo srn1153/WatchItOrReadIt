@@ -345,14 +345,23 @@ const ItemDetailScreen = ({ route }) => {
                 <Text style={styles.airingYears}>  ‧  {airingYears}</Text>
               </>
             )}
+
+              {item.type === 'book' && (
+                 <>
+                 <Image source={require('../../assets/book.png')} style={styles.bookIcon} />
+                 <Text style={styles.infoTitle}>  BOOK   </Text>
+               </> 
+             )}
+            
           </View>
 
+          
           {/* Cast and Genres Box */}
           <View style={styles.infoBox2}>
             {(item.type === 'tv' || item.type === 'movie') && (
               <>
               <View style={styles.castContainer}>
-                <Text style={styles.infoTitle}>CAST </Text>
+                <Text style={styles.infoTitle2}>CAST </Text>
                 <Text style={styles.mainCast}>{displayMainCast}</Text>
                 </View>
 
@@ -393,7 +402,7 @@ const ItemDetailScreen = ({ route }) => {
       );
     }}
     showsHorizontalScrollIndicator={false}
-    contentContainerStyle={{ paddingHorizontal: 10 }}
+    contentContainerStyle={{ paddingLeft: 13, paddingRight: 13  }}
   />
 </View>
 
@@ -415,7 +424,7 @@ const ItemDetailScreen = ({ route }) => {
           </TouchableOpacity>
         )}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 10 }}
+        contentContainerStyle={{ paddingLeft: 13, paddingRight: 13  }}
       />
     </View>
   
@@ -512,6 +521,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginRight: 10,
   },
+  infoTitle2: {
+    fontWeight: '700',
+    marginBottom: 6,
+    marginRight: 15,
+  },
   synopsis: {
     fontFamily: 'Roboto',
     fontSize: 16,
@@ -530,19 +544,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f7f7', // Box background color
     borderRadius: 0,
     padding: 16,
+    paddingTop:20,
     marginVertical: 16,
     borderColor: '#ddd', 
-    flexDirection: 'row',
     borderTopWidth: 0.8,
+    flexDirection: 'row',
+    borderColor: '#ddd', 
+    borderBottomWidth: 0.8,
 
   },
 
   // Info Box
   infoBox2: {
     padding: 16,
-    
+    backgroundColor: '#F9F9F9',
+    top: -14.8,
+    borderColor: '#ddd', 
+    borderBottomWidth: 0.8,
   },
   castContainer:{
+    paddingTop: 14,
     flexDirection: 'row',
     paddingBottom: 15,
   },
@@ -565,10 +586,49 @@ const styles = StyleSheet.create({
     aspectRatio: 1/1,
     width: 15,
   },
+  bookIcon:{
+    aspectRatio: 1/1,
+    width: 22,
+    bottom: 2,
+    left: 2,
+  },
   seasonIcon:{
     aspectRatio: 1/1,
     width: 16,
   },
+
+    // RECOMMENDATIONS
+    recommendationContainer: {
+    width: 392,
+    left: -17,
+      marginTop: 10,
+      // paddingHorizontal: 5,
+    },
+    sectionTitle: {
+      fontSize: 13.8,
+     fontWeight: 'bold',
+      fontFamily: 'roboto',
+      marginBottom: 10,
+      left: 18,
+      textTransform: 'uppercase',
+    },
+    recommendationItem: {
+      // margin: 2,
+  
+    },
+    recommendationImage: {
+      width: 100,
+      height: 150,
+      margin: 4,
+      borderRadius: 4,
+      
+      },
+
+    
+      bookRecommendations: {
+        margin: 0,
+        paddingHorizontal: 0,
+      },
 
   // REVIEW
 
@@ -611,33 +671,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   
-  // RECOMMENDATIONS
-  recommendationContainer: {
-    marginTop: 20,
-    paddingHorizontal: 5,
-  },
-  sectionTitle: {
-    fontSize: 18,
-   //fontWeight: 'bold',
-    //fontFamily: 'courier',
-    marginBottom: 10,
-    marginLeft: -10,
-    textTransform: 'uppercase',
-  },
-  recommendationItem: {
-    margin: 2,
 
-  },
-  recommendationImage: {
-    width: 100,
-    height: 150,
-    margin: 1,
-    },
-  
-    bookRecommendations: {
-      margin: 5,
-      paddingHorizontal: 5,
-    }
 });
 
 export default ItemDetailScreen;

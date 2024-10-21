@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     height: 110,
     paddingHorizontal: 10,
     backgroundColor: '#EEEEEE',
-    shadowColor: '#000', // iOS shadow
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
