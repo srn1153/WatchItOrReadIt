@@ -4,7 +4,7 @@ import axios from 'axios';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native'
-import StarRating from '../components/StarRating';
+import StarRating from '../components/StarRating'; // Importing the StarRating component
 
 
 const ItemDetailScreen = ({ route }) => {
@@ -249,6 +249,8 @@ const ItemDetailScreen = ({ route }) => {
             )}
           </Text>
         </View>
+         {/* Add StarRating component here */}
+         <StarRating itemId={item.id} itemType={item.type} /> 
 
           {/* button Container */}
           <View style={styles.buttonContainer}>
@@ -305,16 +307,6 @@ const ItemDetailScreen = ({ route }) => {
 
               </>
             )}
-          </View>
-          {/*Star Rating */}
-          
-          <View style={styles.container}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-            <View style={styles.ratingContainer}>
-              <Text style={styles.ratingText}>Select a Rating</Text>
-              <StarRating user ={ user } />  
-      </View>
     </View>
   
       </ScrollView>
@@ -498,36 +490,11 @@ const styles = StyleSheet.create({
     marginTop: 30
 
   },
-
   topBox:{
     flexDirection: 'row',
     alignItems: 'flex-start', // Align items at the start
     justifyContent: 'space-between', // Space between synopsis and buttons
     padding: 16,
-  },
-
-  // STAR RATING
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  ratingContainer: {
-    marginTop: 20,
-    alignItems: 'flex-start',
-  },
-  ratingText: {
-    fontSize: 18,
-    marginBottom: 10,
   },
 });
 

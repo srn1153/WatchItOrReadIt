@@ -1,81 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { db } from '../../firebaseConfig'; 
-import { doc, getDoc, setDoc } from 'firebase/firestore'; 
-import Icon from 'react-native-vector-icons/FontAwesome'; 
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react'; // Import React hooks
+import { View, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native'; // UI components
+import { useAuth } from '../context/authContext' // Context hook to get the current logged-in user
+import { db } from '../../firebaseConfig'; // Import Firebase firestore instance
+import { doc, getDoc, setDoc } from 'firebase/firestore'; // Firebase functions to interact with the Firestore database
 
-const filledStar = require('../../assets/images/filled-star.png'); // Path to your filled star image
-const unfilledStar = require('../../assets/images/unfilled-star.png'); // Path to your unfilled star image
+const filledStar = require('../../assets/images/filled-star.png'); 
+const unfilledStar = require('../../assets/images/unfilled-star.png'); 
 
+const StarRating = ({ item.id, item.type }) => {  // item.id = The ID of the movie/tv show/book & item.type = The type of item movie/tv show/book
+  const [rating, setRating] = useState(0); //Stores the users current rating (from 1 to 5)
+  const [isLoading, setIsLoading] = useState(true); //Manages the loading state while fetching data from the Firestore
+  const { user } = useAuth();  
 
-const { user } = useAuth(); // Get the current logged-in user 
+  // Fetch the existing rating from Firebase
 
-const StarRating = ({ user }) => {  
-    const [rating, setRating] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
-    const db = getFirestore();  // Initialise Firestore
-  
-    // Fetch the existing rating from Firebase on component mount
-    useEffect(() => {
-      const fetchRating = async () => {
-        try {
-          const docRef = doc(db, 'ratings', `${user}`);
-          const docSnap = await getDoc(docRef);
-  
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setRating(data.rating);
-          }
-        } catch (error) {
-          console.error('Error fetching rating:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  //Fetch Rating
-      fetchRating();
-    }, [db, user]);
-  
-    // Save the rating to Firebase
-    const saveRatingToFirebase = async (newRating) => {
+  useEffect(() => {
+    const fetchRating = async () => {
+      if (!user) return;  // Makes sure user is logged in
       try {
-        const docRef = doc(db, 'ratings', `${user}`); 
-        await setDoc(docRef, { rating: newRating }, { merge: true });
+        const ratingDoc = doc(db, "users", user.uid, "ratings", `${item.type}_${item.id}`);
+        const docSnap = await getDoc(ratingDoc);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setRating(data.rating); // If a rating exists, set it
+        }
       } catch (error) {
-        console.error('Error saving rating:', error);
+        console.error('Error fetching rating:', error);
+      } finally {
+        setIsLoading(false); // End the loading state after data is fetched 
       }
     };
+
+    fetchRating();
+  }, [db, user, item.id, item.type]);  // Refetch rating when user or item changes
   
-    // Handle when a star is pressed
-    const handlePress = (newRating) => {
-      setRating(newRating);
-      saveRatingToFirebase(newRating);
-    };
-  
-    return (
-      <View style={styles.starContainer}>
-        {[1, 2, 3, 4, 5].map((star) => (
-          <TouchableOpacity key={star} onPress={() => handlePress(star)}>
-            <Image
-              source={star <= rating ? filledStar : unfilledStar}
-              style={styles.star}
-            />
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
+  // Save the rating to Firebase
+
+  const saveRatingToFirebase = async (newRating) => {
+    if (!user) return; // Makes sure user is logged in
+    try {
+      const ratingDoc = doc(db, "users", user.uid, "ratings", `${item.type}_${item.id}`);
+      await setDoc(ratingDoc, { rating: newRating }, { merge: true }); // Save or update the rating
+    } catch (error) {
+      console.error('Error saving rating:', error);
+    }
   };
-  
-  const styles = StyleSheet.create({
-    starContainer: {
-      flexDirection: 'row',
-    },
-    star: {
-      width: 40,
-      height: 40,
-      marginRight: 5,
-    },
-  });
-  
-  export default StarRating; 
+
+  // Handle star press
+  const handlePress = (newRating) => {
+    setRating(newRating); // Update the local rating immediately for a better UX
+    saveRatingToFirebase(newRating); // Save the rating to Firebase
+  };
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#f7524b" />;
+  }
+
+  // Star Rating UI
+  return (
+    <View style={styles.starContainer}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity key={star} onPress={() => handlePress(star)}>
+          <Image
+            source={star <= rating ? filledStar : unfilledStar} //Display filled or unfilled star based on rating
+            style={styles.star}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  starContainer: {
+    flexDirection: 'row',
+  },
+  star: {
+    width: 5,
+    height: 5,
+    marginRight: 5,
+  },
+});
+
+export default StarRating;
