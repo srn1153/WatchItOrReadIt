@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, StatusBar, FlatList } from 'react-native';
 import axios from 'axios';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -16,11 +16,69 @@ const ItemDetailScreen = ({ route }) => {
   const [releaseDate, setReleaseDate] = useState('Release date not available.');
   const [mainCast, setMainCast] = useState([]);
   const [genres, setGenres] = useState('Genres not available.');
-  const [headerImage, setHeaderImage] = useState(null);
+ const [headerImage, setHeaderImage] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const navigation = useNavigation(); 
 
+  const [recommendations, setRecommendations] = useState([]);
+  const [bookRecommendations, setBookRecommendations] = useState([]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      const API_KEY = '79c14b18444432a1b856be277e49212d';
+      try {
+        let movieRecommendations = [];
+        let bookRecommendations = [];
+  
+        // Check if item and item.volumeInfo exist before trying to access properties
+        if (item?.volumeInfo?.title) {
+          // Fetch movie recommendations based on book title
+          const movieResponse = await axios.get(
+            `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(item.volumeInfo.title)}&api_key=${API_KEY}`
+          );
+          movieRecommendations = movieResponse.data.results || [];
+          setRecommendations(movieRecommendations); // Set movie recommendations state
+        }
+    
+        // Fetch TV or movie recommendations if item is a TV or movie
+        if (item?.type === 'movie' || item?.type === 'tv') {
+          let response;
+          if (item?.type === 'movie') {
+            response = await axios.get(`https://api.themoviedb.org/3/movie/${item.id}/recommendations?api_key=${API_KEY}`);
+          } else if (item?.type === 'tv') {
+            response = await axios.get(`https://api.themoviedb.org/3/tv/${item.id}/recommendations?api_key=${API_KEY}`);
+          }
+          setRecommendations(response.data.results || []); // Set TV or movie recommendations state
+        }
+    
+        // Fetch book recommendations based on the movie title or book title
+        const bookTitle = item?.title || item?.volumeInfo?.title;
+        if (bookTitle) {
+          const bookResponse = await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookTitle)}&key=AIzaSyCig7-HIgBN7KFhfBf-ZNytMaoiwLCRG1g`
+          );
+          bookRecommendations = bookResponse.data.items || [];
+          setBookRecommendations(bookRecommendations);
+        }
+  
+        // Fetch book recommendations based on genre
+        if (item?.volumeInfo?.categories && Array.isArray(item.volumeInfo.categories)) {
+          const genres = item.volumeInfo.categories.map((category) => encodeURIComponent(category)).join('|');
+          const genreBookResponse = await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=subject:${genres}&key=AIzaSyAeZbl387rbSJ2JK51M4XCUkobfSQPkH50`
+          );
+          const genreBookRecommendations = genreBookResponse.data.items || [];
+          setBookRecommendations((prev) => [...prev, ...genreBookRecommendations]); // Combine with previous book recommendations
+        }
+      } catch (error) {
+        console.error('Error fetching recommendations:', error);
+      }
+    };
+  
+    fetchRecommendations();
+  }, [item]);
+  
 
   const addReview = (item) => {
     console.log("Add review button pressed!");
@@ -53,7 +111,6 @@ const ItemDetailScreen = ({ route }) => {
   const addToList = () => {
     // Logic to handle adding the item to the user's list goes here
     console.log("Add to List button pressed!");
-    navigation.navigate('ListSearchScreen')
   };
 
 
@@ -187,10 +244,13 @@ const ItemDetailScreen = ({ route }) => {
 
   const { poster, synopsis, directorName: displayDirectorName, mainCast: displayMainCast, genres: displayGenres} = getDetails();
 
+  console.log(item);
+
   return (
     // <SafeAreaView style={styles.container}> 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        
+      <StatusBar barStyle="light-content"/>
+
         <View style={styles.headerContainer}>
           {headerImage && (
             <>
@@ -273,7 +333,6 @@ const ItemDetailScreen = ({ route }) => {
 
 
         {/*TV Series*/}
- 
             {item.type === 'tv' && (
               <>
                 <Image source={require('../../assets/TVicon.png')} style={styles.tvIcon} />
@@ -285,28 +344,92 @@ const ItemDetailScreen = ({ route }) => {
                 <Text style={styles.airingYears}>  ‧  {airingYears}</Text>
               </>
             )}
+
+              {item.type === 'book' && (
+                 <>
+                 <Image source={require('../../assets/book.png')} style={styles.bookIcon} />
+                 <Text style={styles.infoTitle}>  BOOK   </Text>
+               </> 
+             )}
+            
           </View>
 
+          
           {/* Cast and Genres Box */}
           <View style={styles.infoBox2}>
             {(item.type === 'tv' || item.type === 'movie') && (
               <>
               <View style={styles.castContainer}>
-                <Text style={styles.infoTitle}>CAST </Text>
+                <Text style={styles.infoTitle2}>CAST </Text>
                 <Text style={styles.mainCast}>{displayMainCast}</Text>
                 </View>
 
                 <View style={styles.castContainer}>
                 <Text style={styles.infoTitle}>GENRE</Text>
                 <Text style={styles.mainCast}>{displayGenres}</Text>
-                </View>
+                </View>    
+          </>
+            )}
+            </View>
+            <View style={styles.infoBox2}>
 
-              </>
+  <View style={styles.bookDetails}>
+    {/* Display book details here */}
+  </View>
+
+  <View style={styles.recommendationContainer}>
+  <Text style={styles.sectionTitle}>You May Also Like to Watch...</Text>
+  <FlatList
+    data={recommendations}
+    horizontal
+    keyExtractor={(item) => item.id.toString()}
+    renderItem={({ item }) => {
+      // See if type of item is movie or tv
+      const itemType = (item.media_type === 'tv') ? 'tv' : 'movie';
+
+      return ( // Make sure to return the JSX
+        <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item: { ...item, type: itemType } })}>
+          <View style={styles.recommendationItem}>
+            {item.poster_path && (
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
+                style={styles.recommendationImage}
+              />
             )}
           </View>
+        </TouchableOpacity>
+      );
+    }}
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={{ paddingLeft: 13, paddingRight: 13  }}
+  />
+</View>
 
 
-        
+    <View style={styles.recommendationContainer}>
+      <Text style={styles.sectionTitle}>Books You will love...</Text>
+      <FlatList
+        data={bookRecommendations}
+        horizontal
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigation.push('ItemDetail', { item: {...item, type: 'book' } })}>
+            <View style={styles.recommendationItem}>
+              <Image
+                source={{ uri: item.volumeInfo.imageLinks?.thumbnail || 'default_image_url' }}
+                style={styles.recommendationImage}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingLeft: 13, paddingRight: 13  }}
+      />
+    </View>
+  
+</View>
+
+
       </ScrollView>
     // </SafeAreaView>
   );
@@ -376,7 +499,7 @@ const styles = StyleSheet.create({
   },
   titleDetails:{
     marginTop: 2,
-    flexDirection: 'row',
+   flexDirection: 'row',
   },
   releaseDate: {
     fontStyle: 'none',
@@ -397,6 +520,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginRight: 10,
   },
+  infoTitle2: {
+    fontWeight: '700',
+    marginBottom: 6,
+    marginRight: 15,
+  },
   synopsis: {
     fontFamily: 'Roboto',
     fontSize: 16,
@@ -415,19 +543,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f7f7', // Box background color
     borderRadius: 0,
     padding: 16,
+    paddingTop:20,
     marginVertical: 16,
     borderColor: '#ddd', 
-    flexDirection: 'row',
     borderTopWidth: 0.8,
+    flexDirection: 'row',
+    borderColor: '#ddd', 
+    borderBottomWidth: 0.8,
 
   },
 
   // Info Box
   infoBox2: {
     padding: 16,
-    
+    backgroundColor: '#F9F9F9',
+    top: -14.8,
+    borderColor: '#ddd', 
+    borderBottomWidth: 0.8,
   },
   castContainer:{
+    paddingTop: 14,
     flexDirection: 'row',
     paddingBottom: 15,
   },
@@ -450,10 +585,49 @@ const styles = StyleSheet.create({
     aspectRatio: 1/1,
     width: 15,
   },
+  bookIcon:{
+    aspectRatio: 1/1,
+    width: 22,
+    bottom: 2,
+    left: 2,
+  },
   seasonIcon:{
     aspectRatio: 1/1,
     width: 16,
   },
+
+    // RECOMMENDATIONS
+    recommendationContainer: {
+    width: 392,
+    left: -17,
+      marginTop: 10,
+      // paddingHorizontal: 5,
+    },
+    sectionTitle: {
+      fontSize: 13.8,
+     fontWeight: 'bold',
+      fontFamily: 'roboto',
+      marginBottom: 10,
+      left: 18,
+      textTransform: 'uppercase',
+    },
+    recommendationItem: {
+      // margin: 2,
+  
+    },
+    recommendationImage: {
+      width: 100,
+      height: 150,
+      margin: 4,
+      borderRadius: 4,
+      
+      },
+
+    
+      bookRecommendations: {
+        margin: 0,
+        paddingHorizontal: 0,
+      },
 
   // REVIEW
 
@@ -500,3 +674,8 @@ const styles = StyleSheet.create({
 });
 
 export default ItemDetailScreen;
+
+
+
+
+

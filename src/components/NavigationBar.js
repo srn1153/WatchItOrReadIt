@@ -13,7 +13,7 @@ import ShadedSearchIcon from '../../assets/images/shadedSearchIcon.png'
 import ShadedProfileRoomIcon from '../../assets/images/shadedProfileRoomIcon.png'
 
 //Creating an instance of the bottom tab navigator
-const Tab = createBottomTabNavigator(); 
+const Tab = createBottomTabNavigator();
 
 //Implementing bottom tab bar, including each images, and text to match the colour black 
 //Adding Home, Search and Profile Room in the bottom tab navigation

@@ -1,15 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
 import axios from 'axios';
 import { db } from '../../firebaseConfig'; 
 import { collection, query, where, getDocs } from 'firebase/firestore'; 
+import FollowUser from './FollowUser'; // Import followUser component for following functionality
 
 const SearchScreen = ({ navigation }) => {
   // State variables
   const [searchQuery, setSearchQuery] = useState(''); // Stores the current search query
   const [searchResults, setSearchResults] = useState([]); // Stores search results from API
   const [loading, setLoading] = useState(false); // Indicates if data is being fetched
-  const [searchType, setSearchType] = useState('user'); // Tracks the type of search (movie, tv, or book)
+  const [searchType, setSearchType] = useState('movie'); // Tracks the type of search (movie, tv, or book)
+
+  const slideAnim = useRef(new Animated.Value(0)).current; // Animation value for sliding
+
+  const buttonWidth = 88; // Set a fixed width for the buttons
+
+   // Function to handle the search type change with animation
+   const handleSearchTypeChange = (type, index) => {
+    setSearchType(type);
+
+    // Animate the sliding of the active button
+    Animated.spring(slideAnim, 
+      {
+      toValue: index * buttonWidth, // Move the slider to the new button's position
+      useNativeDriver: true, // Enable native driver for smoother animation
+    }).start();
+  };
+
+  // Show the FollowUser component if the search type is user
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+    <Text style={styles.itemTitle}>{searchType === 'user' ? item.username : item.title || item.name || item.volumeInfo?.title}</Text>
+    {searchType === 'user' && <FollowUser user={item} />}  
+    </View>
+  );
 
   // Resets search results and query when searchType changes
   useEffect(() => {
@@ -31,16 +56,34 @@ const SearchScreen = ({ navigation }) => {
     setSearchQuery(text);
 
     try {
-      const API_KEY = '79c14b18444432a1b856be277e49212d';
-      let response;
+    const API_KEY = '79c14b18444432a1b856be277e49212d'; // TMDB API key
+    const GOOGLE_BOOKS_API_KEY = 'AIzaSyA3zuZaTA8tqqlm83lg4qnHJZPGzwODLQY'; // Google Books API key
 
-      // Fetch data based on searchType
-      if (searchType === 'movie') {
-        response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${text}&api_key=${API_KEY}`);
-      } else if (searchType === 'tv') {
-        response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${text}&api_key=${API_KEY}`);
-      } else if (searchType === 'book') {
-        response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${text}`);
+    let response;
+
+    // Log the search text before making the request
+    console.log(`Searching for: ${text}`);
+
+    // Fetch data based on searchType
+    if (searchType === 'movie') {
+      response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${text}&api_key=${API_KEY}`);
+    } else if (searchType === 'tv') {
+      response = await axios.get(`https://api.themoviedb.org/3/search/tv?query=${text}&api_key=${API_KEY}`);
+    } else if (searchType === 'book') {
+      // Check if the search query is valid before making the request
+      if (!text || text.trim() === '') {
+        console.error('Invalid book search query');
+        setSearchResults([]);
+        return;
+      }
+
+      response = await axios.get(`https://www.googleapis.com/books/v1/volumes`, {
+        params: {
+          q: text,
+          maxResults: 20,
+          key: GOOGLE_BOOKS_API_KEY // Include the API key here
+        }
+      });
       } //Fetching users from database (firebase)
       else if (searchType === 'user'){
         const userQuery = query(
@@ -80,8 +123,8 @@ const SearchScreen = ({ navigation }) => {
     //if searchType is movie, tv show or book, then go to the ItemDetailScreen 
     if(searchType === 'movie' || searchType === 'tv' || searchType === 'book'){
       navigation.navigate('ItemDetail', { item: itemWithType });
-    } else { //else go to Temporary Profile Room
-      navigation.navigate('TempUserProfileRoom'); 
+    } else if( searchType == 'user') { //else go to user profile room
+      navigation.navigate('ProfileRoom', { user : item }); //Goes to specific users profile room
     }
   };
 
@@ -101,58 +144,80 @@ const SearchScreen = ({ navigation }) => {
     }
   };
 
+
+
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Search</Text>
 
-      {/* Search type buttons */}
-      <SafeAreaView style={styles.searchTypeContainer}>
-        <TouchableOpacity
+      {/* Search type buttons with sliding animation */}
+      <View style={styles.searchTypeContainer}>
+        <Animated.View
           style={[
-            styles.searchTypeButton,
-            searchType === 'movie' && styles.searchTypeButtonActive,
+            styles.slidingIndicator,
+            { transform: [{ translateX: slideAnim }] },
           ]}
-          onPress={() => setSearchType('movie')}
-        >
-          <Text style={styles.searchTypeText}>Movies</Text>
-        </TouchableOpacity>
-
+        />
         <TouchableOpacity
-          style={[
-            styles.searchTypeButton,
-            searchType === 'tv' && styles.searchTypeButtonActive,
-          ]}
-          onPress={() => setSearchType('tv')}
+          style={styles.searchTypeButton}
+          onPress={() => handleSearchTypeChange('movie', 0)}
         >
-          <Text style={styles.searchTypeText}>TV Shows</Text>
+          <Text
+            style={[
+              styles.searchTypeText,
+              searchType === 'movie' && styles.searchTypeTextActive,
+            ]}
+          >
+            Movies
+          </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
-          style={[
-            styles.searchTypeButton,
-            searchType === 'book' && styles.searchTypeButtonActive,
-          ]}
-          onPress={() => setSearchType('book')}
+          style={styles.searchTypeButton}
+          onPress={() => handleSearchTypeChange('tv', 1)}
         >
-          <Text style={styles.searchTypeText}>Books</Text>
+          <Text
+            style={[
+              styles.searchTypeText,
+              searchType === 'tv' && styles.searchTypeTextActive,
+            ]}
+          >
+            TV Shows
+          </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
-          style={[
-            styles.searchTypeButton,
-            searchType === 'user' && styles.searchTypeButtonActive,
-          ]}
-          onPress={() => setSearchType('user')}
+          style={styles.searchTypeButton}
+          onPress={() => handleSearchTypeChange('book', 2)}
         >
-          <Text style={styles.searchTypeText}>Users</Text>
+          <Text
+            style={[
+              styles.searchTypeText,
+              searchType === 'book' && styles.searchTypeTextActive,
+            ]}
+          >
+            Books
+          </Text>
         </TouchableOpacity>
-
-      </SafeAreaView>
+        <TouchableOpacity
+          style={styles.searchTypeButton}
+          onPress={() => handleSearchTypeChange('user', 3)}
+        >
+          <Text
+            style={[
+              styles.searchTypeText,
+              searchType === 'user' && styles.searchTypeTextActive,
+            ]}
+          >
+            Users
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Search bar */}
       <TextInput
         style={styles.searchBar}
         placeholder="Find movies, TV shows, books, or users..."
+        placeholderTextColor="#888"
         value={searchQuery}
         onChangeText={handleSearch}
       />
@@ -162,18 +227,19 @@ const SearchScreen = ({ navigation }) => {
 
       {/* List of search results */}
       <FlatList
-      data={searchResults}
-      keyExtractor={(item) => {
-        if(searchType === 'user') {
-          return item.username; 
-        }
-          return `${searchType}-${item.id}`} // Composite key for uniqueness
-      }
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.itemContainer}
-          onPress={() => handleItemPress(item)}
-        >
+  data={searchResults}
+  keyExtractor={(item, index) => {
+    if (searchType === 'user') {
+      return item.username || `user-${index}`; // Fallback to index if username is undefined
+    }
+    return `${searchType}-${item.id || index}`; // Fallback to index if item.id is undefined
+  }}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleItemPress(item)}
+    >
+
       {/* Display poster image based on search type */}
       {(searchType === 'movie' || searchType === 'tv') && item.poster_path && (
         <Image
@@ -214,6 +280,7 @@ const SearchScreen = ({ navigation }) => {
         )}
 
         <Text style={styles.itemType}>{getTypeLabel()}</Text>
+        {searchType === 'user' && <FollowUser user={item} />}
       </View>
     </TouchableOpacity>
   )}
@@ -222,19 +289,19 @@ const SearchScreen = ({ navigation }) => {
   );
 };
 
-// Styles for the components
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F5F5',
   },
   title: {
-    fontSize: 40,
+    fontSize: 37,
     fontWeight: '100',
     marginBottom: 10,
     marginTop: 60,
-    fontFamily: 'Courier-light',
+    fontFamily: 'Menlo',
+    letterSpacing: -2,
   },
   // Search Types
   searchTypeContainer: {
@@ -242,31 +309,52 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 1,
     marginBottom: 10,
+    position: 'relative',
+    height: 35,
+    left: -2, // Move the slider to the left of the container
+    
+    
   },
   searchTypeButton: {
+    width: 90, // Fixed width for each button
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 9,
-    borderWidth: 0.3,
+    paddingHorizontal: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 0,
+    borderWidth: 0,
     borderColor: '#ccc',
-  },
-  searchTypeButtonActive: {
-    backgroundColor: '#ccc',
-    opacity: 0.6,
+    // backgroundColor: '#EEEEEE',
   },
   searchTypeText: {
-    // fontFamily: 'courier',
-    // fontSize: 20,
+    fontFamily: 'menlo',
+    fontSize: 12,
+    color: '#000', // Default text color
+  },
+  searchTypeTextActive: {
+    color: '#fff', // Text color for active button
+  },
+  slidingIndicator: {
+    position: 'absolute',
+    width: 92, // Same width as the button
+    height: '100%',
+    backgroundColor: '#41509A',
+    borderRadius: 3,
+    // opacity: 1,
+    bottom: 0, // Positioning it at the bottom of the button
+    left: 0, // Move the slider to the left of the container
+    
   },
   searchBar: {
     height: 40,
-    borderColor: '#ccc',
+    width: '100%',
+    borderColor: '#EEEEEE',
     borderWidth: 1,
     borderRadius: 8,
     paddingLeft: 10,
     marginBottom: 20,
     marginTop: 10,
-    fontFamily: '',
+    backgroundColor: '#EEEEEE',
   },
   itemContainer: {
     flexDirection: 'row',
